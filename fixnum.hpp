@@ -115,7 +115,7 @@ public:
         return *this;
     }
 
-    /* boolean negate. equivalent to == 0 */
+    /* boolean negate */
     inline constexpr Fixnum & operator!() noexcept {
         bits = uint64_t(bits == impl::fixnum_tag) | impl::fixnum_tag;
         return *this;
@@ -144,6 +144,13 @@ public:
     inline constexpr Fixnum & operator/=(Fixnum other) noexcept {
         int64_t i = untag(bits), j = untag(other.bits);
         bits = uint64_t(i / j) | impl::fixnum_tag;
+        return *this;
+    }
+
+    /* modulus */
+    inline constexpr Fixnum & operator%=(Fixnum other) noexcept {
+        int64_t i = untag(bits), j = untag(other.bits);
+        bits = uint64_t(i % j) | impl::fixnum_tag;
         return *this;
     }
 
@@ -217,6 +224,10 @@ inline constexpr Fixnum operator*(Fixnum a, Fixnum b) noexcept {
 
 inline constexpr Fixnum operator/(Fixnum a, Fixnum b) noexcept {
     return a /= b;
+}
+
+inline constexpr Fixnum operator%(Fixnum a, Fixnum b) noexcept {
+    return a %= b;
 }
 
 
