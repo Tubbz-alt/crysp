@@ -1,9 +1,11 @@
+CXX=g++
+CXXFLAGS_BASE=-Wall -Wextra  -march=native
 
 all:
-	g++ -Wall -Wextra -O3 -march=native *.cpp -o main
+	$(CXX) -O3 $(CXXFLAGS_BASE) $(CXXFLAGS) *.cpp -o main
 
 debug:
-	g++ -Wall -Wextra -g -march=native *.cpp -o main.debug
+	$(CXX) -g  $(CXXFLAGS_BASE) $(CXXFLAGS) *.cpp -o main.debug
 
 clean:
 	rm -f main main.debug *.o *~

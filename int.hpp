@@ -4,13 +4,29 @@
 #include "fixnum.hpp"
 
 class Int : public Fixnum {
+private:
+
+    static inline uint64_t check(uint64_t bits) /* throw(std::bad_cast) */ {
+        uint32_t hi = bits >> 32;
+        if (hi != (impl::fixnum_tag >> 32) && ~hi != 0) {
+            impl::throw_bad_cast();
+        }
+        return bits;
+    }
+
 public:
     inline constexpr Int() noexcept
     /**/ : Fixnum{} {
     }
 
     explicit constexpr inline Int(int32_t i) noexcept
+        // sign-extend to 64 bits
         : Fixnum{uint64_t(int64_t(i)) | impl::fixnum_tag, bits_constructor{}} {
+    }
+
+    /* throws if argument is not an Int */
+    explicit inline Int(T arg) /* throw(std::bad_cast) */
+        : Fixnum{check(arg.bits), bits_constructor{}} {
     }
 
     /*

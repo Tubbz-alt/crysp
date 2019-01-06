@@ -7,7 +7,7 @@
 
 namespace impl {
     enum {
-        // Fixnum methods depend on this exact value
+        // Fixnum and Int methods depend on this exact value
         fixnum_tag   = 0xFFFC000000000000ull, // negative quiet NaN
         fixnum_mask  = fixnum_tag,
 
@@ -28,6 +28,8 @@ namespace impl {
         nil_bits     = cons_tag,
         t_bits       = symbol_tag + 0x20,
     };
+
+    void throw_bad_cast(); /* throw(std::bad_cast) */
 }
 
 #endif // CRYSP_IMPL_HPP

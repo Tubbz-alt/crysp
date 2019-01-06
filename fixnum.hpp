@@ -12,18 +12,26 @@ private:
         payload_nbits = 50,
     };
     
-    static void fixnum_range_error(); /* throw(std::range_error) */
+    static void throw_overflow_error(); /* throw(std::overflow_error) */
     
-    static inline uint64_t tag(int64_t i) /* throw(std::range_error) */ {
+    static inline uint64_t tag(int64_t i) /* throw(std::overflow_error) */ {
         uint32_t hi = uint64_t(i) >> payload_nbits;
         if (hi != 0 && hi != 0x3FFF) {
-            fixnum_range_error();
+            throw_overflow_error();
         }
         return uint64_t(i) | impl::fixnum_tag;
     }
 
     static inline constexpr int64_t untag(uint64_t bits) noexcept {
         return int64_t(bits << tag_nbits) >> tag_nbits;
+    }
+
+    static inline uint64_t check(uint64_t bits) /* throw(std::bad_cast) */ {
+        uint32_t hi = ~bits >> payload_nbits;
+        if (hi != 0) {
+            impl::throw_bad_cast();
+        }
+        return bits;
     }
 
 protected:
@@ -40,9 +48,14 @@ public:
     /**/ : T{uint64_t(impl::fixnum_tag)} {
     }
 
-    /* may throw: Fixnum only holds 50 bits */
-    explicit inline Fixnum(int64_t i) /* throw(std::range_error) */
+    /* throws if argument does not fit in 50 bits */
+    explicit inline Fixnum(int64_t i) /* throw(std::overflow_error) */
     /**/ : T{tag(i)} {
+    }
+
+    /* throws if argument is not a Fixnum */
+    explicit inline Fixnum(T arg) /* throw(std::bad_cast) */
+    /**/ : T{check(arg.bits)} {
     }
 
     /*

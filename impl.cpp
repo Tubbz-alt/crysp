@@ -1,6 +1,7 @@
 
 #include <cstdio>
-#include <stdexcept>
+#include <stdexcept> // std::overflow_error
+#include <typeinfo>  // std::bad_cast
 
 #include "fixnum.hpp"
 #include "float.hpp"
@@ -11,8 +12,12 @@
 const Fixnum most_positive_fixnum( 0x1ffffffffffffll);
 const Fixnum most_negative_fixnum(-0x2000000000000ll);
 
-void Fixnum::fixnum_range_error() /* throw(std::range_error) */ {
-    throw std::range_error{"integer too large, overflows fixnum"};
+void impl::throw_bad_cast() /* throw(std::bad_cast) */ {
+    throw std::bad_cast{};
+}
+
+void Fixnum::throw_overflow_error() /* throw(std::overflow_error) */ {
+    throw std::overflow_error{"integer too large, overflows fixnum"};
 }
 
 void T::print(FILE *out) const {
@@ -35,7 +40,8 @@ void T::print(FILE *out) const {
     uint64_t addr52;
     
     if ((bits >> 52) == (impl::pointer_tag >> 52) &&
-	(addr52 = (bits & ~impl::pointer_mask)) != 0) {
+	(addr52 = (bits & ~impl::pointer_mask)) != 0 && /* skip +inf */
+        addr52 != (uint64_t(1) << 51)) /* skip +NaN */ {
 
         switch (bits & 0xF) {
         case impl::struct_tag & 0xF:

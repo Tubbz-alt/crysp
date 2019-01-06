@@ -39,12 +39,16 @@ noinline void test_float() {
 
 noinline void test_fixnum_assign() {
     Fixnum n;
+    T t;
     TEST_EQ(n.val(), 0);
     TEST_EQ(n, Int{});
-    for (int32_t i = -16; i <= 16; i++) {
+    for (int32_t i = -50; i <= 50; i++) {
         n = i;
         TEST_EQ(n.val(), i);
         TEST_EQ(n, Int{i});
+        t = Int{i};
+        TEST_EQ(n, t);
+        TEST_EQ(n, Fixnum{t}); // calls Fixnum(T)
         if (n.val() >= -1 && n.val() <= 1)
             show(n);
     }
