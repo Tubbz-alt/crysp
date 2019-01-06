@@ -8,7 +8,7 @@ public:
     inline constexpr Float() noexcept : T(0.0f) {
     }
 
-    inline constexpr Float(float f) noexcept : T(f) {
+    inline constexpr Float(float fl) noexcept : T(fl) {
     }
 
     /*
@@ -17,16 +17,12 @@ public:
     inline ~Float() = default;
     */
     
-    inline operator bool() const noexcept {
-	return true;
+    inline float val() const noexcept {
+        return fl;
     }
 
-    inline operator float() const noexcept {
-	return f;
-    }
-
-    inline float value() const noexcept {
-        return f;
+    inline Float & operator=(float fl) noexcept {
+        return (*this) = Float{fl};
     }
 };
 

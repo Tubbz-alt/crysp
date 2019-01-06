@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstdio>
 
 #include "nil.hpp"
@@ -8,29 +9,36 @@
 
 
 void show(T x) {
-   printf("%016lX\n", x.debug_bits());
+   printf("%016lX = ", x.debug_bits());
+   x.print(stdout);
+   putchar('\n');
 }
 
-void show(Fixnum I) {
-    printf("%ld\n", I.value());
-    show(static_cast<T>(I));
-}
 
 int main(void) 
 {
-   T x;
-   show(x);
-   x = nil;
-   show(x);
+   show(t);
+   show(nil);
 
-   Double D = 0.0/0.0;
-   printf("%f\n", D.value());
-   show(D);
+   show(Double(0.0));
+   show(Double(0.5));
+   show(Double(1.0));
+   show(Double(1023.0));
+   show(Double(1.0/0.0)); // inf
+   show(Double(-0.0/0.0)); // -NaN
 
-   Fixnum I;
+   show(Float(0.0f));
+   show(Float(0.5f));
+   show(Float(1.0f));
+   show(Float(1023.0f));
+   show(Float(1.0f/0.0f)); // inf
+   show(Float(-0.0f/0.0f)); // -NaN
+
+   Fixnum F;
    for (int64_t i = -16; i <= 16; i++) {
-       I = i;
-       show(I);
+       F = i;
+       show(F);
+       assert(F == Int(i));
    }
    show(most_positive_fixnum);
    show(most_negative_fixnum);

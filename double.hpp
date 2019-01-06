@@ -8,7 +8,8 @@ public:
     inline constexpr Double() noexcept : T(0.0) {
     }
 
-    inline constexpr Double(double real) noexcept : T(real) {
+    explicit inline constexpr Double(double real) noexcept
+    /**/ : T(real) {
     }
 
     /*
@@ -17,16 +18,12 @@ public:
     inline ~Double() = default;
     */
     
-    inline operator bool() const noexcept {
-	return true;
-    }
-
-    inline operator double() const noexcept {
-	return real;
-    }
-
-    inline double value() const noexcept {
+    inline double val() const noexcept {
         return real;
+    }
+  
+    inline Double & operator=(double real) noexcept {
+        return (*this) = Double{real};
     }
 };
 

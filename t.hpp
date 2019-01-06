@@ -2,6 +2,7 @@
 #define CRYSP_T_HPP
 
 #include <cstdint>
+#include <cstdio>
 #include <endian.h>
 #include "impl.hpp"
 
@@ -20,14 +21,14 @@ private:
         uint64_t  bits;
         double    real; // NaN if not a double
         uint8_t * addr;
-#ifdef __LITTLE_ENDIAN__
+#if __BYTE_ORDER == __LITTLE_ENDIAN
         struct {
-            int32_t i;
+	    int32_t  i; // rune or 32-bit integer
             uint32_t i_tag;
         };
         struct {
-            float    f;
-            uint32_t f_tag;
+            float    fl;
+            uint32_t fl_tag;
         };
 #else
         struct {
@@ -35,8 +36,8 @@ private:
             int32_t  i;
         };
         struct {
-            uint32_t f_tag;
-            float    f;
+            uint32_t fl_tag;
+            float    fl;
         };
 #endif // __LITTLE_ENDIAN__
     };
@@ -48,25 +49,25 @@ private:
     explicit inline constexpr T(double real) noexcept : real(real) {
     }
     
-#ifdef __LITTLE_ENDIAN__
-    explicit inline constexpr T(float f) noexcept
-    : f(f), f_tag(impl::float_tag >> 32) {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    explicit inline constexpr T(float fl) noexcept
+    /**/ : fl(fl), fl_tag(impl::float_tag >> 32) {
     }
-    explicit inline constexpr T(int32_t i, uint32_t i_tag) noexcept
-    : i(i), i_tag(i_tag) {
+    explicit inline constexpr T(int32_t ch) noexcept
+    /**/ : i(ch), i_tag(impl::rune_tag >> 32) {
     }
 #else
-    explicit inline constexpr T(float f) noexcept
-    : f_tag(impl::float_tag >> 32), f(f) {
+    explicit inline constexpr T(float fl) noexcept
+    /**/ : fl_tag(impl::float_tag >> 32), fl(fl) {
     }
-    explicit inline constexpr T(int32_t i, uint32_t i_tag) noexcept
-    : i_tag(i_tag), i(i) {
+    explicit inline constexpr T(int32_t ch) noexcept
+    /**/ : i_tag(impl::rune_tag >> 32), i(ch) {
     }
 #endif
     
 public:
     inline constexpr T() noexcept
-    : bits(impl::t_bits) {
+    /**/ : bits(impl::t_bits) {
     }
 
     /*
@@ -79,9 +80,17 @@ public:
 	return bits;
     }
 
-    inline operator bool() const noexcept {
-	return bits != impl::nil_bits;
+    inline bool operator==(T other) const noexcept {
+        return bits == other.bits;
     }
+
+    inline bool operator!=(T other) const noexcept {
+        return bits != other.bits;
+    }
+
+    void print(FILE *out) const;
 };
+
+extern const T t;
 
 #endif // CRYSP_T_HPP
