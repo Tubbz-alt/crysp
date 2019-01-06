@@ -76,21 +76,21 @@ public:
     inline ~T() = default;
     */
     
-    inline uint64_t debug_bits() const noexcept {
+    inline constexpr uint64_t debug_bits() const noexcept {
 	return bits;
     }
 
-    inline bool operator==(T other) const noexcept {
+    inline constexpr bool operator==(T other) const noexcept {
         return bits == other.bits;
     }
 
-    inline bool operator!=(T other) const noexcept {
+    inline constexpr bool operator!=(T other) const noexcept {
         return bits != other.bits;
     }
 
     void print(FILE *out) const;
 };
 
-extern const T t;
+constexpr T t;
 
 #endif // CRYSP_T_HPP

@@ -19,6 +19,6 @@ public:
     }
 };
 
-extern const Null nil;
+constexpr Null nil;
 
 #endif // CRYSP_NIL_HPP

@@ -8,14 +8,8 @@
 #include "nil.hpp"
 #include "double.hpp"
 
-const T t;
-const Null nil;
-
 const Fixnum most_positive_fixnum( 0x1ffffffffffffll);
 const Fixnum most_negative_fixnum(-0x2000000000000ll);
-
-const Int most_positive_int( 0x7fffffff);
-const Int most_negative_int(-0x80000000);
 
 void Fixnum::fixnum_range_error() /* throw(std::range_error) */ {
     throw std::range_error{"integer too large, overflows fixnum"};

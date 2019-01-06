@@ -9,8 +9,8 @@ public:
     /**/ : Fixnum{} {
     }
 
-    explicit inline Int(int32_t i) noexcept
-      : Fixnum{i, impl::fixnum_tag >> 32} {
+    explicit constexpr inline Int(int32_t i) noexcept
+        : Fixnum{uint64_t(int64_t(i)) | impl::fixnum_tag, bits_constructor{}} {
     }
 
     /*
@@ -28,6 +28,6 @@ public:
     }
 };
 
-extern const Int most_positive_int, most_negative_int;
+constexpr Int most_positive_int{0x7fffffffl}, most_negative_int{-0x80000000l};
 
 #endif // CRYSP_INT_HPP

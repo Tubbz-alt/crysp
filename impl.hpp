@@ -1,6 +1,10 @@
 #ifndef CRYSP_IMPL_HPP
 #define CRYSP_IMPL_HPP
 
+#ifdef __GNUC__
+#define noinline __attribute__((noinline))
+#endif
+
 namespace impl {
     enum {
         // Fixnum methods depend on this exact value
