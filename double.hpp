@@ -8,8 +8,8 @@ public:
     inline constexpr Double() noexcept : T(0.0) {
     }
 
-    explicit inline constexpr Double(double real) noexcept
-    /**/ : T(real) {
+    /*implicit*/ inline constexpr Double(double dbl) noexcept
+    /**/ : T(dbl) {
     }
 
     /*
@@ -19,40 +19,41 @@ public:
     */
     
     inline constexpr double val() const noexcept {
-        return real;
+        return dbl;
     }
-  
-    inline constexpr Double & operator=(double real) noexcept {
-        return (*this) = Double{real};
+
+    /* not strictly needed, constructor Double(double) is implicit */
+    inline constexpr Double & operator=(double other) noexcept {
+        return (*this) = Double{other};
     }
 
     inline constexpr bool operator<(Double other) noexcept {
-        return real < other.real;
+        return dbl < other.dbl;
     }
     
     /* pre-increment */
     inline constexpr Double & operator++() noexcept {
-        ++real;
+        ++dbl;
         return *this;
     }
 
     /* post-increment */
     inline constexpr Double operator++(int) noexcept {
         Double ret = *this;
-        ++real;
+        ++dbl;
         return ret;
     }
 
     /* pre-decrement */
     inline constexpr Double & operator--() noexcept {
-        --real;
+        --dbl;
         return *this;
     }
 
     /* post-decrement */
     inline constexpr Double operator--(int) noexcept {
         Double ret = *this;
-        --real;
+        --dbl;
         return ret;
     }
 
@@ -63,37 +64,37 @@ public:
 
     /* flip sign */
     inline constexpr Double & operator-() noexcept {
-        real = -real;
+        dbl = -dbl;
         return *this;
     }
 
     /* boolean negate */
     inline constexpr Double & operator!() noexcept {
-        real = !real;
+        dbl = !dbl;
         return *this;
     }
 
     /* add */
     inline constexpr Double & operator+=(Double other) noexcept {
-        real += other.real;
+        dbl += other.dbl;
         return *this;
     }
 
     /* subtract */
     inline constexpr Double & operator-=(Double other) noexcept {
-        real -= other.real;
+        dbl -= other.dbl;
         return *this;
     }
 
     /* multiply */
     inline constexpr Double & operator*=(Double other) noexcept {
-        real *= other.real;
+        dbl *= other.dbl;
         return *this;
     }
 
     /* divide */
     inline constexpr Double & operator/=(Double other) noexcept {
-        real /= other.real;
+        dbl /= other.dbl;
         return *this;
     }
 };
@@ -128,6 +129,5 @@ inline constexpr Double operator*(Double a, Double b) noexcept {
 inline constexpr Double operator/(Double a, Double b) noexcept {
     return a /= b;
 }
-
 
 #endif // CRYSP_DOUBLE_HPP

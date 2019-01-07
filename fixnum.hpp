@@ -13,8 +13,20 @@ private:
     };
     
     static void throw_overflow_error(); /* throw(std::overflow_error) */
-    
-    static inline uint64_t tag(int64_t i) /* throw(std::overflow_error) */ {
+
+    /*
+     * int64_t -> Fixnum conversion, modulo 2^50:
+     * wraps around if argument overflows Fixnum
+     */
+    static inline constexpr uint64_t tag(int64_t i) noexcept {
+        return uint64_t(i) | impl::fixnum_tag;
+    }
+
+    /*
+     * checked int64_t -> Fixnum conversion. throws std::overflow_error
+     * if argument overflows Fixnum (50 bits)
+    */
+    static inline uint64_t tag(int64_t i, check_overflow_t) /* throw(std::overflow_error) */ {
         uint32_t hi = uint64_t(i) >> payload_nbits;
         if (hi != 0 && hi != 0x3FFF) {
             throw_overflow_error();
@@ -48,12 +60,20 @@ public:
     /**/ : T{uint64_t(impl::fixnum_tag)} {
     }
 
-    /* throws if argument does not fit in 50 bits */
-    explicit inline Fixnum(int64_t i) /* throw(std::overflow_error) */
+    /* wraps around modulo 2^50 if argument overflows Fixnum */
+    explicit inline constexpr Fixnum(int64_t i) noexcept
     /**/ : T{tag(i)} {
     }
 
-    /* throws if argument is not a Fixnum */
+    /*
+     * checked constructor: throws std::overflow_error
+     * if argument overflows Fixnum (50 bits)
+     */
+    explicit inline Fixnum(int64_t i, check_overflow_t chk) /* throw(std::overflow_error) */
+        /**/ : T{tag(i, chk)} {
+    }
+
+    /* throws std::bad_cast if argument dynamic type is not Fixnum */
     explicit inline Fixnum(T arg) /* throw(std::bad_cast) */
     /**/ : T{check(arg.bits)} {
     }
@@ -252,6 +272,7 @@ inline constexpr Fixnum operator>>(Fixnum a, uint8_t b) noexcept {
     return a >>= b;
 }
 
-extern const Fixnum most_positive_fixnum, most_negative_fixnum;
+constexpr Fixnum most_positive_fixnum{ 0x1ffffffffffffll};
+constexpr Fixnum most_negative_fixnum{-0x2000000000000ll};
 
 #endif // CRYSP_FIXNUM_HPP

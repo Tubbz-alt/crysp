@@ -19,7 +19,7 @@ private:
     
     union {
         uint64_t  bits;
-        double    real; // NaN if not a double
+        double    dbl; // NaN if not a double
         uint8_t * addr;
 #if __BYTE_ORDER == __LITTLE_ENDIAN
         struct {
@@ -46,7 +46,7 @@ private:
     }
     explicit inline constexpr T(uint8_t *addr) noexcept : addr(addr) {
     }
-    explicit inline constexpr T(double real) noexcept : real(real) {
+    explicit inline constexpr T(double dbl) noexcept : dbl(dbl) {
     }
     
 #if __BYTE_ORDER == __LITTLE_ENDIAN

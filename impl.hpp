@@ -5,6 +5,10 @@
 #define noinline __attribute__((noinline))
 #endif
 
+struct check_overflow_t {};
+
+constexpr check_overflow_t check_overflow = {};
+
 namespace impl {
     enum {
         // Fixnum and Int methods depend on this exact value

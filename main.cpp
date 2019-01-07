@@ -195,8 +195,8 @@ noinline void test_double_unary_op() {
     for (double i = -50; i <= 50; i++) {
         for (double j = -50; j <= 50; j++) {
             n = i;
-            n += Double{j}; TEST_EQ(n.val(), i + j);
-            n -= Double{i}; TEST_EQ(n.val(), j);
+            n += j; TEST_EQ(n.val(), i + j);
+            n -= i; TEST_EQ(n.val(), j);
         }
     }
 
@@ -220,10 +220,14 @@ noinline void test_double_binary_op() {
             TEST_EQ(a < b, i < j);
             
             c = a + b; TEST_EQ(c.val(), i + j);
+            c = a + j; TEST_EQ(c.val(), i + j);
             c = a - b; TEST_EQ(c.val(), i - j);
+            c = a - j; TEST_EQ(c.val(), i - j);
             c = a * b; TEST_EQ(c.val(), i * j);
+            c = a * j; TEST_EQ(c.val(), i * j);
             if (j != 0) {
                 c = a / b; TEST_EQ(c.val(), i / j);
+                c = a / j; TEST_EQ(c.val(), i / j);
             }
         }
     }

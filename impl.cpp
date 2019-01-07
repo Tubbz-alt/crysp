@@ -9,9 +9,6 @@
 #include "nil.hpp"
 #include "double.hpp"
 
-const Fixnum most_positive_fixnum( 0x1ffffffffffffll);
-const Fixnum most_negative_fixnum(-0x2000000000000ll);
-
 void impl::throw_bad_cast() /* throw(std::bad_cast) */ {
     throw std::bad_cast{};
 }
@@ -63,5 +60,5 @@ void T::print(FILE *out) const {
         return;
     }
     
-    fprintf(out, "%f", real);
+    fprintf(out, "%f", dbl);
 }
