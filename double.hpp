@@ -27,10 +27,6 @@ public:
         return (*this) = Double{other};
     }
 
-    inline constexpr bool operator<(Double other) noexcept {
-        return dbl < other.dbl;
-    }
-    
     /* pre-increment */
     inline constexpr Double & operator++() noexcept {
         ++dbl;
@@ -63,15 +59,13 @@ public:
     }
 
     /* flip sign */
-    inline constexpr Double & operator-() noexcept {
-        dbl = -dbl;
-        return *this;
+    inline constexpr Double operator-() noexcept {
+        return Double{-dbl};
     }
 
     /* boolean negate */
-    inline constexpr Double & operator!() noexcept {
-        dbl = !dbl;
-        return *this;
+    inline constexpr Double operator!() noexcept {
+        return Double{double(!dbl)};
     }
 
     /* add */
@@ -100,16 +94,21 @@ public:
 };
 
 
+/* op(Double, Double) */
+inline constexpr bool operator<(Double a, Double b) noexcept {
+    return a.val() < b.val();
+}
+
 inline constexpr bool operator>(Double a, Double b) noexcept {
-    return b < a;
+    return a.val() > b.val();
 }
 
 inline constexpr bool operator<=(Double a, Double b) noexcept {
-    return !(b < a);
+    return a.val() <= b.val();
 }
 
 inline constexpr bool operator>=(Double a, Double b) noexcept {
-    return !(a < b);
+    return a.val() >= b.val();
 }
 
 
@@ -129,5 +128,46 @@ inline constexpr Double operator*(Double a, Double b) noexcept {
 inline constexpr Double operator/(Double a, Double b) noexcept {
     return a /= b;
 }
+
+
+
+/* op(Double, double) */
+inline constexpr bool operator<(Double a, double b) noexcept {
+    return a.val() < b;
+}
+
+inline constexpr bool operator>(Double a, double b) noexcept {
+    return a.val() > b;
+}
+
+inline constexpr bool operator<=(Double a, double b) noexcept {
+    return a.val() <= b;
+}
+
+inline constexpr bool operator>=(Double a, double b) noexcept {
+    return a.val() >= b;
+}
+
+
+
+
+/* op(double, Double) */
+inline constexpr bool operator<(double a, Double b) noexcept {
+    return a < b.val();
+}
+
+inline constexpr bool operator>(double a, Double b) noexcept {
+    return a > b.val();
+}
+
+inline constexpr bool operator<=(double a, Double b) noexcept {
+    return a <= b.val();
+}
+
+inline constexpr bool operator>=(double a, Double b) noexcept {
+    return a >= b.val();
+}
+
+
 
 #endif // CRYSP_DOUBLE_HPP

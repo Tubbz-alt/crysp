@@ -59,6 +59,5 @@ void T::print(FILE *out) const {
         }
         return;
     }
-    
     fprintf(out, "%f", dbl);
 }

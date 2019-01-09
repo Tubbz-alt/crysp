@@ -86,8 +86,10 @@ noinline void test_fixnum_unary_op() {
     for (int32_t i = -50; i <= 50; i++) {
         for (int32_t j = -50; j <= 50; j++) {
             n = i;
-            n += Fixnum{j}; TEST_EQ(n.val(), i + j);
-            n -= Fixnum{i}; TEST_EQ(n.val(), j);
+            n += j; TEST_EQ(n.val(), i + j);
+            n -= i; TEST_EQ(n.val(), j);
+            n += Fixnum{i}; TEST_EQ(n.val(), i + j);
+            n -= Fixnum{j}; TEST_EQ(n.val(), i);
         }
     }
 
@@ -97,6 +99,8 @@ noinline void test_fixnum_unary_op() {
             n = hi - i;
             n += Fixnum{j}; TEST_EQ(n.val(), mod_fixnum(hi - i + j));
             n -= Fixnum{j}; TEST_EQ(n.val(), mod_fixnum(hi - i));
+            n += j; TEST_EQ(n.val(), mod_fixnum(hi - i + j));
+            n -= j; TEST_EQ(n.val(), mod_fixnum(hi - i));
         }
     }
 
@@ -117,29 +121,57 @@ noinline void test_fixnum_unary_op() {
     }
 }
 
+noinline void test_fixnum_binary_op(int64_t i, int64_t j) {
+    Fixnum a{i}, b{j}, c;
+
+    c = a + b; TEST_EQ(c.val(), mod_fixnum(i + j));
+    c = a + j; TEST_EQ(c.val(), mod_fixnum(i + j));
+    c = i + b; TEST_EQ(c.val(), mod_fixnum(i + j));
+            
+    c = a - b; TEST_EQ(c.val(), mod_fixnum(i - j));
+    c = a - j; TEST_EQ(c.val(), mod_fixnum(i - j));
+    c = i - b; TEST_EQ(c.val(), mod_fixnum(i - j));
+            
+    c = a * b; TEST_EQ(c.val(), mod_fixnum(i * j));
+    c = a * j; TEST_EQ(c.val(), mod_fixnum(i * j));
+    c = i * b; TEST_EQ(c.val(), mod_fixnum(i * j));
+
+    if (j != 0) {
+        c = a / b; TEST_EQ(c.val(), mod_fixnum(i / j));
+        c = a / j; TEST_EQ(c.val(), mod_fixnum(i / j));
+        c = i / b; TEST_EQ(c.val(), mod_fixnum(i / j));
+
+        c = a % b; TEST_EQ(c.val(), mod_fixnum(i % j));
+        c = a % j; TEST_EQ(c.val(), mod_fixnum(i % j));
+        c = i % b; TEST_EQ(c.val(), mod_fixnum(i % j));
+    }
+    c = a & b; TEST_EQ(c.val(), mod_fixnum(i & j));
+    c = a & j; TEST_EQ(c.val(), mod_fixnum(i & j));
+    c = i & b; TEST_EQ(c.val(), mod_fixnum(i & j));
+
+    c = a | b; TEST_EQ(c.val(), mod_fixnum(i | j));
+    c = a | j; TEST_EQ(c.val(), mod_fixnum(i | j));
+    c = i | b; TEST_EQ(c.val(), mod_fixnum(i | j));
+
+    c = a ^ b; TEST_EQ(c.val(), mod_fixnum(i ^ j));
+    c = a ^ j; TEST_EQ(c.val(), mod_fixnum(i ^ j));
+    c = i ^ b; TEST_EQ(c.val(), mod_fixnum(i ^ j));
+}
+
 noinline void test_fixnum_binary_op() {
     Fixnum a, b, c;
 
     int64_t lo = most_negative_fixnum.val();
     int64_t hi = most_positive_fixnum.val();
-
+    
     for (int64_t i = -50; i <= 50; i++) {
         for (int64_t j = -50; j <= 50; j++) {
             a = i;
             b = j;
 
             TEST_EQ(a < b, i < j);
-            
-            c = a + b; TEST_EQ(c.val(), i + j);
-            c = a - b; TEST_EQ(c.val(), i - j);
-            c = a * b; TEST_EQ(c.val(), i * j);
-            if (j != 0) {
-                c = a / b; TEST_EQ(c.val(), i / j);
-                c = a % b; TEST_EQ(c.val(), i % j);
-            }
-            c = a & b; TEST_EQ(c.val(), i & j);
-            c = a | b; TEST_EQ(c.val(), i | j);
-            c = a ^ b; TEST_EQ(c.val(), i ^ j);
+            TEST_EQ(a < j, i < j);
+            TEST_EQ(i < b, i < j);
 
             if (j >= 0) {
                 uint8_t n = uint8_t(j);
@@ -147,29 +179,10 @@ noinline void test_fixnum_binary_op() {
                 c = a >> n; TEST_EQ(c.val(), mod_fixnum(i >> n));
             }
 
-            a = mod_fixnum(hi + i);
-            b = j;
-            c = a + b; TEST_EQ(c.val(), mod_fixnum((hi + i) + j));
-            c = a - b; TEST_EQ(c.val(), mod_fixnum((hi + i) - j));
-            c = a * b; TEST_EQ(c.val(), mod_fixnum((hi + i) * j));
-            if (j != 0) {
-                c = a / b; TEST_EQ(c.val(), mod_fixnum(mod_fixnum(hi + i) / j));
-                c = a % b; TEST_EQ(c.val(), mod_fixnum(hi + i) % j);
-            }
-            c = a & b; TEST_EQ(c.val(), mod_fixnum(hi + i) & j);
-            c = a | b; TEST_EQ(c.val(), mod_fixnum(hi + i) | j);
-            c = a ^ b; TEST_EQ(c.val(), mod_fixnum(hi + i) ^ j);
-
-            a = i;
-            b = mod_fixnum(lo + j);
-            c = a + b; TEST_EQ(c.val(), mod_fixnum(i + (lo + j)));
-            c = a - b; TEST_EQ(c.val(), mod_fixnum(i - (lo + j)));
-            c = a * b; TEST_EQ(c.val(), mod_fixnum(i * (lo + j)));
-            c = a / b; TEST_EQ(c.val(), mod_fixnum(i / mod_fixnum(lo + j)));
-            c = a % b; TEST_EQ(c.val(), i % mod_fixnum(lo + j));
-            c = a & b; TEST_EQ(c.val(), mod_fixnum(i & (lo + j)));
-            c = a | b; TEST_EQ(c.val(), mod_fixnum(i | (lo + j)));
-            c = a ^ b; TEST_EQ(c.val(), mod_fixnum(i ^ (lo + j)));
+            test_fixnum_binary_op(i,                  j);
+            test_fixnum_binary_op(mod_fixnum(hi + i), j);
+            test_fixnum_binary_op(i,                  mod_fixnum(lo + j));
+            test_fixnum_binary_op(mod_fixnum(hi + i), mod_fixnum(lo + j));
         }
     }
 }
@@ -180,10 +193,11 @@ noinline void test_fixnum() {
     test_fixnum_binary_op();
 }
 
-noinline void test_double_unary_op() {
-    Double n;
+template<class FL, class fl>
+noinline void test_float_unary_op() {
+    FL n;
     // test ++ and --
-    for (double i = -1024; i <= 1024; i++) {
+    for (fl i = -1024; i <= 1024; i++) {
         n = i;
         n++; TEST_EQ(n.val(), i + 1);
         ++n; TEST_EQ(n.val(), i + 2);
@@ -192,8 +206,8 @@ noinline void test_double_unary_op() {
     }
 
     // test += and -=
-    for (double i = -50; i <= 50; i++) {
-        for (double j = -50; j <= 50; j++) {
+    for (fl i = -50; i <= 50; i++) {
+        for (fl j = -50; j <= 50; j++) {
             n = i;
             n += j; TEST_EQ(n.val(), i + j);
             n -= i; TEST_EQ(n.val(), j);
@@ -201,7 +215,7 @@ noinline void test_double_unary_op() {
     }
 
     // test unary + - !
-    for (double i = -1024; i <= 1024; i++) {
+    for (fl i = -1024; i <= 1024; i++) {
         n = i;
         n = +n; TEST_EQ(n.val(), +i);
         n = -n; TEST_EQ(n.val(), -i);
@@ -209,38 +223,52 @@ noinline void test_double_unary_op() {
     }
 }
 
-noinline void test_double_binary_op() {
-    Double a, b, c;
+template<class FL, class fl>
+noinline void test_float_binary_op(fl i, fl j) {
+    FL a = i, b = j, c;
 
-    for (double i = -50; i <= 50; i++) {
-        for (double j = -50; j <= 50; j++) {
-            a = i;
-            b = j;
-
-            TEST_EQ(a < b, i < j);
+    TEST_EQ(a < b, i < j);
+    TEST_EQ(a < j, i < j);
+    TEST_EQ(i < b, i < j);
             
-            c = a + b; TEST_EQ(c.val(), i + j);
-            c = a + j; TEST_EQ(c.val(), i + j);
-            c = a - b; TEST_EQ(c.val(), i - j);
-            c = a - j; TEST_EQ(c.val(), i - j);
-            c = a * b; TEST_EQ(c.val(), i * j);
-            c = a * j; TEST_EQ(c.val(), i * j);
-            if (j != 0) {
-                c = a / b; TEST_EQ(c.val(), i / j);
-                c = a / j; TEST_EQ(c.val(), i / j);
-            }
+    c = a + b; TEST_EQ(c.val(), i + j);
+    c = a + j; TEST_EQ(c.val(), i + j);
+    c = i + b; TEST_EQ(c.val(), i + j);
+
+    c = a - b; TEST_EQ(c.val(), i - j);
+    c = a - j; TEST_EQ(c.val(), i - j);
+    c = i - b; TEST_EQ(c.val(), i - j);
+    
+    c = a * b; TEST_EQ(c.val(), i * j);
+    c = a * j; TEST_EQ(c.val(), i * j);
+    c = i * b; TEST_EQ(c.val(), i * j);
+
+    if (j != 0) {
+        c = a / b; TEST_EQ(c.val(), i / j);
+        c = a / j; TEST_EQ(c.val(), i / j);
+        c = i / b; TEST_EQ(c.val(), i / j);
+    }
+}
+
+template<class FL, class fl>
+noinline void test_float_binary_op() {
+    for (fl i = -20; i <= 20; i += 0.25) {
+        for (fl j = -20; j <= 20; j += 0.25) {
+            test_float_binary_op<FL, fl>(i, j);
         }
     }
 }
 
 noinline void test_double() {
     show_double();
-    test_double_unary_op();
-    test_double_binary_op();
+    test_float_unary_op<Double, double>();
+    test_float_binary_op<Double, double>();
 }
 
 noinline void test_float() {
     show_float();
+    test_float_unary_op<Float, float>();
+    test_float_binary_op<Float, float>();
 }
 
 noinline void test() {
@@ -253,21 +281,5 @@ noinline void test() {
 int main() {
     test();
     return 0;
-}
-
-noinline Fixnum fixnum_add(Fixnum a, Fixnum b) {
-    return a + b;
-}
-
-noinline Fixnum fixnum_sub(Fixnum a, Fixnum b) {
-    return a - b;
-}
-
-noinline Fixnum fixnum_mul(Fixnum a, Fixnum b) {
-    return a * b;
-}
-
-noinline Fixnum fixnum_rshift(Fixnum a, uint8_t count) {
-    return a >> count;
 }
 

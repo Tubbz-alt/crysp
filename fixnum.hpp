@@ -60,7 +60,10 @@ public:
     /**/ : T{uint64_t(impl::fixnum_tag)} {
     }
 
-    /* wraps around modulo 2^50 if argument overflows Fixnum */
+    /* 
+     * unchecked constructor: wraps around modulo 2^50
+     * if argument overflows Fixnum (50 bits)
+     */
     explicit inline constexpr Fixnum(int64_t i) noexcept
     /**/ : T{tag(i)} {
     }
@@ -88,14 +91,15 @@ public:
         return untag(bits);
     }
 
-    /* may throw: Fixnum only holds 50 bits */
-    inline Fixnum & operator=(int64_t i) /* throw(std::range_error) */ {
+    /* wraps around modulo 2^50: Fixnum only holds 50 bits */
+    inline constexpr Fixnum & operator=(int64_t i) noexcept {
         return (*this) = Fixnum{i};
     }
 
+    /* less than */
     inline constexpr bool operator<(Fixnum other) noexcept {
         return (int64_t(bits) << tag_nbits)
-             < (int64_t(other.bits) << tag_nbits);
+            < (int64_t(other.bits) << tag_nbits);
     }
     
     /* pre-increment */
@@ -130,20 +134,25 @@ public:
     }
 
     /* flip sign */
-    inline constexpr Fixnum & operator-() noexcept {
-        bits = -bits | impl::fixnum_tag;
-        return *this;
+    inline constexpr Fixnum operator-() noexcept {
+        return Fixnum{-bits | impl::fixnum_tag,
+                bits_constructor{}};
     }
 
     /* boolean negate */
-    inline constexpr Fixnum & operator!() noexcept {
-        bits = uint64_t(bits == impl::fixnum_tag) | impl::fixnum_tag;
-        return *this;
+    inline constexpr Fixnum operator!() noexcept {
+        return Fixnum{(bits == impl::fixnum_tag) | impl::fixnum_tag,
+                bits_constructor{}};
     }
 
     /* add */
     inline constexpr Fixnum & operator+=(Fixnum other) noexcept {
         bits = (bits + other.bits) | impl::fixnum_tag;
+        return *this;
+    }
+
+    inline constexpr Fixnum & operator+=(int64_t other) noexcept {
+        bits = (bits + other) | impl::fixnum_tag;
         return *this;
     }
 
@@ -153,9 +162,22 @@ public:
         return *this;
     }
 
+    inline constexpr Fixnum & operator-=(int64_t other) noexcept {
+        bits = (bits - other) | impl::fixnum_tag;
+        return *this;
+    }
+
     /* multiply */
     inline constexpr Fixnum & operator*=(Fixnum other) noexcept {
-        int64_t i = untag(bits), j = untag(other.bits);
+        // no need to untag(bits)
+        int64_t i = int64_t(bits), j = untag(other.bits);
+        bits = uint64_t(i * j) | impl::fixnum_tag;
+        return *this;
+    }
+
+    inline constexpr Fixnum & operator*=(int64_t other) noexcept {
+        // no need to untag(bits)
+        int64_t i = int64_t(bits), j = other;
         bits = uint64_t(i * j) | impl::fixnum_tag;
         return *this;
     }
@@ -167,6 +189,12 @@ public:
         return *this;
     }
 
+    inline constexpr Fixnum & operator/=(int64_t other) noexcept {
+        int64_t i = untag(bits), j = other;
+        bits = uint64_t(i / j) | impl::fixnum_tag;
+        return *this;
+    }
+
     /* modulus */
     inline constexpr Fixnum & operator%=(Fixnum other) noexcept {
         int64_t i = untag(bits), j = untag(other.bits);
@@ -174,15 +202,26 @@ public:
         return *this;
     }
 
-    /* bitwise complement */
-    inline constexpr Fixnum & operator~() noexcept {
-        bits = ~bits | impl::fixnum_tag;
+    inline constexpr Fixnum & operator%=(int64_t other) noexcept {
+        int64_t i = untag(bits), j = other;
+        bits = uint64_t(i % j) | impl::fixnum_tag;
         return *this;
+    }
+
+    /* bitwise complement */
+    inline constexpr Fixnum operator~() noexcept {
+        return Fixnum{~bits | impl::fixnum_tag,
+                bits_constructor{}};
     }
 
     /* bitwise and */
     inline constexpr Fixnum & operator&=(Fixnum other) noexcept {
         bits = (bits & other.bits) | impl::fixnum_tag;
+        return *this;
+    }
+
+    inline constexpr Fixnum & operator&=(int64_t other) noexcept {
+        bits = (bits & other) | impl::fixnum_tag;
         return *this;
     }
 
@@ -192,9 +231,19 @@ public:
         return *this;
     }
 
+    inline constexpr Fixnum & operator|=(int64_t other) noexcept {
+        bits = (bits | other) | impl::fixnum_tag;
+        return *this;
+    }
+
     /* bitwise xor */
     inline constexpr Fixnum & operator^=(Fixnum other) noexcept {
         bits = (bits ^ other.bits) | impl::fixnum_tag;
+        return *this;
+    }
+
+    inline constexpr Fixnum & operator^=(int64_t other) noexcept {
+        bits = (bits ^ other) | impl::fixnum_tag;
         return *this;
     }
 
@@ -215,6 +264,8 @@ public:
     }
 };
 
+
+/* op(Fixnum, Fixnum) */
 
 inline constexpr bool operator>(Fixnum a, Fixnum b) noexcept {
     return b < a;
@@ -271,6 +322,126 @@ inline constexpr Fixnum operator<<(Fixnum a, uint8_t b) noexcept {
 inline constexpr Fixnum operator>>(Fixnum a, uint8_t b) noexcept {
     return a >>= b;
 }
+
+
+
+/* op(Fixnum, int64_t) */
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator<(Fixnum a, int64_t b) noexcept {
+    return a.val() < b;
+}
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator>(Fixnum a, int64_t b) noexcept {
+    return a.val() > b;
+}
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator<=(Fixnum a, int64_t b) noexcept {
+    return a.val() <= b;
+}
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator>=(Fixnum a, int64_t b) noexcept {
+    return a.val() >= b;
+}
+
+
+inline constexpr Fixnum operator+(Fixnum a, int64_t b) noexcept {
+    return a += b;
+}
+
+inline constexpr Fixnum operator-(Fixnum a, int64_t b) noexcept {
+    return a -= b;
+}
+
+inline constexpr Fixnum operator*(Fixnum a, int64_t b) noexcept {
+    return a *= b;
+}
+
+inline constexpr Fixnum operator/(Fixnum a, int64_t b) noexcept {
+    return a /= b;
+}
+
+inline constexpr Fixnum operator%(Fixnum a, int64_t b) noexcept {
+    return a %= b;
+}
+
+
+
+inline constexpr Fixnum operator&(Fixnum a, int64_t b) noexcept {
+    return a &= b;
+}
+
+inline constexpr Fixnum operator|(Fixnum a, int64_t b) noexcept {
+    return a |= b;
+}
+
+inline constexpr Fixnum operator^(Fixnum a, int64_t b) noexcept {
+    return a ^= b;
+}
+
+
+
+
+/* op(int64_t, Fixnum) */
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator<(int64_t a, Fixnum b) noexcept {
+    return a < b.val();
+}
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator>(int64_t a, Fixnum b) noexcept {
+    return a > b.val();
+}
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator<=(int64_t a, Fixnum b) noexcept {
+    return a <= b.val();
+}
+
+// correct also if a overflows Fixnum
+inline constexpr bool operator>=(int64_t a, Fixnum b) noexcept {
+    return a >= b.val();
+}
+
+
+inline constexpr Fixnum operator+(int64_t a, Fixnum b) noexcept {
+    return b += a;
+}
+
+inline constexpr Fixnum operator-(int64_t a, Fixnum b) noexcept {
+    return Fixnum{int64_t(a - b.debug_bits())};
+}
+
+inline constexpr Fixnum operator*(int64_t a, Fixnum b) noexcept {
+    return b *= a;
+}
+
+inline constexpr Fixnum operator/(int64_t a, Fixnum b) noexcept {
+    return Fixnum{a / b.val()};
+}
+
+inline constexpr Fixnum operator%(int64_t a, Fixnum b) noexcept {
+    return Fixnum{a % b.val()};
+}
+
+
+
+inline constexpr Fixnum operator&(int64_t a, Fixnum b) noexcept {
+    return b &= a;
+}
+
+inline constexpr Fixnum operator|(int64_t a, Fixnum b) noexcept {
+    return b |= a;
+}
+
+inline constexpr Fixnum operator^(int64_t a, Fixnum b) noexcept {
+    return b ^= a;
+}
+
 
 constexpr Fixnum most_positive_fixnum{ 0x1ffffffffffffll};
 constexpr Fixnum most_negative_fixnum{-0x2000000000000ll};

@@ -20,7 +20,7 @@ private:
     union {
         uint64_t  bits;
         double    dbl; // NaN if not a double
-        uint8_t * addr;
+        // uint8_t * addr;
 #if __BYTE_ORDER == __LITTLE_ENDIAN
         struct {
 	    int32_t  i; // rune or 32-bit integer
@@ -43,8 +43,6 @@ private:
     };
 
     explicit inline constexpr T(uint64_t bits) noexcept : bits(bits) {
-    }
-    explicit inline constexpr T(uint8_t *addr) noexcept : addr(addr) {
     }
     explicit inline constexpr T(double dbl) noexcept : dbl(dbl) {
     }
