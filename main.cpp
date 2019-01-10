@@ -1,11 +1,13 @@
 #include <cstdio>
 
-#include "nil.hpp"
+#include "cast.hpp"
 #include "double.hpp"
-#include "test.hpp"
 #include "fixnum.hpp"
 #include "float.hpp"
 #include "int.hpp"
+#include "nil.hpp"
+#include "test.hpp"
+#include "type.hpp"
 
 
 noinline noinline void show(T x) {
@@ -48,7 +50,7 @@ noinline void test_fixnum_assign() {
         TEST_EQ(n, Int{i});
         t = Int{i};
         TEST_EQ(n, t);
-        TEST_EQ(n, Fixnum{t}); // calls Fixnum(T)
+        TEST_EQ(n, cast<Fixnum>(t));
         if (n.val() >= -1 && n.val() <= 1)
             show(n);
     }

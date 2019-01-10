@@ -12,11 +12,17 @@ private:
     friend class Float;
     friend class Double;
     friend class Int;
-    friend class Null;
+    friend class Cons;
     template<class E> friend class Obj;
     friend class Rune;
     friend class Symbol;
+    template<class To> friend bool is(T arg);
+    template<class To, class From> friend To cast(From arg);
     
+    static inline constexpr bool typecheck(uint64_t) noexcept {
+        return true;
+    }
+
     union {
         uint64_t  bits;
         double    dbl; // NaN if not a double
@@ -86,9 +92,12 @@ public:
         return bits != other.bits;
     }
 
+    type_id constexpr type() const noexcept;
+    
     void print(FILE *out) const;
 };
 
 constexpr T t;
+
 
 #endif // CRYSP_T_HPP

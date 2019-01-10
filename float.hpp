@@ -4,6 +4,13 @@
 #include "t.hpp"
 
 class Float : public T {
+private:
+    template<class To> friend bool is(T arg);
+
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        return (bits >> 48) == (impl::float_tag >> 48);
+    }
+
 public:
     inline constexpr Float() noexcept : T(0.0f) {
     }
@@ -21,6 +28,14 @@ public:
         return fl;
     }
 
+    inline constexpr type_id type() const noexcept {
+        return float_id;
+    }
+
+    enum {
+        static_type = float_id,
+    };
+    
     /* not strictly needed, constructor Float(float) is implicit */
     inline Float & operator=(float other) noexcept {
         return (*this) = Float{other};

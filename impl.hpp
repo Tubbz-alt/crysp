@@ -36,4 +36,17 @@ namespace impl {
     void throw_bad_cast(); /* throw(std::bad_cast) */
 }
 
+enum type_id {
+    unknown_id = 0,
+    double_id  = 1,
+    fixnum_id  = 2,
+    float_id   = 3,
+    rune_id    = 4,
+    struct_id  = 5,
+    cons_id    = 6,
+    symbol_id  = 7,
+    func_id    = 8,
+};
+    
+
 #endif // CRYSP_IMPL_HPP

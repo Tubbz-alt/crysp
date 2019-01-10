@@ -6,6 +6,7 @@
 class Fixnum : public T {
 private:
     friend class T;
+    template<class To> friend bool is(T arg);
 
     enum {
         tag_nbits = 14,
@@ -38,23 +39,10 @@ private:
         return int64_t(bits << tag_nbits) >> tag_nbits;
     }
 
-    static inline uint64_t check(uint64_t bits) /* throw(std::bad_cast) */ {
-        uint32_t hi = ~bits >> payload_nbits;
-        if (hi != 0) {
-            impl::throw_bad_cast();
-        }
-        return bits;
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        return (~bits >> payload_nbits) == 0;
     }
 
-protected:
-    struct bits_constructor {};
-    
-    /* needed by subclass constructor Int(int32_t) */
-    inline constexpr Fixnum(uint64_t bits, bits_constructor) noexcept
-    /**/ : T{bits} {
-    }
-        
-    
 public:
     inline constexpr Fixnum() noexcept
     /**/ : T{uint64_t(impl::fixnum_tag)} {
@@ -76,11 +64,6 @@ public:
         /**/ : T{tag(i, chk)} {
     }
 
-    /* throws std::bad_cast if argument dynamic type is not Fixnum */
-    explicit inline Fixnum(T arg) /* throw(std::bad_cast) */
-    /**/ : T{check(arg.bits)} {
-    }
-
     /*
     inline constexpr Fixnum(const Fixnum & other) = default;
     inline constexpr Fixnum & operator=(const Fixnum & other) = default;
@@ -90,6 +73,14 @@ public:
     inline constexpr int64_t val() const noexcept {
         return untag(bits);
     }
+
+    inline constexpr type_id type() const noexcept {
+        return fixnum_id;
+    }
+
+    enum {
+        static_type = fixnum_id,
+    };
 
     /* wraps around modulo 2^50: Fixnum only holds 50 bits */
     inline constexpr Fixnum & operator=(int64_t i) noexcept {
@@ -135,14 +126,12 @@ public:
 
     /* flip sign */
     inline constexpr Fixnum operator-() noexcept {
-        return Fixnum{-bits | impl::fixnum_tag,
-                bits_constructor{}};
+        return Fixnum{-int64_t(bits)}; // exploit wraparound
     }
 
     /* boolean negate */
     inline constexpr Fixnum operator!() noexcept {
-        return Fixnum{(bits == impl::fixnum_tag) | impl::fixnum_tag,
-                bits_constructor{}};
+        return Fixnum{bits == impl::fixnum_tag};
     }
 
     /* add */
@@ -210,8 +199,7 @@ public:
 
     /* bitwise complement */
     inline constexpr Fixnum operator~() noexcept {
-        return Fixnum{~bits | impl::fixnum_tag,
-                bits_constructor{}};
+        return Fixnum{~int64_t(bits)}; // exploit wraparound
     }
 
     /* bitwise and */

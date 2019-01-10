@@ -21,12 +21,7 @@ public:
 
     explicit constexpr inline Int(int32_t i) noexcept
         // sign-extend to 64 bits
-        : Fixnum{uint64_t(int64_t(i)) | impl::fixnum_tag, bits_constructor{}} {
-    }
-
-    /* throws if argument is not an Int */
-    explicit inline Int(T arg) /* throw(std::bad_cast) */
-        : Fixnum{check(arg.bits), bits_constructor{}} {
+        : Fixnum{int64_t(i)} {
     }
 
     /*
@@ -35,7 +30,7 @@ public:
     inline ~Int() = default;
     */
     
-    inline int32_t val() const noexcept {
+    inline constexpr int32_t val() const noexcept {
         return i;
     }
 

@@ -1,11 +1,16 @@
 #ifndef CRYSP_NIL_HPP
 #define CRYSP_NIL_HPP
 
-#include "t.hpp"
+#include "cons.hpp"
 
-class Null : public T {
+class Null : public Cons {
+private:
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        return bits == impl::nil_bits;
+    }
+
 public:
-    inline constexpr Null() noexcept : T(impl::nil_bits) {
+    inline constexpr Null() noexcept : Cons(impl::nil_bits) {
     }
 
     /*
@@ -13,10 +18,6 @@ public:
     inline constexpr Null & operator=(const Null & other) = default;
     inline ~Null() = default;
     */
-
-    inline operator bool() const noexcept {
-        return false;
-    }
 };
 
 constexpr Null nil;

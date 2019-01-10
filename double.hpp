@@ -4,6 +4,21 @@
 #include "t.hpp"
 
 class Double : public T {
+private:
+    template<class To> friend bool is(T arg);
+
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        switch (bits >> 51) {
+        case 0x7FF0 >> 3: // +inf or signaling +NaN
+        case 0x7FF8 >> 3: // quiet +NaN
+        case 0xFFF0 >> 3: // -inf or signaling -NaN
+        case 0xFFF8 >> 3: // quiet -NaN
+            return (bits << 13) == 0;
+        default:
+            return true;
+        }
+    }
+
 public:
     inline constexpr Double() noexcept : T(0.0) {
     }
@@ -21,6 +36,14 @@ public:
     inline constexpr double val() const noexcept {
         return dbl;
     }
+
+    inline constexpr type_id type() const noexcept {
+        return double_id;
+    }
+
+    enum {
+        static_type = fixnum_id,
+    };
 
     /* not strictly needed, constructor Double(double) is implicit */
     inline constexpr Double & operator=(double other) noexcept {
