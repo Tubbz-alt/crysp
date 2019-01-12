@@ -6,9 +6,11 @@
 #include <endian.h>
 #include "impl.hpp"
 
-#if defined(__SIZEOF_POINTER__) && && (__SIZEOF_POINTER__ >= 8) || \
-    defined(__WORDSIZE) && (__WORDSIZE >= 64)
+#if defined(__SIZEOF_POINTER__) && (__SIZEOF_POINTER__ < 8) || \
+    defined(__WORDSIZE) && (__WORDSIZE < 64)
 // do not trust UINTPTR_MAX: 'gcc -m32' on x86_64 gets it wrong
+# define CRYSP_32BIT // 32bit or narrower architecture
+#else
 # define CRYSP_64BIT // 64bit or wider architecture
 #endif
 
