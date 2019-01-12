@@ -3,6 +3,22 @@
 
 #include "t.hpp"
 
+// do not trust UINTPTR_MAX: 'gcc -m32' on x86_64 gets it wrong
+#if defined(__SIZEOF_POINTER__) && (__SIZEOF_POINTER__ < 8) ||  \
+    defined(__WORDSIZE) && (__WORDSIZE < 64)
+
+// on 32-bit architectures, in methods returning Float,
+// modifying *this is more efficient
+# define CRYSP_FLOAT_THIS_INPLACE
+
+// on arm and ppc 32-bit architectures, in functions returning Float,
+// modifying an existing Float and returning it is more efficient
+# if defined(__ARMEL__) || defined(__ARM_ARCH) || \
+    defined(__PPC__) || defined(_ARCH_PPC) || defined(__powerpc__)
+#  define CRYSP_FLOAT_OP_INPLACE
+# endif
+#endif
+
 class Float : public T {
 private:
     template<class To> friend bool is(T arg);
@@ -37,14 +53,14 @@ public:
     };
     
     /* not strictly needed, constructor Float(float) is implicit */
-#ifdef CRYSP_64BIT
-    inline constexpr Float & operator=(float other) noexcept {
-        return (*this) = Float{other};
-    }
-#else // 32bit or narrower architecture
+#ifdef CRYSP_FLOAT_THIS_INPLACE
     inline constexpr Float & operator=(float other) noexcept {
         fl = other;
         return *this;
+    }
+#else
+    inline constexpr Float & operator=(float other) noexcept {
+        return (*this) = Float{other};
     }
 #endif
     
@@ -89,43 +105,7 @@ public:
         return Float{float(!fl)};
     }
 
-#ifdef CRYSP_64BIT
-    /* add */
-    inline constexpr Float & operator+=(Float other) noexcept {
-        return *this = Float{fl + other.fl};
-    }
-
-    inline constexpr Float & operator+=(float other) noexcept {
-        return *this = Float{fl + other};
-    }
-
-    /* subtract */
-    inline constexpr Float & operator-=(Float other) noexcept {
-        return *this = Float{fl - other.fl};
-    }
-
-    inline constexpr Float & operator-=(float other) noexcept {
-        return *this = Float{fl - other};
-    }
-
-    /* multiply */
-    inline constexpr Float & operator*=(Float other) noexcept {
-        return *this = Float{fl * other.fl};
-    }
-
-    inline constexpr Float & operator*=(float other) noexcept {
-        return *this = Float{fl * other};
-    }
-
-    /* divide */
-    inline constexpr Float & operator/=(Float other) noexcept {
-        return *this = Float{fl / other.fl};
-    }
-
-    inline constexpr Float & operator/=(float other) noexcept {
-        return *this = Float{fl / other};
-    }
-#else // 32bit or narrower architecture
+#ifdef CRYSP_FLOAT_THIS_INPLACE
     /* add */
     inline constexpr Float & operator+=(Float other) noexcept {
         fl += other.fl;
@@ -169,7 +149,43 @@ public:
         fl /= other;
         return *this;
     }
-#endif
+#else // !CRYSP_FLOAT_THIS_INPLACE
+    /* add */
+    inline constexpr Float & operator+=(Float other) noexcept {
+        return *this = Float{fl + other.fl};
+    }
+
+    inline constexpr Float & operator+=(float other) noexcept {
+        return *this = Float{fl + other};
+    }
+
+    /* subtract */
+    inline constexpr Float & operator-=(Float other) noexcept {
+        return *this = Float{fl - other.fl};
+    }
+
+    inline constexpr Float & operator-=(float other) noexcept {
+        return *this = Float{fl - other};
+    }
+
+    /* multiply */
+    inline constexpr Float & operator*=(Float other) noexcept {
+        return *this = Float{fl * other.fl};
+    }
+
+    inline constexpr Float & operator*=(float other) noexcept {
+        return *this = Float{fl * other};
+    }
+
+    /* divide */
+    inline constexpr Float & operator/=(Float other) noexcept {
+        return *this = Float{fl / other.fl};
+    }
+
+    inline constexpr Float & operator/=(float other) noexcept {
+        return *this = Float{fl / other};
+    }
+#endif // CRYSP_FLOAT_THIS_INPLACE
 };
 
 /* relational operators */
@@ -222,55 +238,7 @@ inline constexpr bool operator>=(float a, Float b) noexcept {
 }
 
 /* arithmetic operators */
-#if defined(CRYSP_64BIT) || defined(__i386__)
-inline constexpr Float operator+(Float a, Float b) noexcept {
-    return Float{a.val() + b.val()};
-}
-
-inline constexpr Float operator+(Float a, float b) noexcept {
-    return Float{a.val() + b};
-}
-
-inline constexpr Float operator+(float a, Float b) noexcept {
-    return Float{a + b.val()};
-}
-
-inline constexpr Float operator-(Float a, Float b) noexcept {
-    return Float{a.val() - b.val()};
-}
-
-inline constexpr Float operator-(Float a, float b) noexcept {
-    return Float{a.val() - b};
-}
-
-inline constexpr Float operator-(float a, Float b) noexcept {
-    return Float{a - b.val()};
-}
-
-inline constexpr Float operator*(Float a, Float b) noexcept {
-    return Float{a.val() * b.val()};
-}
-
-inline constexpr Float operator*(Float a, float b) noexcept {
-    return Float{a.val() * b};
-}
-
-inline constexpr Float operator*(float a, Float b) noexcept {
-    return Float{a * b.val()};
-}
-
-inline constexpr Float operator/(Float a, Float b) noexcept {
-    return Float{a.val() / b.val()};
-}
-
-inline constexpr Float operator/(Float a, float b) noexcept {
-    return Float{a.val() / b};
-}
-
-inline constexpr Float operator/(float a, Float b) noexcept {
-    return Float{a / b.val()};
-}
-#else // 32bit or narrower architecture
+#ifdef CRYSP_FLOAT_OP_INPLACE
 inline constexpr Float operator+(Float a, Float b) noexcept {
     return a += b;
 }
@@ -318,6 +286,54 @@ inline constexpr Float operator/(Float a, float b) noexcept {
 inline constexpr Float operator/(float a, Float b) noexcept {
     return b = a / b.val();
 }
-#endif
+#else // !CRYSP_FLOAT_OP_INPLACE
+inline constexpr Float operator+(Float a, Float b) noexcept {
+    return Float{a.val() + b.val()};
+}
+
+inline constexpr Float operator+(Float a, float b) noexcept {
+    return Float{a.val() + b};
+}
+
+inline constexpr Float operator+(float a, Float b) noexcept {
+    return Float{a + b.val()};
+}
+
+inline constexpr Float operator-(Float a, Float b) noexcept {
+    return Float{a.val() - b.val()};
+}
+
+inline constexpr Float operator-(Float a, float b) noexcept {
+    return Float{a.val() - b};
+}
+
+inline constexpr Float operator-(float a, Float b) noexcept {
+    return Float{a - b.val()};
+}
+
+inline constexpr Float operator*(Float a, Float b) noexcept {
+    return Float{a.val() * b.val()};
+}
+
+inline constexpr Float operator*(Float a, float b) noexcept {
+    return Float{a.val() * b};
+}
+
+inline constexpr Float operator*(float a, Float b) noexcept {
+    return Float{a * b.val()};
+}
+
+inline constexpr Float operator/(Float a, Float b) noexcept {
+    return Float{a.val() / b.val()};
+}
+
+inline constexpr Float operator/(Float a, float b) noexcept {
+    return Float{a.val() / b};
+}
+
+inline constexpr Float operator/(float a, Float b) noexcept {
+    return Float{a / b.val()};
+}
+#endif // CRYSP_FLOAT_OP_INPLACE
 
 #endif // CRYSP_FLOAT_HPP

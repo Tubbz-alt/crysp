@@ -7,6 +7,18 @@
 #include "nil.hpp"
 #include "double.hpp"
 
+#ifdef CRYSP_FLOAT_THIS_INPLACE
+# pragma message "CRYSP_FLOAT_THIS_INPLACE"
+#else
+# pragma message "CRYSP_FLOAT_THIS_NOTINPLACE"
+#endif
+
+#ifdef CRYSP_FLOAT_OP_INPLACE
+# pragma message "CRYSP_FLOAT_OP_INPLACE"
+#else
+# pragma message "CRYSP_FLOAT_OP_NOTINPLACE"
+#endif
+
 type_id constexpr T::type() const noexcept {
     switch (bits >> 48) {
     case impl::float_tag >> 48:
