@@ -5,7 +5,7 @@
 
 #include <sys/mman.h> // mmap()
 
-#include "fixnum.hpp"
+#include "fixint.hpp"
 #include "nil.hpp"
 
 #ifndef GC_MALLOC
@@ -50,7 +50,7 @@ void impl::throw_bad_cast() /* throw(std::bad_cast) */ {
     throw std::bad_cast{};
 }
 
-void Fixnum::throw_overflow_error() /* throw(std::overflow_error) */ {
-    throw std::overflow_error{"integer too large, overflows Fixnum"};
+void Fixint::throw_overflow_error() /* throw(std::overflow_error) */ {
+    throw std::overflow_error{"integer too large, overflows Fixint"};
 }
 

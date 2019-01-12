@@ -42,7 +42,7 @@ public:
     }
 
     enum {
-        static_type = fixnum_id,
+        static_type = double_id,
     };
 
     /* not strictly needed, constructor Double(double) is implicit */

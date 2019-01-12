@@ -2,9 +2,8 @@
 #include <cstdio>
 #include <cinttypes>  // PRId64
 
-#include "fixnum.hpp"
+#include "fixint.hpp"
 #include "float.hpp"
-#include "int.hpp"
 #include "nil.hpp"
 #include "double.hpp"
 
@@ -14,11 +13,11 @@ type_id constexpr T::type() const noexcept {
         return float_id;
     case impl::rune_tag >> 48:
         return rune_id;
-    case (impl::fixnum_tag >> 48) + 0:
-    case (impl::fixnum_tag >> 48) + 1:
-    case (impl::fixnum_tag >> 48) + 2:
-    case (impl::fixnum_tag >> 48) + 3:
-        return fixnum_id;
+    case (impl::fixint_tag >> 48) + 0:
+    case (impl::fixint_tag >> 48) + 1:
+    case (impl::fixint_tag >> 48) + 2:
+    case (impl::fixint_tag >> 48) + 3:
+        return fixint_id;
     }
 
     uint64_t addr52 = 0;
@@ -48,8 +47,8 @@ void T::print(FILE *out) const {
     case double_id:
         fprintf(out, "%f", dbl);
         break;
-    case fixnum_id:
-        fprintf(out, "%" PRId64, Fixnum::untag(bits));
+    case fixint_id:
+        fprintf(out, "%" PRId64, Fixint::untag(bits));
         break;
     case float_id:
         fprintf(out, "%f", double(fl));

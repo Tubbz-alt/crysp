@@ -11,9 +11,9 @@ constexpr check_overflow_t check_overflow = {};
 
 namespace impl {
     enum {
-        // Fixnum and Int methods depend on this exact value
-        fixnum_tag     = 0xFFFC000000000000ull, // negative quiet NaN
-        fixnum_mask    = fixnum_tag,
+        // Fixint and Smallint methods depend on this exact value
+        fixint_tag     = 0xFFFC000000000000ull, // negative quiet NaN
+        fixint_mask    = fixint_tag,
 
         value_mask     = 0xFFFF000000000000ull,
 
@@ -42,7 +42,7 @@ namespace impl {
 enum type_id {
     unknown_id = 0,
     double_id  = 1,
-    fixnum_id  = 2,
+    fixint_id  = 2,
     float_id   = 3,
     rune_id    = 4,
     struct_id  = 5,

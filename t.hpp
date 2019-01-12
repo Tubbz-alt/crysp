@@ -16,13 +16,13 @@
 
 class T {
 private:
-    friend class Fixnum;
+    friend class Fixint;
     friend class Float;
     friend class Double;
-    friend class Int;
     friend class Cons;
     template<class E> friend class Obj;
     friend class Rune;
+    friend class Smallint;
     friend class Symbol;
     template<class To> friend bool is(T arg);
     template<class To, class From> friend To cast(From arg);

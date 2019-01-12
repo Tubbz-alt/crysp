@@ -3,10 +3,10 @@
 
 #include "cast.hpp"
 #include "double.hpp"
-#include "fixnum.hpp"
+#include "fixint.hpp"
 #include "float.hpp"
-#include "int.hpp"
 #include "nil.hpp"
+#include "smallint.hpp"
 #include "test.hpp"
 #include "type.hpp"
 
@@ -47,34 +47,34 @@ noinline void show_float() {
     show(Float{-0.0f/0.0f}); // -NaN
 }
 
-noinline void test_fixnum_assign() {
-    Fixnum n;
+noinline void test_fixint_assign() {
+    Fixint n;
     T t;
     TEST_EQ(n.val(), 0);
-    TEST_EQ(n, Int{});
+    TEST_EQ(n, Smallint{});
     for (int32_t i = -50; i <= 50; i++) {
         n = i;
         TEST_EQ(n.val(), i);
-        TEST_EQ(n, Int{i});
-        t = Int{i};
+        TEST_EQ(n, Smallint{i});
+        t = Smallint{i};
         TEST_EQ(n, t);
-        TEST_EQ(n, cast<Fixnum>(t));
+        TEST_EQ(n, cast<Fixint>(t));
         if (n.val() >= -1 && n.val() <= 1)
             show(n);
     }
-    show(most_positive_fixnum);
-    show(most_negative_fixnum);
-    show(most_positive_int);
-    show(most_negative_int);
+    show(fixint_max);
+    show(fixint_min);
+    show(smallint_max);
+    show(smallint_min);
 }
 
-int64_t mod_fixnum(int64_t i) {
+int64_t mod_fixint(int64_t i) {
     i &= 0x3FFFFFFFFFFFFll;
     return (i << 14) >> 14; // sign extend
 }
  
-noinline void test_fixnum_unary_op() {
-    Fixnum n;
+noinline void test_fixint_unary_op() {
+    Fixint n;
     // test ++ and --
     for (int32_t i = -1024; i <= 1024; i++) {
         n = i;
@@ -84,8 +84,8 @@ noinline void test_fixnum_unary_op() {
         --n; TEST_EQ(n.val(), i + 0);
     }
     // test overflow and underflow
-    int64_t lo = most_negative_fixnum.val();
-    int64_t hi = most_positive_fixnum.val();
+    int64_t lo = fixint_min.val();
+    int64_t hi = fixint_max.val();
     n = hi;
     n++; TEST_EQ(n.val(), lo);
     n--; TEST_EQ(n.val(), hi);
@@ -98,8 +98,8 @@ noinline void test_fixnum_unary_op() {
             n = i;
             n += j; TEST_EQ(n.val(), i + j);
             n -= i; TEST_EQ(n.val(), j);
-            n += Fixnum{i}; TEST_EQ(n.val(), i + j);
-            n -= Fixnum{j}; TEST_EQ(n.val(), i);
+            n += Fixint{i}; TEST_EQ(n.val(), i + j);
+            n -= Fixint{j}; TEST_EQ(n.val(), i);
         }
     }
 
@@ -107,10 +107,10 @@ noinline void test_fixnum_unary_op() {
     for (int32_t i = -50; i <= 0; i++) {
         for (int32_t j = -70; j <= 70; j++) {
             n = hi - i;
-            n += Fixnum{j}; TEST_EQ(n.val(), mod_fixnum(hi - i + j));
-            n -= Fixnum{j}; TEST_EQ(n.val(), mod_fixnum(hi - i));
-            n += j; TEST_EQ(n.val(), mod_fixnum(hi - i + j));
-            n -= j; TEST_EQ(n.val(), mod_fixnum(hi - i));
+            n += Fixint{j}; TEST_EQ(n.val(), mod_fixint(hi - i + j));
+            n -= Fixint{j}; TEST_EQ(n.val(), mod_fixint(hi - i));
+            n += j; TEST_EQ(n.val(), mod_fixint(hi - i + j));
+            n -= j; TEST_EQ(n.val(), mod_fixint(hi - i));
         }
     }
 
@@ -127,52 +127,52 @@ noinline void test_fixnum_unary_op() {
         n = -n; TEST_EQ(n.val(), -hi + i);
 
         n = lo + i;
-        n = -n; TEST_EQ(n.val(), mod_fixnum(-lo - i));
+        n = -n; TEST_EQ(n.val(), mod_fixint(-lo - i));
     }
 }
 
-noinline void test_fixnum_binary_op(int64_t i, int64_t j) {
-    Fixnum a{i}, b{j}, c;
+noinline void test_fixint_binary_op(int64_t i, int64_t j) {
+    Fixint a{i}, b{j}, c;
 
-    c = a + b; TEST_EQ(c.val(), mod_fixnum(i + j));
-    c = a + j; TEST_EQ(c.val(), mod_fixnum(i + j));
-    c = i + b; TEST_EQ(c.val(), mod_fixnum(i + j));
+    c = a + b; TEST_EQ(c.val(), mod_fixint(i + j));
+    c = a + j; TEST_EQ(c.val(), mod_fixint(i + j));
+    c = i + b; TEST_EQ(c.val(), mod_fixint(i + j));
             
-    c = a - b; TEST_EQ(c.val(), mod_fixnum(i - j));
-    c = a - j; TEST_EQ(c.val(), mod_fixnum(i - j));
-    c = i - b; TEST_EQ(c.val(), mod_fixnum(i - j));
+    c = a - b; TEST_EQ(c.val(), mod_fixint(i - j));
+    c = a - j; TEST_EQ(c.val(), mod_fixint(i - j));
+    c = i - b; TEST_EQ(c.val(), mod_fixint(i - j));
             
-    c = a * b; TEST_EQ(c.val(), mod_fixnum(i * j));
-    c = a * j; TEST_EQ(c.val(), mod_fixnum(i * j));
-    c = i * b; TEST_EQ(c.val(), mod_fixnum(i * j));
+    c = a * b; TEST_EQ(c.val(), mod_fixint(i * j));
+    c = a * j; TEST_EQ(c.val(), mod_fixint(i * j));
+    c = i * b; TEST_EQ(c.val(), mod_fixint(i * j));
 
     if (j != 0) {
-        c = a / b; TEST_EQ(c.val(), mod_fixnum(i / j));
-        c = a / j; TEST_EQ(c.val(), mod_fixnum(i / j));
-        c = i / b; TEST_EQ(c.val(), mod_fixnum(i / j));
+        c = a / b; TEST_EQ(c.val(), mod_fixint(i / j));
+        c = a / j; TEST_EQ(c.val(), mod_fixint(i / j));
+        c = i / b; TEST_EQ(c.val(), mod_fixint(i / j));
 
-        c = a % b; TEST_EQ(c.val(), mod_fixnum(i % j));
-        c = a % j; TEST_EQ(c.val(), mod_fixnum(i % j));
-        c = i % b; TEST_EQ(c.val(), mod_fixnum(i % j));
+        c = a % b; TEST_EQ(c.val(), mod_fixint(i % j));
+        c = a % j; TEST_EQ(c.val(), mod_fixint(i % j));
+        c = i % b; TEST_EQ(c.val(), mod_fixint(i % j));
     }
-    c = a & b; TEST_EQ(c.val(), mod_fixnum(i & j));
-    c = a & j; TEST_EQ(c.val(), mod_fixnum(i & j));
-    c = i & b; TEST_EQ(c.val(), mod_fixnum(i & j));
+    c = a & b; TEST_EQ(c.val(), mod_fixint(i & j));
+    c = a & j; TEST_EQ(c.val(), mod_fixint(i & j));
+    c = i & b; TEST_EQ(c.val(), mod_fixint(i & j));
 
-    c = a | b; TEST_EQ(c.val(), mod_fixnum(i | j));
-    c = a | j; TEST_EQ(c.val(), mod_fixnum(i | j));
-    c = i | b; TEST_EQ(c.val(), mod_fixnum(i | j));
+    c = a | b; TEST_EQ(c.val(), mod_fixint(i | j));
+    c = a | j; TEST_EQ(c.val(), mod_fixint(i | j));
+    c = i | b; TEST_EQ(c.val(), mod_fixint(i | j));
 
-    c = a ^ b; TEST_EQ(c.val(), mod_fixnum(i ^ j));
-    c = a ^ j; TEST_EQ(c.val(), mod_fixnum(i ^ j));
-    c = i ^ b; TEST_EQ(c.val(), mod_fixnum(i ^ j));
+    c = a ^ b; TEST_EQ(c.val(), mod_fixint(i ^ j));
+    c = a ^ j; TEST_EQ(c.val(), mod_fixint(i ^ j));
+    c = i ^ b; TEST_EQ(c.val(), mod_fixint(i ^ j));
 }
 
-noinline void test_fixnum_binary_op() {
-    Fixnum a, b, c;
+noinline void test_fixint_binary_op() {
+    Fixint a, b, c;
 
-    int64_t lo = most_negative_fixnum.val();
-    int64_t hi = most_positive_fixnum.val();
+    int64_t lo = fixint_min.val();
+    int64_t hi = fixint_max.val();
     
     for (int64_t i = -50; i <= 50; i++) {
         for (int64_t j = -50; j <= 50; j++) {
@@ -185,22 +185,22 @@ noinline void test_fixnum_binary_op() {
 
             if (j >= 0) {
                 uint8_t n = uint8_t(j);
-                c = a << n; TEST_EQ(c.val(), mod_fixnum(i << n));
-                c = a >> n; TEST_EQ(c.val(), mod_fixnum(i >> n));
+                c = a << n; TEST_EQ(c.val(), mod_fixint(i << n));
+                c = a >> n; TEST_EQ(c.val(), mod_fixint(i >> n));
             }
 
-            test_fixnum_binary_op(i,                  j);
-            test_fixnum_binary_op(mod_fixnum(hi + i), j);
-            test_fixnum_binary_op(i,                  mod_fixnum(lo + j));
-            test_fixnum_binary_op(mod_fixnum(hi + i), mod_fixnum(lo + j));
+            test_fixint_binary_op(i,                  j);
+            test_fixint_binary_op(mod_fixint(hi + i), j);
+            test_fixint_binary_op(i,                  mod_fixint(lo + j));
+            test_fixint_binary_op(mod_fixint(hi + i), mod_fixint(lo + j));
         }
     }
 }
 
-noinline void test_fixnum() {
-    test_fixnum_assign();
-    test_fixnum_unary_op();
-    test_fixnum_binary_op();
+noinline void test_fixint() {
+    test_fixint_assign();
+    test_fixint_unary_op();
+    test_fixint_binary_op();
 }
 
 template<class FL, class fl>
@@ -287,7 +287,7 @@ noinline void test() {
     test_cons();
     test_double();
     test_float();
-    test_fixnum();
+    test_fixint();
 }
 
 int main() {
