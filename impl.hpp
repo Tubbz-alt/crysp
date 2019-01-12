@@ -12,28 +12,31 @@ constexpr check_overflow_t check_overflow = {};
 namespace impl {
     enum {
         // Fixnum and Int methods depend on this exact value
-        fixnum_tag   = 0xFFFC000000000000ull, // negative quiet NaN
-        fixnum_mask  = fixnum_tag,
+        fixnum_tag     = 0xFFFC000000000000ull, // negative quiet NaN
+        fixnum_mask    = fixnum_tag,
 
-        value_mask   = 0xFFFF000000000000ull,
+        value_mask     = 0xFFFF000000000000ull,
 
-        float_tag    = 0xFFF1000000000000ull, // negative signaling NaN
-        rune_tag     = 0xFFF2000000000000ull,
+        float_tag      = 0xFFF1000000000000ull, // negative signaling NaN
+        rune_tag       = 0xFFF2000000000000ull,
 
-	// pointer methods depend on this exact value
-        pointer_tag  = 0x7FF0000000000000ull, // positive signaling NaN (must skip zero payload = +inf)
-        pointer_mask = 0xFFF0000000000000ull,
+        pointer_tag    = 0x7FF0000000000000ull, // positive signaling NaN (must skip zero payload = +inf)
+        pointer_mask   = 0xFFF0000000000000ull,
+        pointer_unmask = ~0xFFF000000000000Full,
 
-        struct_tag   = pointer_tag,
-        cons_tag     = 0x7FF0000000000001ull,
-        symbol_tag   = 0x7FF0000000000002ull,
-        func_tag     = 0x7FF0000000000003ull,
+        struct_tag     = pointer_tag,
+        cons_tag       = 0x7FF0000000000001ull,
+        symbol_tag     = 0x7FF0000000000002ull,
+        func_tag       = 0x7FF0000000000003ull,
         
-        nil_bits     = cons_tag,
-        t_bits       = symbol_tag + 0x20,
+        nil_bits       = cons_tag + (0x7FF0ull << 4*sizeof(void *)),
+        t_bits         = symbol_tag + (0x7FF0ull << 4*sizeof(void *)) + 0x20,
     };
 
-    void throw_bad_cast(); /* throw(std::bad_cast) */
+    bool init();                /* throw(std::bad_alloc) */
+    void * alloc(size_t bytes); /* throw(std::bad_alloc) */
+    void throw_bad_alloc();     /* throw(std::bad_alloc) */
+    void throw_bad_cast();      /* throw(std::bad_cast) */
 }
 
 enum type_id {

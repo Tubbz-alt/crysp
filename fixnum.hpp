@@ -401,7 +401,7 @@ inline constexpr Fixnum operator+(int64_t a, Fixnum b) noexcept {
 }
 
 inline constexpr Fixnum operator-(int64_t a, Fixnum b) noexcept {
-    return Fixnum{int64_t(a - b.debug_bits())};
+    return Fixnum{a - int64_t(b.debug_bits())};
 }
 
 inline constexpr Fixnum operator*(int64_t a, Fixnum b) noexcept {

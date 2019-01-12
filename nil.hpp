@@ -3,23 +3,24 @@
 
 #include "cons.hpp"
 
-class Null : public Cons {
+class Nil : public Cons {
 private:
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
         return bits == impl::nil_bits;
     }
 
 public:
-    inline constexpr Null() noexcept : Cons(impl::nil_bits) {
+    inline constexpr Nil() noexcept
+    : Cons(impl::nil_bits, bits_constructor{}) {
     }
 
     /*
-    inline constexpr Null(const Null & other) = default;
-    inline constexpr Null & operator=(const Null & other) = default;
-    inline ~Null() = default;
+    inline constexpr Nil(const Nil & other) = default;
+    inline constexpr Nil & operator=(const Nil & other) = default;
+    inline ~Nil() = default;
     */
 };
 
-constexpr Null nil;
+constexpr Nil nil;
 
 #endif // CRYSP_NIL_HPP

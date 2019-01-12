@@ -1,5 +1,6 @@
 
 #include <cstdio>
+#include <cinttypes>  // PRId64
 
 #include "fixnum.hpp"
 #include "float.hpp"
@@ -48,14 +49,14 @@ void T::print(FILE *out) const {
         fprintf(out, "%f", dbl);
         break;
     case fixnum_id:
-        fprintf(out, "%ld", Fixnum::untag(bits));
+        fprintf(out, "%" PRId64, Fixnum::untag(bits));
         break;
     case float_id:
         fprintf(out, "%f", double(fl));
         break;
     case rune_id:
         // FIXME print Unicode
-        fprintf(out, "%c", char(i));
+        fprintf(out, "%c", int(char(i)));
         break;
     case struct_id:
         fputs("struct", out);

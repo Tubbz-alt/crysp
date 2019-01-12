@@ -1,10 +1,16 @@
 #ifndef CRYSP_T_HPP
 #define CRYSP_T_HPP
 
-#include <cstdint>
+#include <cstdint> // int32_t, uint64_t
 #include <cstdio>
 #include <endian.h>
 #include "impl.hpp"
+
+#if defined(__SIZEOF_POINTER__) && && (__SIZEOF_POINTER__ >= 8) || \
+    defined(__WORDSIZE) && (__WORDSIZE >= 64)
+// do not trust UINTPTR_MAX: 'gcc -m32' on x86_64 gets it wrong
+# define CRYSP_64BIT // 64bit or wider architecture
+#endif
 
 class T {
 private:
@@ -48,6 +54,10 @@ private:
 #endif // __LITTLE_ENDIAN__
     };
 
+    inline constexpr void * addr() noexcept {
+        return (void *)(bits & impl::pointer_unmask);
+    }
+    
     explicit inline constexpr T(uint64_t bits) noexcept : bits(bits) {
     }
     explicit inline constexpr T(double dbl) noexcept : dbl(dbl) {

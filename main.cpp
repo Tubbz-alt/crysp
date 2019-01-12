@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cinttypes> // PRIX64
 
 #include "cast.hpp"
 #include "double.hpp"
@@ -11,7 +12,7 @@
 
 
 noinline noinline void show(T x) {
-    printf("%016lX = ", x.debug_bits());
+    printf("%016" PRIX64 " = ", x.debug_bits());
     x.print(stdout);
     putchar('\n');
 }
@@ -19,6 +20,13 @@ noinline noinline void show(T x) {
 noinline void test_bool() {
     show(nil);
     show(t);
+}
+
+noinline void test_cons() {
+    Cons c = Cons{t, nil};
+    show(c);
+    TEST_EQ(c->first, t);
+    TEST_EQ(c->rest, nil);
 }
 
 noinline void show_double() {
@@ -273,8 +281,10 @@ noinline void test_float() {
     test_float_binary_op<Float, float>();
 }
 
+
 noinline void test() {
     test_bool();
+    test_cons();
     test_double();
     test_float();
     test_fixnum();

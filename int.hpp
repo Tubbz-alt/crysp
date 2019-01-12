@@ -39,6 +39,6 @@ public:
     }
 };
 
-constexpr Int most_positive_int{0x7fffffffl}, most_negative_int{-0x80000000l};
+constexpr Int most_positive_int{int32_t(0x7fffffffl)}, most_negative_int{int32_t(-0x80000000l)};
 
 #endif // CRYSP_INT_HPP
