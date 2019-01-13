@@ -5,7 +5,7 @@
 
 #include <sys/mman.h> // mmap()
 
-#include "fixint.hpp"
+#include "int.hpp"
 #include "nil.hpp"
 
 #ifndef GC_MALLOC
@@ -28,8 +28,8 @@ bool impl::init() {
     if (addr == MAP_FAILED)
         throw_bad_alloc();
 
-    Cons x = nil;
-    x->first = x->rest = nil;
+    Pair x = nil;
+    x->first = x->second = nil;
     return true;
 }
 
@@ -50,7 +50,7 @@ void impl::throw_bad_cast() /* throw(std::bad_cast) */ {
     throw std::bad_cast{};
 }
 
-void Fixint::throw_overflow_error() /* throw(std::overflow_error) */ {
+void Int::throw_overflow_error() /* throw(std::overflow_error) */ {
     throw std::overflow_error{"integer too large, overflows Fixint"};
 }
 

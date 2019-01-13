@@ -8,13 +8,13 @@
 
 class T {
 private:
-    friend class Fixint;
     friend class Float;
     friend class Double;
-    friend class Cons;
+    friend class Int;
     template<class E> friend class Obj;
+    friend class Pair;
     friend class Rune;
-    friend class Smallint;
+    friend class Short;
     friend class Symbol;
     template<class To> friend bool is(T arg);
     template<class To, class From> friend To cast(From arg);

@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cinttypes>  // PRId64
 
-#include "fixint.hpp"
+#include "int.hpp"
 #include "float.hpp"
 #include "nil.hpp"
 #include "double.hpp"
@@ -25,11 +25,11 @@ type_id constexpr T::type() const noexcept {
         return float_id;
     case impl::rune_tag >> 48:
         return rune_id;
-    case (impl::fixint_tag >> 48) + 0:
-    case (impl::fixint_tag >> 48) + 1:
-    case (impl::fixint_tag >> 48) + 2:
-    case (impl::fixint_tag >> 48) + 3:
-        return fixint_id;
+    case (impl::int_tag >> 48) + 0:
+    case (impl::int_tag >> 48) + 1:
+    case (impl::int_tag >> 48) + 2:
+    case (impl::int_tag >> 48) + 3:
+        return int_id;
     }
 
     uint64_t addr52 = 0;
@@ -41,8 +41,8 @@ type_id constexpr T::type() const noexcept {
         switch (bits & 0xF) {
         case impl::struct_tag & 0xF:
             return struct_id;
-        case impl::cons_tag & 0xF:
-            return cons_id;
+        case impl::pair_tag & 0xF:
+            return pair_id;
         case impl::symbol_tag & 0xF:
             return symbol_id;
         case impl::func_tag & 0xF:
@@ -59,8 +59,8 @@ void T::print(FILE *out) const {
     case double_id:
         fprintf(out, "%f", dbl);
         break;
-    case fixint_id:
-        fprintf(out, "%" PRId64, Fixint::untag(bits));
+    case int_id:
+        fprintf(out, "%" PRId64, Int::untag(bits));
         break;
     case float_id:
         fprintf(out, "%f", double(fl));
@@ -72,8 +72,8 @@ void T::print(FILE *out) const {
     case struct_id:
         fputs("struct", out);
         break;
-    case cons_id:
-        fputs(bits == impl::nil_bits ? "nil" : "cons", out);
+    case pair_id:
+        fputs(bits == impl::nil_bits ? "nil" : "pair", out);
         break;
     case symbol_id:
         fputs(bits == impl::t_bits ? "t" : "symbol", out);

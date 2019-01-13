@@ -11,9 +11,9 @@ constexpr check_overflow_t check_overflow = {};
 
 namespace impl {
     enum {
-        // Fixint and Smallint methods depend on this exact value
-        fixint_tag     = 0xFFFC000000000000ull, // negative quiet NaN
-        fixint_mask    = fixint_tag,
+        // Int and Short methods depend on this exact value
+        int_tag        = 0xFFFC000000000000ull, // negative quiet NaN
+        int_mask       = int_tag,
 
         value_mask     = 0xFFFF000000000000ull,
 
@@ -25,11 +25,11 @@ namespace impl {
         pointer_unmask = ~0xFFF000000000000Full,
 
         struct_tag     = pointer_tag,
-        cons_tag       = 0x7FF0000000000001ull,
+        pair_tag       = 0x7FF0000000000001ull,
         symbol_tag     = 0x7FF0000000000002ull,
         func_tag       = 0x7FF0000000000003ull,
         
-        nil_bits       = cons_tag + (0x7FF0ull << 4*sizeof(void *)),
+        nil_bits       = pair_tag + (0x7FF0ull << 4*sizeof(void *)),
         t_bits         = symbol_tag + (0x7FF0ull << 4*sizeof(void *)) + 0x20,
     };
 
@@ -42,11 +42,11 @@ namespace impl {
 enum type_id {
     unknown_id = 0,
     double_id  = 1,
-    fixint_id  = 2,
+    int_id     = 2,
     float_id   = 3,
     rune_id    = 4,
     struct_id  = 5,
-    cons_id    = 6,
+    pair_id    = 6,
     symbol_id  = 7,
     func_id    = 8,
 };
