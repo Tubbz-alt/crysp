@@ -48,7 +48,7 @@ private:
 #endif // __LITTLE_ENDIAN__
     };
 
-    inline constexpr void * addr() noexcept {
+    inline void * addr() noexcept {
         return (void *)(bits & impl::pointer_unmask);
     }
     

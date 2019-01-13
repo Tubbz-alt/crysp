@@ -9,7 +9,7 @@ inline bool is(T arg) {
 }
 
 template<class To>
-inline bool is(To arg) {
+inline bool is(To) {
     return true;
 }
 

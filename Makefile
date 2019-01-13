@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS_BASE=-Wall -Wextra  -march=native
+CXXFLAGS_BASE=-Wall -Wextra
 
 all:
 	$(CXX) -O3 $(CXXFLAGS_BASE) $(CXXFLAGS) *.cpp -o main
