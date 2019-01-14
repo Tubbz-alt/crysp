@@ -3,6 +3,11 @@
 
 #include "t.hpp"
 
+/**
+ * 50-bit signed integer.
+ * operations on Int are wrapping, i.e. any overflow is truncated modulo 50 bits,
+ * except methods with a check_overflow_t argument, which throw an exception on overflow.
+ */
 class Int : public T {
 private:
     friend class T;

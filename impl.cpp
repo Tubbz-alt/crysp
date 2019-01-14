@@ -13,6 +13,18 @@
 #define GC_MALLOC malloc
 #endif // GC_MALLOC
 
+#ifdef CRYSP_32BIT_THIS_INPLACE
+# pragma message "CRYSP_32BIT_THIS_INPLACE"
+#else
+# pragma message "CRYSP_32BIT_THIS_NOTINPLACE"
+#endif
+
+#ifdef CRYSP_32BIT_OP_INPLACE
+# pragma message "CRYSP_32BIT_OP_INPLACE"
+#else
+# pragma message "CRYSP_32BIT_OP_NOTINPLACE"
+#endif
+
 namespace impl {
     static const bool running = init();
 }

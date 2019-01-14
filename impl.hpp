@@ -51,5 +51,21 @@ enum type_id {
     func_id    = 8,
 };
     
+// do not trust UINTPTR_MAX: 'gcc -m32' on x86_64 gets it wrong
+#if defined(__SIZEOF_POINTER__) && (__SIZEOF_POINTER__ < 8) ||  \
+    defined(__WORDSIZE) && (__WORDSIZE < 64)
+
+// on 32-bit architectures, in methods returning Float,
+// modifying *this is more efficient
+# define CRYSP_32BIT_THIS_INPLACE
+
+// on arm and ppc 32-bit architectures, in functions returning Float,
+// modifying an existing Float and returning it is more efficient
+# if defined(__ARMEL__) || defined(__ARM_ARCH) || \
+    defined(__PPC__) || defined(_ARCH_PPC) || defined(__powerpc__)
+#  define CRYSP_32BIT_OP_INPLACE
+# endif
+#endif
+
 
 #endif // CRYSP_IMPL_HPP
