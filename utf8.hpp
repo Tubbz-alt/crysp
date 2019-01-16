@@ -17,16 +17,16 @@ private:
     /* encode Unicode codepoint to 4-byte utf-8 */
     static noinline constexpr uint32_t make(rune r) noexcept {
         uint32_t u = 0;
-        if (r <= 0x7F) {
+        if (CRYSP_LIKELY(r <= 0x7F)) {
             u = r;
-        } else if (r <= 0x07FF) {
+        } else if (CRYSP_LIKELY(r <= 0x07FF)) {
             u = 0x80C0 | (r >> 6) | ((r & 0x3F) << 8);
-        } else if (r <= 0xFFFF) {
+        } else if (CRYSP_LIKELY(r <= 0xFFFF)) {
             u = 0x8080E0 |
                 (r >> 12) |
                 ((r << 2) & 0x3F00) |
                 ((r & 0x3F) << 16);
-        } else if (r <= 0x10FFFF) {
+        } else if (CRYSP_LIKELY(r <= 0x10FFFF)) {
             u = 0x808080F0 |
                 (r >> 18) |
                 ((r >> 4) & 0x3F00) |
@@ -39,13 +39,13 @@ private:
     /* decode 4-byte utf-8 to Unicode codepoint */
     static noinline constexpr rune unmake(uint32_t u) noexcept {
         rune r = 0;
-        if (u <= 0xFF) {
+        if (CRYSP_LIKELY(u <= 0xFF)) {
             r = u & 0x7F;
-        } else if (u <= 0xFFFF) {
+        } else if (CRYSP_LIKELY(u <= 0xFFFF)) {
             r = ((u & 0x1F) << 6) | ((u >> 8) & 0x3F);
             if (r <= 0x7F)
                 r = 0; // overlong encoding
-        } else if (u <= 0xFFFFFF) {
+        } else if (CRYSP_LIKELY(u <= 0xFFFFFF)) {
             r = ((u & 0x0F) << 12) |
                 ((u & 0x3F00) >> 2) |
                 ((u >> 16) & 0x3F);
@@ -65,18 +65,18 @@ private:
     /* encode Unicode codepoint to 4-byte utf-8 */
     static noinline constexpr uint32_t make(rune r) noexcept {
         uint32_t u = 0;
-        if (r <= 0x7F) {
+        if (CRYSP_LIKELY(r <= 0x7F)) {
             u = r << 24;
-        } else if (r <= 0x07FF) {
+        } else if (CRYSP_LIKELY(r <= 0x07FF)) {
             u = 0xC0800000 |
                 ((r & 0x07C0) << 18) |
                 ((r & 0x003F) << 16);
-        } else if (r <= 0xFFFF) {
+        } else if (CRYSP_LIKELY(r <= 0xFFFF)) {
             u = 0xE0808000u |
                 ((r & 0xF000) << 12) |
                 ((r & 0x0FC0) << 10) |
                 ((r & 0x003F) << 8);
-        } else if (r <= 0x10FFFF) {
+        } else if (CRYSP_LIKELY(r <= 0x10FFFF)) {
             u = 0xF0808080 |
                 ((r & 0x1C0000) << 6) |
                 ((r & 0x03F000) << 4) |
@@ -89,14 +89,14 @@ private:
     /* decode 4-byte utf-8 to Unicode codepoint */
     static noinline constexpr rune unmake(uint32_t u) noexcept {
         rune r = 0;
-        if ((u & 0x00FFFFFF) == 0) {
+        if (CRYSP_LIKELY((u & 0x00FFFFFF) == 0)) {
             r = u >> 24;
-        } else if ((u & 0xFFFF) == 0) {
+        } else if (CRYSP_LIKELY((u & 0xFFFF) == 0)) {
             r = ((u >> 18) & 0x07C0) |
                 ((u >> 16) & 0x003F);
             if (r <= 0x7F)
                 r = 0; // overlong encoding
-        } else if (u <= 0xFFFFFF) {
+        } else if (CRYSP_LIKELY(u <= 0xFFFFFF)) {
             r = ((u >> 12) & 0xF000) |
                 ((u >> 10) & 0x0FC0) |
                 ((u >>  8) & 0x003F);

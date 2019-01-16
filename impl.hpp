@@ -7,6 +7,12 @@
 #define noinline
 #endif
 
+#ifdef __GNUC__
+#define CRYSP_LIKELY(val) __builtin_expect(val, true)
+#else
+#define CRYSP_LIKELY(val) (val)
+#endif
+
 struct check_overflow_t {};
 
 constexpr check_overflow_t check_overflow = {};

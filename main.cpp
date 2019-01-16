@@ -279,6 +279,7 @@ noinline void show_rune() {
     show(Rune{0x20AC}); // Euro sign
     show(Rune{0xFFFD}); // replacement character
     show(Rune{0x10348}); // Gothic letter Hwair
+    show(Rune{0x10FFFF}); // highest codepoint
 
     show(Utf8{' '});
     show(Utf8{'A'});
@@ -287,6 +288,7 @@ noinline void show_rune() {
     show(Utf8{0x20AC}); // Euro sign
     show(Utf8{0xFFFD}); // replacement character
     show(Utf8{0x10348}); // Gothic letter Hwair
+    show(Utf8{0x10FFFF}); // highest codepoint
 }
 
 noinline void test_rune() {
