@@ -1,6 +1,6 @@
 
 #include <cstdio>
-#include <cinttypes> // PRId64
+#include <cinttypes> // PRIx64
 
 #include "test.hpp"
 #include "type.hpp"
@@ -10,8 +10,8 @@ void test_failed(const char * str) {
 }
 
 void test_failed(const char * str, int64_t actual, int64_t expected) {
-    fprintf(stderr, "test failed at %s,\tactual int64_t(%" PRId64
-            "),\texpected int64_t(%" PRId64 ")\n",
+    fprintf(stderr, "test failed at %s,\tactual int64_t(0x%" PRIx64
+            "),\texpected int64_t(0x%" PRIx64 ")\n",
             str, actual, expected);
 }
 

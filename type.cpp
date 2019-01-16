@@ -15,6 +15,8 @@ const char * Type::name() const noexcept {
         return "Short";
     case rune_id:
         return "Rune";
+    case utf8_id:
+        return "Utf8";
     case struct_id:
         return "Struct";
     case pair_id:

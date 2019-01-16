@@ -16,6 +16,7 @@ private:
     friend class Rune;
     friend class Short;
     friend class Symbol;
+    friend class Utf8;
     template<class To> friend bool is(T arg);
     template<class To, class From> friend To cast(From arg);
     
@@ -45,7 +46,7 @@ private:
             uint32_t fl_tag;
             float    fl;
         };
-#endif // __LITTLE_ENDIAN__
+#endif // __BYTE_ORDER == __LITTLE_ENDIAN
     };
 
     inline void * addr() noexcept {

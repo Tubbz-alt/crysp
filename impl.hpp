@@ -3,6 +3,8 @@
 
 #ifdef __GNUC__
 #define noinline __attribute__((noinline))
+#else
+#define noinline
 #endif
 
 struct check_overflow_t {};
@@ -20,10 +22,12 @@ namespace impl {
         float_tag      = 0xFFF1000000000000ull, // negative signaling NaN
         short_tag      = 0xFFF2000000000000ull,
         rune_tag       = 0xFFF3000000000000ull,
+        utf8_tag       = 0xFFF4000000000000ull,
 
         pointer_tag    = 0x7FF0000000000000ull, // positive signaling NaN (must skip zero payload = +inf)
-        pointer_mask   = 0xFFF0000000000000ull,
-        pointer_unmask = ~0xFFF000000000000Full,
+        pointer_himask = 0xFFF0000000000000ull,
+        pointer_mask   = 0xFFF000000000000Full,
+        pointer_unmask = ~pointer_mask,
 
         struct_tag     = pointer_tag,
         pair_tag       = 0x7FF0000000000001ull,
@@ -48,10 +52,11 @@ enum type_id {
     float_id   = 3,
     short_id   = 4,
     rune_id    = 5,
-    struct_id  = 6,
-    pair_id    = 7,
-    symbol_id  = 8,
-    func_id    = 9,
+    utf8_id    = 6,
+    struct_id  = 0x10,
+    pair_id    = 0x11,
+    symbol_id  = 0x12,
+    func_id    = 0x13,
 };
     
 #endif // CRYSP_IMPL_HPP

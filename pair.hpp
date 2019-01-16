@@ -13,8 +13,7 @@ private:
     template<class To> friend bool is(T arg);
 
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
-        return (bits >> 52) == (impl::pair_tag >> 52) &&
-            (bits & 0xF) == (impl::pair_tag & 0xF);
+        return (bits & impl::pointer_mask) == impl::pair_tag;
     }
 
 protected:

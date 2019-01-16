@@ -9,6 +9,7 @@
 #include "double.hpp"
 #include "pair.hpp"
 #include "rune.hpp"
+#include "utf8.hpp"
 
 type_id T::type() const noexcept {
     switch (bits >> 48) {
@@ -18,6 +19,8 @@ type_id T::type() const noexcept {
         return short_id;
     case impl::rune_tag >> 48:
         return rune_id;
+    case impl::utf8_tag >> 48:
+        return utf8_id;
     case (impl::int_tag >> 48) + 0:
     case (impl::int_tag >> 48) + 1:
     case (impl::int_tag >> 48) + 2:
@@ -47,6 +50,16 @@ type_id T::type() const noexcept {
     return double_id;
 }
 
+
+static int print_utf8(FILE * out, uint32_t bits) {
+    union utf8_union {
+        uint32_t bits;
+        char bytes[4];
+    };
+    utf8_union u = {bits};
+    return fprintf(out, "%.4s", u.bytes);
+}
+
 int T::print(FILE *out) const {
     switch (type()) {
     case double_id:
@@ -58,7 +71,9 @@ int T::print(FILE *out) const {
     case short_id:
         return fprintf(out, "%" PRId32, i);
     case rune_id:
-        return fprintf(out, "%.4s", utf8_t(i).byte);
+        return print_utf8(out, Utf8::make(i));
+    case utf8_id:
+        return print_utf8(out, uint32_t(i));
     case struct_id:
         return fputs("struct", out);
     case pair_id:

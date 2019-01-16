@@ -10,6 +10,7 @@
 #include "short.hpp"
 #include "test.hpp"
 #include "type.hpp"
+#include "utf8.hpp"
 
 
 noinline noinline void show(T x) {
@@ -149,13 +150,17 @@ noinline void test_int_binary_op0(num i, num j) {
     c = i * b; TEST_EQ(c.val(), mod(i * j));
 
     if (j != 0) {
-        c = a / b; TEST_EQ(c.val(), mod(i / j));
-        c = a / j; TEST_EQ(c.val(), mod(i / j));
-        c = i / b; TEST_EQ(c.val(), mod(i / j));
+        // do not divide <type>_min by -1,
+        // it may generate SIGFPE
+        if (mod(i-1) < i || j != -1) {
+            c = a / b; TEST_EQ(c.val(), mod(i / j));
+            c = a / j; TEST_EQ(c.val(), mod(i / j));
+            c = i / b; TEST_EQ(c.val(), mod(i / j));
 
-        c = a % b; TEST_EQ(c.val(), mod(i % j));
-        c = a % j; TEST_EQ(c.val(), mod(i % j));
-        c = i % b; TEST_EQ(c.val(), mod(i % j));
+            c = a % b; TEST_EQ(c.val(), mod(i % j));
+            c = a % j; TEST_EQ(c.val(), mod(i % j));
+            c = i % b; TEST_EQ(c.val(), mod(i % j));
+        }
     }
     c = a & b; TEST_EQ(c.val(), mod(i & j));
     c = a & j; TEST_EQ(c.val(), mod(i & j));
@@ -272,10 +277,26 @@ noinline void show_rune() {
     show(Rune{'Z'});
     show(Rune{0xA2}); // cent symbol
     show(Rune{0x20AC}); // Euro sign
+    show(Rune{0xFFFD}); // replacement character
     show(Rune{0x10348}); // Gothic letter Hwair
+
+    show(Utf8{' '});
+    show(Utf8{'A'});
+    show(Utf8{'Z'});
+    show(Utf8{0xA2}); // cent symbol
+    show(Utf8{0x20AC}); // Euro sign
+    show(Utf8{0xFFFD}); // replacement character
+    show(Utf8{0x10348}); // Gothic letter Hwair
 }
 
 noinline void test_rune() {
+    for (rune i = 0x80; i <= 0x10FFFF; i++) {
+        Rune r{i};
+        Utf8 u{r};
+        TEST_EQ(r.val(), i);
+        TEST_EQ(u.toRune(), r);
+        TEST_EQ(u.torune(), i);
+    }
     show_rune();
 }
 
