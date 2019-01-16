@@ -6,13 +6,14 @@
 #include "int.hpp"
 #include "float.hpp"
 #include "nil.hpp"
+#include "rune.hpp"
 #include "short.hpp"
 #include "test.hpp"
 #include "type.hpp"
 
 
 noinline noinline void show(T x) {
-    printf("%016" PRIX64 " = ", x.debug_bits());
+    printf("%016" PRIX64 " = %s  \t", x.debug_bits(), type_of(x).name());
     x.print(stdout);
     putchar('\n');
 }
@@ -47,36 +48,38 @@ noinline void show_float() {
     show(Float{-0.0f/0.0f}); // -NaN
 }
 
-noinline void test_int_assign() {
-    Int n;
+template<class Num, class num>
+noinline void test_int_assign(Num lo, Num hi) {
+    Num n;
     T t;
     TEST_EQ(n.val(), 0);
-    TEST_EQ(n, Short{});
-    for (int32_t i = -50; i <= 50; i++) {
+    for (num i = -50; i <= 50; i++) {
         n = i;
         TEST_EQ(n.val(), i);
-        TEST_EQ(n, Short{i});
-        t = Short{i};
+        t = n;
         TEST_EQ(n, t);
-        TEST_EQ(n, cast<Int>(t));
+        TEST_EQ(n, cast<Num>(t));
         if (n.val() >= -1 && n.val() <= 1)
             show(n);
     }
-    show(int_max);
-    show(int_min);
-    show(short_max);
-    show(short_min);
+    show(hi);
+    show(lo);
 }
 
-int64_t mod_int(int64_t i) {
-    i &= 0x3FFFFFFFFFFFFll;
+int64_t mod(int64_t i) {
+    i &= 0x3FFFFFFFFFFFFll; // truncate to 50 bits
     return (i << 14) >> 14; // sign extend
 }
- 
-noinline void test_int_unary_op() {
-    Int n;
+
+int32_t mod(int32_t i) {
+    return i;
+}
+
+template<class Num, class num>
+noinline void test_int_unary_op(num lo, num hi) {
+    Num n;
     // test ++ and --
-    for (int32_t i = -1024; i <= 1024; i++) {
+    for (num i = -1024; i <= 1024; i++) {
         n = i;
         n++; TEST_EQ(n.val(), i + 1);
         ++n; TEST_EQ(n.val(), i + 2);
@@ -84,8 +87,6 @@ noinline void test_int_unary_op() {
         --n; TEST_EQ(n.val(), i + 0);
     }
     // test overflow and underflow
-    int64_t lo = int_min.val();
-    int64_t hi = int_max.val();
     n = hi;
     n++; TEST_EQ(n.val(), lo);
     n--; TEST_EQ(n.val(), hi);
@@ -93,89 +94,88 @@ noinline void test_int_unary_op() {
     --n; TEST_EQ(n.val(), hi);
 
     // test += and -=
-    for (int32_t i = -50; i <= 50; i++) {
-        for (int32_t j = -50; j <= 50; j++) {
+    for (num i = -50; i <= 50; i++) {
+        for (num j = -50; j <= 50; j++) {
             n = i;
             n += j; TEST_EQ(n.val(), i + j);
             n -= i; TEST_EQ(n.val(), j);
-            n += Int{i}; TEST_EQ(n.val(), i + j);
-            n -= Int{j}; TEST_EQ(n.val(), i);
+            n += Num{i}; TEST_EQ(n.val(), i + j);
+            n -= Num{j}; TEST_EQ(n.val(), i);
         }
     }
 
     // test overflow and underflow
-    for (int32_t i = -50; i <= 0; i++) {
-        for (int32_t j = -70; j <= 70; j++) {
+    for (num i = -50; i <= 0; i++) {
+        for (num j = -70; j <= 70; j++) {
             n = hi - i;
-            n += Int{j}; TEST_EQ(n.val(), mod_int(hi - i + j));
-            n -= Int{j}; TEST_EQ(n.val(), mod_int(hi - i));
-            n += j; TEST_EQ(n.val(), mod_int(hi - i + j));
-            n -= j; TEST_EQ(n.val(), mod_int(hi - i));
+            n += Num{j}; TEST_EQ(n.val(), mod(hi - i + j));
+            n -= Num{j}; TEST_EQ(n.val(), mod(hi - i));
+            n += j; TEST_EQ(n.val(), mod(hi - i + j));
+            n -= j; TEST_EQ(n.val(), mod(hi - i));
         }
     }
 
     // test unary + - !
-    for (int32_t i = -1024; i <= 1024; i++) {
+    for (num i = -1024; i <= 1024; i++) {
         n = i;
         n = +n; TEST_EQ(n.val(), +i);
         n = -n; TEST_EQ(n.val(), -i);
         n = !n; TEST_EQ(n.val(), !-i);
     }
     // test overflow and underflow
-    for (int32_t i = 0; i <= 16; i++) {
+    for (num i = 0; i <= 16; i++) {
         n = hi - i;
         n = -n; TEST_EQ(n.val(), -hi + i);
 
         n = lo + i;
-        n = -n; TEST_EQ(n.val(), mod_int(-lo - i));
+        n = -n; TEST_EQ(n.val(), mod(-lo - i));
     }
 }
 
-noinline void test_int_binary_op(int64_t i, int64_t j) {
-    Int a{i}, b{j}, c;
+template<class Num, class num>
+noinline void test_int_binary_op0(num i, num j) {
+    Num a{i}, b{j}, c;
 
-    c = a + b; TEST_EQ(c.val(), mod_int(i + j));
-    c = a + j; TEST_EQ(c.val(), mod_int(i + j));
-    c = i + b; TEST_EQ(c.val(), mod_int(i + j));
+    c = a + b; TEST_EQ(c.val(), mod(i + j));
+    c = a + j; TEST_EQ(c.val(), mod(i + j));
+    c = i + b; TEST_EQ(c.val(), mod(i + j));
             
-    c = a - b; TEST_EQ(c.val(), mod_int(i - j));
-    c = a - j; TEST_EQ(c.val(), mod_int(i - j));
-    c = i - b; TEST_EQ(c.val(), mod_int(i - j));
+    c = a - b; TEST_EQ(c.val(), mod(i - j));
+    c = a - j; TEST_EQ(c.val(), mod(i - j));
+    c = i - b; TEST_EQ(c.val(), mod(i - j));
             
-    c = a * b; TEST_EQ(c.val(), mod_int(i * j));
-    c = a * j; TEST_EQ(c.val(), mod_int(i * j));
-    c = i * b; TEST_EQ(c.val(), mod_int(i * j));
+    c = a * b; TEST_EQ(c.val(), mod(i * j));
+    c = a * j; TEST_EQ(c.val(), mod(i * j));
+    c = i * b; TEST_EQ(c.val(), mod(i * j));
 
     if (j != 0) {
-        c = a / b; TEST_EQ(c.val(), mod_int(i / j));
-        c = a / j; TEST_EQ(c.val(), mod_int(i / j));
-        c = i / b; TEST_EQ(c.val(), mod_int(i / j));
+        c = a / b; TEST_EQ(c.val(), mod(i / j));
+        c = a / j; TEST_EQ(c.val(), mod(i / j));
+        c = i / b; TEST_EQ(c.val(), mod(i / j));
 
-        c = a % b; TEST_EQ(c.val(), mod_int(i % j));
-        c = a % j; TEST_EQ(c.val(), mod_int(i % j));
-        c = i % b; TEST_EQ(c.val(), mod_int(i % j));
+        c = a % b; TEST_EQ(c.val(), mod(i % j));
+        c = a % j; TEST_EQ(c.val(), mod(i % j));
+        c = i % b; TEST_EQ(c.val(), mod(i % j));
     }
-    c = a & b; TEST_EQ(c.val(), mod_int(i & j));
-    c = a & j; TEST_EQ(c.val(), mod_int(i & j));
-    c = i & b; TEST_EQ(c.val(), mod_int(i & j));
+    c = a & b; TEST_EQ(c.val(), mod(i & j));
+    c = a & j; TEST_EQ(c.val(), mod(i & j));
+    c = i & b; TEST_EQ(c.val(), mod(i & j));
 
-    c = a | b; TEST_EQ(c.val(), mod_int(i | j));
-    c = a | j; TEST_EQ(c.val(), mod_int(i | j));
-    c = i | b; TEST_EQ(c.val(), mod_int(i | j));
+    c = a | b; TEST_EQ(c.val(), mod(i | j));
+    c = a | j; TEST_EQ(c.val(), mod(i | j));
+    c = i | b; TEST_EQ(c.val(), mod(i | j));
 
-    c = a ^ b; TEST_EQ(c.val(), mod_int(i ^ j));
-    c = a ^ j; TEST_EQ(c.val(), mod_int(i ^ j));
-    c = i ^ b; TEST_EQ(c.val(), mod_int(i ^ j));
+    c = a ^ b; TEST_EQ(c.val(), mod(i ^ j));
+    c = a ^ j; TEST_EQ(c.val(), mod(i ^ j));
+    c = i ^ b; TEST_EQ(c.val(), mod(i ^ j));
 }
 
-noinline void test_int_binary_op() {
-    Int a, b, c;
+template<class Num, class num>
+noinline void test_int_binary_op(num lo, num hi) {
+    Num a, b, c;
 
-    int64_t lo = int_min.val();
-    int64_t hi = int_max.val();
-    
-    for (int64_t i = -50; i <= 50; i++) {
-        for (int64_t j = -50; j <= 50; j++) {
+    for (num i = -50; i <= 50; i++) {
+        for (num j = -50; j <= 50; j++) {
             a = i;
             b = j;
 
@@ -185,22 +185,28 @@ noinline void test_int_binary_op() {
 
             if (j >= 0) {
                 uint8_t n = uint8_t(j);
-                c = a << n; TEST_EQ(c.val(), mod_int(i << n));
-                c = a >> n; TEST_EQ(c.val(), mod_int(i >> n));
+                c = a << n; TEST_EQ(c.val(), mod(i << n));
+                c = a >> n; TEST_EQ(c.val(), mod(i >> n));
             }
 
-            test_int_binary_op(i,                  j);
-            test_int_binary_op(mod_int(hi + i), j);
-            test_int_binary_op(i,                  mod_int(lo + j));
-            test_int_binary_op(mod_int(hi + i), mod_int(lo + j));
+            test_int_binary_op0<Num, num>(i,           j);
+            test_int_binary_op0<Num, num>(mod(hi + i), j);
+            test_int_binary_op0<Num, num>(i,           mod(lo + j));
+            test_int_binary_op0<Num, num>(mod(hi + i), mod(lo + j));
         }
     }
 }
 
 noinline void test_int() {
-    test_int_assign();
-    test_int_unary_op();
-    test_int_binary_op();
+    test_int_assign<Int, int64_t>(int_min, int_max);
+    test_int_unary_op<Int, int64_t>(int_min.val(), int_max.val());
+    test_int_binary_op<Int, int64_t>(int_min.val(), int_max.val());
+}
+
+noinline void test_short() {
+    test_int_assign<Short, int32_t>(short_min, short_max);
+    test_int_unary_op<Short, int32_t>(short_min.val(), short_max.val());
+    test_int_binary_op<Short, int32_t>(short_min.val(), short_max.val());
 }
 
 template<class FL, class fl>
@@ -260,6 +266,19 @@ noinline void test_float_binary_op(fl i, fl j) {
     }
 }
 
+noinline void show_rune() {
+    show(Rune{' '});
+    show(Rune{'A'});
+    show(Rune{'Z'});
+    show(Rune{0xA2}); // cent symbol
+    show(Rune{0x20AC}); // Euro sign
+    show(Rune{0x10348}); // Gothic letter Hwair
+}
+
+noinline void test_rune() {
+    show_rune();
+}
+
 template<class FL, class fl>
 noinline void test_float_binary_op() {
     for (fl i = -20; i <= 20; i += 0.25) {
@@ -287,6 +306,8 @@ noinline void test() {
     test_cons();
     test_double();
     test_float();
+    test_short();
+    test_rune();
     test_int();
 }
 

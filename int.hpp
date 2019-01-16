@@ -2,6 +2,7 @@
 #define CRYSP_INT_HPP
 
 #include "t.hpp"
+#include "short.hpp"
 
 /**
  * 50-bit signed integer.
@@ -18,8 +19,6 @@ private:
         payload_nbits = 50,
     };
     
-    static void throw_overflow_error(); /* throw(std::overflow_error) */
-
     /*
      * int64_t -> Int conversion, modulo 2^50:
      * wraps around if argument overflows Int
@@ -35,7 +34,7 @@ private:
     static inline uint64_t tag(int64_t i, check_overflow_t) /* throw(std::overflow_error) */ {
         uint32_t hi = uint64_t(i) >> payload_nbits;
         if (hi != 0 && hi != 0x3FFF) {
-            throw_overflow_error();
+            impl::throw_overflow_error("Int");
         }
         return uint64_t(i) | impl::int_tag;
     }
@@ -50,7 +49,7 @@ private:
 
 public:
     inline constexpr Int() noexcept
-    /**/ : T{uint64_t(impl::int_tag)} {
+    /**/: T{uint64_t(impl::int_tag)} {
     }
 
     /* 
@@ -58,7 +57,7 @@ public:
      * if argument overflows Int (50 bits)
      */
     explicit inline constexpr Int(int64_t i) noexcept
-    /**/ : T{tag(i)} {
+    /**/: T{tag(i)} {
     }
 
     /*
@@ -66,7 +65,14 @@ public:
      * if argument overflows Int (50 bits)
      */
     explicit inline Int(int64_t i, check_overflow_t chk) /* throw(std::overflow_error) */
-        /**/ : T{tag(i, chk)} {
+        : T{tag(i, chk)} {
+    }
+
+    /*
+     * convert Short (32 bits) to Int (50 bits)
+     */
+    explicit inline constexpr Int(Short i) noexcept
+        : T{tag(i.val())} {
     }
 
     /*
@@ -271,7 +277,6 @@ inline constexpr bool operator<=(Int a, Int b) noexcept {
 inline constexpr bool operator>=(Int a, Int b) noexcept {
     return !(a < b);
 }
-
 
 
 inline constexpr Int operator+(Int a, Int b) noexcept {

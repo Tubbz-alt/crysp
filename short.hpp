@@ -1,32 +1,39 @@
 #ifndef CRYSP_SHORT_HPP
 #define CRYSP_SHORT_HPP
 
-#include "int.hpp"
+#include "t.hpp"
+
+// optimizations
+#define CRYSP_SHORT_REF_INPLACE
+
+#if defined(__x86_64__) || defined(__x86_64) || \
+    defined(__i386__) || defined(__i386)
+# undef CRYSP_SHORT_OBJ_INPLACE
+#else
+# define CRYSP_SHORT_OBJ_INPLACE
+#endif
 
 /**
  * 32-bit signed integer.
  * operations on Short are wrapping, i.e. any overflow is truncated modulo 32 bits,
  * except methods with a check_overflow_t argument, which throw an exception on overflow.
  */
-class Short : public Int {
+class Short : public T {
 private:
+    friend class T;
+    template<class To> friend bool is(T arg);
 
-    static inline uint64_t check(uint64_t bits) /* throw(std::bad_cast) */ {
-        uint32_t hi = bits >> 32;
-        if (hi != (impl::int_tag >> 32) && ~hi != 0) {
-            impl::throw_bad_cast();
-        }
-        return bits;
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        return bits >> 48 == impl::short_tag >> 48;
     }
 
 public:
     inline constexpr Short() noexcept
-    /**/ : Int{} {
+    /**/ : T{int32_t(0), int32_t(impl::short_tag >> 32)} {
     }
 
     explicit inline constexpr Short(int32_t i) noexcept
-        // sign-extend to 64 bits
-        : Int{int64_t(i)} {
+        : T{int32_t(i), int32_t(impl::short_tag >> 32)} {
     }
 
     /*
@@ -39,16 +46,32 @@ public:
         return i;
     }
 
-#ifdef CRYSP_32BIT_THIS_INPLACE
+    /* identity */
+    inline constexpr Short & operator+() noexcept {
+        return *this;
+    }
+
+    /* flip sign */
+    inline constexpr Short operator-() noexcept {
+        return Short{-i};
+    }
+
+    /* boolean negate */
+    inline constexpr Short operator!() noexcept {
+        return Short{int32_t(!i)};
+    }
+    
+    /* bitwise complement */
+    inline constexpr Short operator~() noexcept {
+        return Short{~i};
+    }
+
+#ifdef CRYSP_SHORT_REF_INPLACE
+    /* assign */
     inline constexpr Short & operator=(int32_t other) noexcept {
         i = other;
         return *this;
     }
-#else
-    inline constexpr Short & operator=(int32_t i) noexcept {
-        return (*this) = Short{i};
-    }
-#endif
 
     /* pre-increment */
     inline constexpr Short & operator++() noexcept {
@@ -76,22 +99,6 @@ public:
         return ret;
     }
 
-    /* identity */
-    inline constexpr Short & operator+() noexcept {
-        return *this;
-    }
-
-    /* flip sign */
-    inline constexpr Short operator-() noexcept {
-        return Short{-i};
-    }
-
-    /* boolean negate */
-    inline constexpr Short operator!() noexcept {
-        return Short{int32_t(!i)};
-    }
-    
-#ifdef CRYSP_32BIT_THIS_INPLACE
     /* add */
     inline constexpr Short & operator+=(Short other) noexcept {
         i += other.i;
@@ -135,7 +142,92 @@ public:
         i /= other;
         return *this;
     }
-#else // !CRYSP_32BIT_THIS_INPLACE
+
+    /* modulus */
+    inline constexpr Short & operator%=(Short other) noexcept {
+        i %= other.i;
+        return *this;
+    }
+
+    inline constexpr Short & operator%=(int32_t other) noexcept {
+        i %= other;
+        return *this;
+    }
+
+    /* bitwise and */
+    inline constexpr Short & operator&=(Short other) noexcept {
+        i &= other.i;
+        return *this;
+    }
+
+    inline constexpr Short & operator&=(int32_t other) noexcept {
+        i &= other;
+        return *this;
+    }
+
+    /* bitwise or */
+    inline constexpr Short & operator|=(Short other) noexcept {
+        i |= other.i;
+        return *this;
+    }
+
+    inline constexpr Short & operator|=(int32_t other) noexcept {
+        i |= other;
+        return *this;
+    }
+
+    /* bitwise xor */
+    inline constexpr Short & operator^=(Short other) noexcept {
+        i ^= other.i;
+        return *this;
+    }
+
+    inline constexpr Short & operator^=(int32_t other) noexcept {
+        i ^= other;
+        return *this;
+    }
+
+    /* bitwise lshift */
+    inline constexpr Short & operator<<=(uint8_t count) noexcept {
+        i <<= count;
+        return *this;
+    }
+
+    /* bitwise rshift */
+    inline constexpr Short & operator>>=(uint8_t count) noexcept {
+        i >>= count;
+        return *this;
+    }
+#else // !CRYSP_SHORT_REF_INPLACE
+    /* assign */
+    inline constexpr Short & operator=(int32_t i) noexcept {
+        return (*this) = Short{i};
+    }
+
+    /* pre-increment */
+    inline constexpr Short & operator++() noexcept {
+        return *this = Short{i + 1};
+    }
+
+    /* post-increment */
+    inline constexpr Short operator++(int) noexcept {
+        Short ret = *this;
+        *this = Short{i + 1};
+        return ret;
+    }
+
+    /* pre-decrement */
+    inline constexpr Short & operator--() noexcept {
+        return *this = Short{i - 1};
+    }
+
+    /* post-decrement */
+    inline constexpr Short operator--(int) noexcept {
+        Short ret = *this;
+        *this = Short{i - 1};
+        return ret;
+    }
+
     /* add */
     inline constexpr Short & operator+=(Short other) noexcept {
         return *this = Short{i + other.i};
@@ -171,7 +263,53 @@ public:
     inline constexpr Short & operator/=(int32_t other) noexcept {
         return *this = Short{i / other};
     }
-#endif // CRYSP_32BIT_THIS_INPLACE
+
+    /* modulus */
+    inline constexpr Short & operator%=(Short other) noexcept {
+        return *this = Short{i % other.i};
+    }
+
+    inline constexpr Short & operator%=(int32_t other) noexcept {
+        return *this = Short{i % other};
+    }
+
+    /* bitwise and */
+    inline constexpr Short & operator&=(Short other) noexcept {
+        return *this = Short{i & other.i};
+    }
+
+    inline constexpr Short & operator&=(int32_t other) noexcept {
+        return *this = Short{i & other};
+    }
+
+    /* bitwise or */
+    inline constexpr Short & operator|=(Short other) noexcept {
+        return *this = Short{i | other.i};
+    }
+
+    inline constexpr Short & operator|=(int32_t other) noexcept {
+        return *this = Short{i | other};
+    }
+
+    /* bitwise xor */
+    inline constexpr Short & operator^=(Short other) noexcept {
+        return *this = Short{i ^ other.i};
+    }
+
+    inline constexpr Short & operator^=(int32_t other) noexcept {
+        return *this = Short{i ^ other};
+    }
+
+    /* bitwise lshift */
+    inline constexpr Short & operator<<=(uint8_t count) noexcept {
+        return *this = Short{i << count};
+    }
+
+    /* bitwise rshift */
+    inline constexpr Short & operator>>=(uint8_t count) noexcept {
+        return *this = Short{i >> count};
+    }
+#endif // CRYSP_SHORT_REF_INPLACE
 };
 
 constexpr Short short_max{int32_t(0x7fffffffl)}, short_min{int32_t(-0x80000000l)};
@@ -226,7 +364,7 @@ inline constexpr bool operator>=(int32_t a, Short b) noexcept {
 }
 
 /* arithmetic operators */
-#ifdef CRYSP_32BIT_OP_INPLACE
+#ifdef CRYSP_SHORT_OBJ_INPLACE
 inline constexpr Short operator+(Short a, Short b) noexcept {
     return a += b;
 }
@@ -274,7 +412,64 @@ inline constexpr Short operator/(Short a, int32_t b) noexcept {
 inline constexpr Short operator/(int32_t a, Short b) noexcept {
     return b = a / b.val();
 }
-#else // !CRYSP_32BIT_OP_INPLACE
+
+inline constexpr Short operator%(Short a, Short b) noexcept {
+    return a %= b;
+}
+
+inline constexpr Short operator%(Short a, int32_t b) noexcept {
+    return a %= b;
+}
+
+inline constexpr Short operator%(int32_t a, Short b) noexcept {
+    return b = a % b.val();
+}
+
+inline constexpr Short operator&(Short a, Short b) noexcept {
+    return a &= b;
+}
+
+inline constexpr Short operator&(Short a, int32_t b) noexcept {
+    return a &= b;
+}
+
+inline constexpr Short operator&(int32_t a, Short b) noexcept {
+    return b &= a;
+}
+
+inline constexpr Short operator|(Short a, Short b) noexcept {
+    return a |= b;
+}
+
+inline constexpr Short operator|(Short a, int32_t b) noexcept {
+    return a |= b;
+}
+
+inline constexpr Short operator|(int32_t a, Short b) noexcept {
+    return b |= a;
+}
+
+inline constexpr Short operator^(Short a, Short b) noexcept {
+    return a ^= b;
+}
+
+inline constexpr Short operator^(Short a, int32_t b) noexcept {
+    return a ^= b;
+}
+
+inline constexpr Short operator^(int32_t a, Short b) noexcept {
+    return b ^= a;
+}
+
+inline constexpr Short operator<<(Short a, uint8_t b) noexcept {
+    return a <<= b;
+}
+
+inline constexpr Short operator>>(Short a, uint8_t b) noexcept {
+    return a >>= b;
+}
+
+#else // !CRYSP_SHORT_OBJ_INPLACE
 inline constexpr Short operator+(Short a, Short b) noexcept {
     return Short{a.val() + b.val()};
 }
@@ -322,6 +517,62 @@ inline constexpr Short operator/(Short a, int32_t b) noexcept {
 inline constexpr Short operator/(int32_t a, Short b) noexcept {
     return Short{a / b.val()};
 }
-#endif // CRYSP_32BIT_OP_INPLACE
+
+inline constexpr Short operator%(Short a, Short b) noexcept {
+    return Short{a.val() % b.val()};
+}
+
+inline constexpr Short operator%(Short a, int32_t b) noexcept {
+    return Short{a.val() % b};
+}
+
+inline constexpr Short operator%(int32_t a, Short b) noexcept {
+    return Short{a % b.val()};
+}
+
+inline constexpr Short operator&(Short a, Short b) noexcept {
+    return Short{a.val() & b.val()};
+}
+
+inline constexpr Short operator&(Short a, int32_t b) noexcept {
+    return Short{a.val() & b};
+}
+
+inline constexpr Short operator&(int32_t a, Short b) noexcept {
+    return Short{a & b.val()};
+}
+
+inline constexpr Short operator|(Short a, Short b) noexcept {
+    return Short{a.val() | b.val()};
+}
+
+inline constexpr Short operator|(Short a, int32_t b) noexcept {
+    return Short{a.val() | b};
+}
+
+inline constexpr Short operator|(int32_t a, Short b) noexcept {
+    return Short{a | b.val()};
+}
+
+inline constexpr Short operator^(Short a, Short b) noexcept {
+    return Short{a.val() ^ b.val()};
+}
+
+inline constexpr Short operator^(Short a, int32_t b) noexcept {
+    return Short{a.val() ^ b};
+}
+
+inline constexpr Short operator^(int32_t a, Short b) noexcept {
+    return Short{a ^ b.val()};
+}
+
+inline constexpr Short operator<<(Short a, uint8_t b) noexcept {
+    return Short{a.val() << b};
+}
+
+inline constexpr Short operator>>(Short a, uint8_t b) noexcept {
+    return Short{a.val() >> b};
+}
+#endif // CRYSP_SHORT_OBJ_INPLACE
 
 #endif // CRYSP_SHORT_HPP

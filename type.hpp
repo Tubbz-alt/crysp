@@ -18,6 +18,12 @@ public:
     inline constexpr type_id id() const noexcept {
         return id_;
     }
+
+    const char * name() const noexcept;
 };
+
+inline Type type_of(T arg) {
+    return Type(arg.type());
+}
 
 #endif // CRYSP_TYPE_HPP

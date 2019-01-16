@@ -61,15 +61,15 @@ private:
     explicit inline constexpr T(float fl) noexcept
     /**/ : fl(fl), fl_tag(impl::float_tag >> 32) {
     }
-    explicit inline constexpr T(int32_t ch) noexcept
-    /**/ : i(ch), i_tag(impl::rune_tag >> 32) {
+    explicit inline constexpr T(int32_t i, int32_t i_tag) noexcept
+    /**/ : i(i), i_tag(i_tag) {
     }
 #else
     explicit inline constexpr T(float fl) noexcept
     /**/ : fl_tag(impl::float_tag >> 32), fl(fl) {
     }
-    explicit inline constexpr T(int32_t ch) noexcept
-    /**/ : i_tag(impl::rune_tag >> 32), i(ch) {
+    explicit inline constexpr T(int32_t i, int32_t i_tag) noexcept
+    /**/ : i_tag(i_tag), i(i) {
     }
 #endif
     
@@ -96,9 +96,10 @@ public:
         return bits != other.bits;
     }
 
-    type_id constexpr type() const noexcept;
-    
-    void print(FILE *out) const;
+    type_id type() const noexcept;
+
+    // return number of written bytes
+    int print(FILE *out) const;
 };
 
 constexpr T t;

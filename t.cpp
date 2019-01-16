@@ -1,16 +1,21 @@
 
 #include <cstdio>
-#include <cinttypes>  // PRId64
+#include <cinttypes>  // PRId32, PRId64
 
+#include "cast.hpp"
 #include "int.hpp"
 #include "float.hpp"
 #include "nil.hpp"
 #include "double.hpp"
+#include "pair.hpp"
+#include "rune.hpp"
 
-type_id constexpr T::type() const noexcept {
+type_id T::type() const noexcept {
     switch (bits >> 48) {
     case impl::float_tag >> 48:
         return float_id;
+    case impl::short_tag >> 48:
+        return short_id;
     case impl::rune_tag >> 48:
         return rune_id;
     case (impl::int_tag >> 48) + 0:
@@ -42,36 +47,39 @@ type_id constexpr T::type() const noexcept {
     return double_id;
 }
 
-void T::print(FILE *out) const {
+int T::print(FILE *out) const {
     switch (type()) {
     case double_id:
-        fprintf(out, "%f", dbl);
-        break;
+        return fprintf(out, "%f", dbl);
     case int_id:
-        fprintf(out, "%" PRId64, Int::untag(bits));
-        break;
+        return fprintf(out, "%" PRId64, Int::untag(bits));
     case float_id:
-        fprintf(out, "%f", double(fl));
-        break;
+        return fprintf(out, "%f", double(fl));
+    case short_id:
+        return fprintf(out, "%" PRId32, i);
     case rune_id:
-        // FIXME print Unicode
-        fprintf(out, "%c", int(char(i)));
-        break;
+        return fprintf(out, "%.4s", utf8_t(i).byte);
     case struct_id:
-        fputs("struct", out);
-        break;
+        return fputs("struct", out);
     case pair_id:
-        fputs(bits == impl::nil_bits ? "nil" : "pair", out);
-        break;
+        if (bits == impl::nil_bits) {
+            return fputs("nil", out);
+        } else {
+            Pair p = cast<Pair>(*this);
+            int ret = 4;
+            fputc('(', out);
+            ret += p->first.print(out);
+            fputs(", ", out);
+            ret += p->second.print(out);
+            fputc(')', out);
+            return ret;
+        }
     case symbol_id:
-        fputs(bits == impl::t_bits ? "t" : "symbol", out);
-        break;
+        return fputs(bits == impl::t_bits ? "t" : "symbol", out);
     case func_id:
-        fputs("func", out);
-        break;
+        return fputs("func", out);
     case unknown_id:
     default:
-        fputs("unknown", out);
-        break;
+        return fputs("unknown", out);
     }
 }

@@ -13,18 +13,6 @@
 #define GC_MALLOC malloc
 #endif // GC_MALLOC
 
-#ifdef CRYSP_32BIT_THIS_INPLACE
-# pragma message "CRYSP_32BIT_THIS_INPLACE"
-#else
-# pragma message "CRYSP_32BIT_THIS_NOTINPLACE"
-#endif
-
-#ifdef CRYSP_32BIT_OP_INPLACE
-# pragma message "CRYSP_32BIT_OP_INPLACE"
-#else
-# pragma message "CRYSP_32BIT_OP_NOTINPLACE"
-#endif
-
 namespace impl {
     static const bool running = init();
 }
@@ -62,7 +50,8 @@ void impl::throw_bad_cast() /* throw(std::bad_cast) */ {
     throw std::bad_cast{};
 }
 
-void Int::throw_overflow_error() /* throw(std::overflow_error) */ {
-    throw std::overflow_error{"integer too large, overflows Fixint"};
+void impl::throw_overflow_error(const char * type_name) /* throw(std::overflow_error) */ {
+    const std::string prefix = "integer too large, overflows ";
+    throw std::overflow_error{prefix + type_name};
 }
 

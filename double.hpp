@@ -2,6 +2,7 @@
 #define CRYSP_DOUBLE_HPP
 
 #include "t.hpp"
+#include "float.hpp"
 
 class Double : public T {
 private:
@@ -25,6 +26,13 @@ public:
 
     /*implicit*/ inline constexpr Double(double dbl) noexcept
     /**/ : T(dbl) {
+    }
+
+    /*
+     * convert single-precision Float to double-precision Double
+     */
+    explicit inline constexpr Double(Float fl) noexcept
+        : T(double(fl.val())) {
     }
 
     /*
