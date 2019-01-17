@@ -1,29 +1,86 @@
 #ifndef CRYSP_TYPE_HPP
 #define CRYSP_TYPE_HPP
 
-#include "t.hpp"
+#include "double.hpp"
+#include "float.hpp"
+#include "int.hpp"
+#include "pair.hpp"
+#include "rune.hpp"
+#include "short.hpp"
+#include "utf8.hpp"
 
-class Type {
-private:
-    type_id id_;
-    
+class Type : public T {
 public:
-    inline constexpr Type(type_id id) noexcept : id_(id) {
+    inline constexpr Type() noexcept
+    /**/: T{int32_t(type::unknown_id), uint32_t(impl::type_tag >> 32)} {
     }
 
-    template<class E>
-    inline constexpr Type() noexcept : id_(E::static_type) {
+    explicit inline constexpr Type(type::id id) noexcept
+        : T{int32_t(id), uint32_t(impl::type_tag >> 32)} {
     }
+
+    // type of this object. overloads T::type()
+    inline constexpr Type type() const noexcept {
+        return Type{type::type_id};
+    }
+
+    // type_id of this object. overloads T::type_id()
+    inline constexpr type::id type_id() const noexcept {
+        return type::type_id;
+    }
+
+    enum {
+          static_type_id = type::type_id,
+    };
     
-    inline constexpr type_id id() const noexcept {
-        return id_;
+    // return number of written bytes
+    int print(FILE *out) const;
+
+    inline constexpr type::id id() const noexcept {
+        return type::id(i);
     }
 
     const char * name() const noexcept;
 };
 
-inline Type type_of(T arg) {
-    return Type(arg.type());
+// declared in t.hpp
+inline constexpr Type T::type() const noexcept {
+    return Type{type_id()};
+}
+
+// declared in double.hpp
+inline constexpr Type Double::type() const noexcept {
+    return Type{type::id(static_type_id)};
+}
+
+// declared in float.hpp
+inline constexpr Type Float::type() const noexcept {
+    return Type{type::id(static_type_id)};
+}
+
+// declared in int.hpp
+inline constexpr Type Int::type() const noexcept {
+    return Type{type::id(static_type_id)};
+}
+
+// declared in pair.hpp
+inline constexpr Type Pair::type() const noexcept {
+    return Type{type::id(static_type_id)};
+}
+
+// declared in rune.hpp
+inline constexpr Type Rune::type() const noexcept {
+    return Type{type::id(static_type_id)};
+}
+
+// declared in short.hpp
+inline constexpr Type Short::type() const noexcept {
+    return Type{type::id(static_type_id)};
+}
+
+// declared in utf8.hpp
+inline constexpr Type Utf8::type() const noexcept {
+    return Type{type::id(static_type_id)};
 }
 
 #endif // CRYSP_TYPE_HPP

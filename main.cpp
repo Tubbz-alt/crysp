@@ -14,7 +14,7 @@
 
 
 noinline noinline void show(T x) {
-    printf("%016" PRIX64 " = %s  \t", x.debug_bits(), type_of(x).name());
+    printf("%016" PRIX64 " = %s  \t", x.debug_bits(), x.type().name());
     x.print(stdout);
     putchar('\n');
 }
@@ -296,8 +296,8 @@ noinline void test_rune() {
         Rune r{i};
         Utf8 u{r};
         TEST_EQ(r.val(), i);
-        TEST_EQ(u.toRune(), r);
-        TEST_EQ(u.torune(), i);
+        TEST_EQ(u.val_rune(), i);
+        TEST_EQ(Rune{u}, r);
     }
     show_rune();
 }
@@ -323,6 +323,18 @@ noinline void test_float() {
     test_float_binary_op<Float, float>();
 }
 
+noinline void test_type() {
+    show(Type{});
+    show(Float{}.type());
+    show(short_max.type());
+    show(t.type().type());
+    show(Rune{}.type());
+    show(Utf8{}.type());
+    show(Double{}.type());
+    show(int_max.type());
+    show(nil.type());
+    show(t.type());
+}
 
 noinline void test() {
     test_bool();
@@ -330,6 +342,7 @@ noinline void test() {
     test_double();
     test_float();
     test_short();
+    test_type();
     test_rune();
     test_int();
 }

@@ -14,6 +14,8 @@ public:
     : Pair(impl::nil_bits, bits_constructor{}) {
     }
 
+    int print(FILE *out) const;
+
     /*
     inline constexpr Nil(const Nil & other) = default;
     inline constexpr Nil & operator=(const Nil & other) = default;

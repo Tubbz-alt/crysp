@@ -6,6 +6,7 @@
 class Utf8 : public T {
 private:
     friend class T;
+    friend class Rune;
     
     template<class To> friend bool is(T arg);
 
@@ -114,26 +115,28 @@ private:
     }
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
 
+    static int print_bits(FILE * out, uint32_t bits);
+
 public:
     inline constexpr Utf8() noexcept
-    /**/: T{int32_t(0), int32_t(impl::utf8_tag >> 32)} {
+    /**/: T{int32_t(0), uint32_t(impl::utf8_tag >> 32)} {
     }
 
     explicit inline constexpr Utf8(rune r) noexcept
-        : T{int32_t(make(r)), int32_t(impl::utf8_tag >> 32)} {
+        : T{int32_t(make(r)), uint32_t(impl::utf8_tag >> 32)} {
     }
 
     explicit inline constexpr Utf8(Rune r) noexcept
-        : T{int32_t(make(r.val())), int32_t(impl::utf8_tag >> 32)} {
+        : T{int32_t(make(r.val())), uint32_t(impl::utf8_tag >> 32)} {
     }
 
     inline constexpr Utf8(char a, char b, char c = 0, char d = 0) noexcept
 #if __BYTE_ORDER == __LITTLE_ENDIAN
         : T{int32_t(a) | int32_t(b) << 8 | int32_t(c) << 16 | int32_t(d) << 24,
-            int32_t(impl::utf8_tag >> 32)}
+            uint32_t(impl::utf8_tag >> 32)}
 #else
         : T{int32_t(a) << 24 | int32_t(b) << 16 | int32_t(c) << 8 | int32_t(d),
-            int32_t(impl::utf8_tag >> 32)}
+            uint32_t(impl::utf8_tag >> 32)}
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
     {
     }
@@ -142,13 +145,22 @@ public:
         return uint32_t(i);
     }
 
-    inline constexpr rune torune() const noexcept {
-        return unmake(val());
+    inline constexpr rune val_rune() const noexcept {
+        return unmake(uint32_t(i));
     }
 
-    inline constexpr Rune toRune() const noexcept {
-        return Rune{unmake(val())};
+    // defined in type.hpp
+    inline constexpr Type type() const noexcept;
+
+    inline constexpr type::id type_id() const noexcept {
+        return type::utf8_id;
     }
+
+    enum {
+        static_type_id = type::utf8_id,
+    };
+
+    int print(FILE *out) const;
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     inline constexpr int size() const noexcept {
@@ -174,9 +186,15 @@ public:
     }
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
 
+    // return '\0'-terminated sequence of bytes
     inline const char * data() noexcept {
         return reinterpret_cast<const char *>(&i);
     }
 };
+
+// declared in rune.hpp
+inline constexpr Rune::Rune(Utf8 utf8) noexcept
+    : T{Utf8::unmake(utf8.val()), uint32_t(impl::rune_tag >> 32)} {
+}
 
 #endif // CRYSP_UTF8_HPP

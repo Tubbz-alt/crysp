@@ -3,30 +3,36 @@
 
 #include "type.hpp"
 
+int Type::print(FILE *out) const {
+    return fputs(name(), out);
+}
+
 const char * Type::name() const noexcept {
-    switch (id_) {
-    case double_id:
-        return "Double";
-    case int_id:
-        return "Int";
-    case float_id:
+    switch (type::id(i)) {
+    case type::float_id:
         return "Float";
-    case short_id:
+    case type::short_id:
         return "Short";
-    case rune_id:
+    case type::type_id:
+        return "Type";
+    case type::rune_id:
         return "Rune";
-    case utf8_id:
+    case type::utf8_id:
         return "Utf8";
-    case struct_id:
+    case type::double_id:
+        return "Double";
+    case type::int_id:
+        return "Int";
+    case type::struct_id:
         return "Struct";
-    case pair_id:
+    case type::pair_id:
         return "Pair";
-    case symbol_id:
+    case type::symbol_id:
         return "Symbol";
-    case func_id:
+    case type::func_id:
         return "Func";
-    case unknown_id:
+    case type::unknown_id:
     default:
-        return "unknown";
+        return "Unknown";
     }
 }

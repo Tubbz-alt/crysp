@@ -85,13 +85,19 @@ public:
         return untag(bits);
     }
 
-    inline constexpr type_id type() const noexcept {
-        return int_id;
+    // defined in type.hpp
+    inline constexpr Type type() const noexcept;
+
+    inline constexpr type::id type_id() const noexcept {
+        return type::int_id;
     }
 
     enum {
-        static_type = int_id,
+          static_type_id = type::int_id,
     };
+
+    // return number of written bytes
+    int print(FILE *out) const;
 
     /* wraps around modulo 2^50: Int only holds 50 bits */
     inline constexpr Int & operator=(int64_t i) noexcept {

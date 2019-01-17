@@ -5,6 +5,8 @@
 
 typedef int32_t rune; // Unicode is actually a little less than 21 bits
 
+class Utf8;
+
 class Rune : public T {
 private:
     template<class To> friend bool is(T arg);
@@ -15,13 +17,17 @@ private:
 
 public:
     inline constexpr Rune() noexcept
-    /**/: T{int32_t(0), int32_t(impl::rune_tag >> 32)} {
+    /**/: T{int32_t(0), uint32_t(impl::rune_tag >> 32)} {
     }
 
-    explicit inline constexpr Rune(rune ch) noexcept
-        : T{ch, int32_t(impl::rune_tag >> 32)} {
+    explicit inline constexpr Rune(rune r) noexcept
+        : T{r, uint32_t(impl::rune_tag >> 32)} {
     }
 
+    // defined in utf8.hpp
+    explicit inline constexpr Rune(Utf8 utf8) noexcept;
+
+    
     /*
     inline constexpr Rune(const Rune & other) = default;
     inline constexpr Rune & operator=(const Rune & other) = default;
@@ -32,14 +38,19 @@ public:
         return i;
     }
 
-    inline constexpr type_id type() const noexcept {
-        return rune_id;
+    // defined in type.hpp
+    inline constexpr Type type() const noexcept;
+
+    inline constexpr type::id type_id() const noexcept {
+        return type::rune_id;
     }
 
     enum {
-        static_type = rune_id,
+        static_type_id = type::rune_id,
     };
     
+    int print(FILE * out) const;
+
     Rune & operator=(rune ch) noexcept {
         return (*this) = Rune{ch};
     }

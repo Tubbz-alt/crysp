@@ -35,12 +35,25 @@ public:
     inline ~Pair() = default;
     */
 
-    type_id constexpr type() const noexcept {
-        return pair_id;
+    // defined in type.hpp
+    inline constexpr Type type() const noexcept;
+
+    inline constexpr type::id type_id() const noexcept {
+        return type::pair_id;
     }
 
+    enum {
+          static_type_id = type::pair_id,
+    };
+
+    int print(FILE *out) const;
+    
     pair * operator->() {
         return (pair *)addr();
+    }
+
+    const pair * operator->() const {
+        return (const pair *)addr();
     }
 };
 

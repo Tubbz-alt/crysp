@@ -37,13 +37,19 @@ public:
         return fl;
     }
 
-    inline constexpr type_id type() const noexcept {
-        return float_id;
+    // defined in type.hpp
+    inline constexpr Type type() const noexcept;
+
+    inline constexpr type::id type_id() const noexcept {
+        return type::float_id;
     }
 
     enum {
-        static_type = float_id,
+          static_type_id = type::float_id,
     };
+    
+    // return number of written bytes
+    int print(FILE *out) const;
     
     /* identity */
     inline constexpr Float & operator+() noexcept {

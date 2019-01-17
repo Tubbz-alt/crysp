@@ -45,13 +45,19 @@ public:
         return dbl;
     }
 
-    inline constexpr type_id type() const noexcept {
-        return double_id;
+    // defined in type.hpp
+    inline constexpr Type type() const noexcept;
+    
+    inline constexpr type::id type_id() const noexcept {
+        return type::double_id;
     }
 
     enum {
-        static_type = double_id,
+          static_type_id = type::double_id,
     };
+
+    // return number of written bytes
+    int print(FILE *out) const;
 
     /* not strictly needed, constructor Double(double) is implicit */
     inline constexpr Double & operator=(double other) noexcept {

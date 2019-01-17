@@ -29,11 +29,11 @@ private:
 
 public:
     inline constexpr Short() noexcept
-    /**/ : T{int32_t(0), int32_t(impl::short_tag >> 32)} {
+    /**/ : T{int32_t(0), uint32_t(impl::short_tag >> 32)} {
     }
 
     explicit inline constexpr Short(int32_t i) noexcept
-        : T{int32_t(i), int32_t(impl::short_tag >> 32)} {
+        : T{int32_t(i), uint32_t(impl::short_tag >> 32)} {
     }
 
     /*
@@ -45,6 +45,20 @@ public:
     inline constexpr int32_t val() const noexcept {
         return i;
     }
+
+    // defined in type.hpp
+    inline constexpr Type type() const noexcept;
+
+    inline constexpr type::id type_id() const noexcept {
+        return type::short_id;
+    }
+
+    enum {
+        static_type_id = type::short_id,
+    };
+
+    // return number of written bytes
+    int print(FILE *out) const;
 
     /* identity */
     inline constexpr Short & operator+() noexcept {
