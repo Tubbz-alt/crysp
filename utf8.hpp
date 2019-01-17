@@ -137,7 +137,7 @@ public:
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
     {
     }
-    
+
     inline constexpr uint32_t val() const noexcept {
         return uint32_t(i);
     }
@@ -173,8 +173,8 @@ public:
         return 4;
     }
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
-    
-    inline constexpr const char * data() noexcept {
+
+    inline const char * data() noexcept {
         return reinterpret_cast<const char *>(&i);
     }
 };

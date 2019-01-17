@@ -1,6 +1,7 @@
 
 #include <new>        // std::bad_alloc
 #include <stdexcept>  // std::overflow_error
+#include <string>     // std::string
 #include <typeinfo>   // std::bad_cast
 
 #include <sys/mman.h> // mmap()

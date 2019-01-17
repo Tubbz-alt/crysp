@@ -39,9 +39,15 @@ namespace impl {
         pair_tag       = 0x7FF0000000000001ull,
         symbol_tag     = 0x7FF0000000000002ull,
         func_tag       = 0x7FF0000000000003ull,
-        
-        nil_bits       = pair_tag + (0x7FF0ull << 4*sizeof(void *)),
-        t_bits         = symbol_tag + (0x7FF0ull << 4*sizeof(void *)) + 0x20,
+
+#if defined(__aarch64__) || defined(__AARCH64EL__) || defined(__AARCH64BE__)
+        fixed_addr_bits = 0x7FF0000000ull,
+#else
+        fixed_addr_bits = 0x7FF0ull << 4*sizeof(void *),
+#endif
+
+        nil_bits       = pair_tag + fixed_addr_bits,
+        t_bits         = symbol_tag + 0x20 + fixed_addr_bits,
     };
 
     bool init();                /* throw(std::bad_alloc) */
@@ -64,5 +70,5 @@ enum type_id {
     symbol_id  = 0x12,
     func_id    = 0x13,
 };
-    
+
 #endif // CRYSP_IMPL_HPP
