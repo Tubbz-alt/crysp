@@ -10,6 +10,14 @@
 #include "utf8.hpp"
 
 class Type : public T {
+private:
+    template<class To> friend bool is(T arg);
+
+    // needed by friend is()
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        return (bits >> 48) == (impl::type_tag >> 48);
+    }
+
 public:
     inline constexpr Type() noexcept
     /**/: T{int32_t(type::unknown_id), uint32_t(impl::type_tag >> 32)} {
@@ -19,6 +27,12 @@ public:
         : T{int32_t(id), uint32_t(impl::type_tag >> 32)} {
     }
 
+    /*
+    inline constexpr Type(const Type & other) = default;
+    inline constexpr Type & operator=(const Type & other) = default;
+    inline ~Type() = default;
+    */
+    
     // type of this object. overloads T::type()
     inline constexpr Type type() const noexcept {
         return Type{type::type_id};

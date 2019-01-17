@@ -107,6 +107,7 @@ public:
     // defined in type.hpp
     inline constexpr Type type() const noexcept;
 
+    // constexpr... must be in header file
     noinline constexpr type::id type_id() const noexcept {
         switch (bits >> 48) {
         case impl::float_tag >> 48:

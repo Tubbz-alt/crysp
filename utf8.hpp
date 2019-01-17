@@ -5,7 +5,6 @@
 
 class Utf8 : public T {
 private:
-    friend class T;
     friend class Rune;
     
     template<class To> friend bool is(T arg);

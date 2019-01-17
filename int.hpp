@@ -14,6 +14,11 @@ private:
     friend class T;
     template<class To> friend bool is(T arg);
 
+    // needed by friend is()
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        return (~bits >> payload_nbits) == 0;
+    }
+
     enum {
         tag_nbits = 14,
         payload_nbits = 50,
@@ -41,10 +46,6 @@ private:
 
     static inline constexpr int64_t untag(uint64_t bits) noexcept {
         return int64_t(bits << tag_nbits) >> tag_nbits;
-    }
-
-    static inline constexpr bool typecheck(uint64_t bits) noexcept {
-        return (~bits >> payload_nbits) == 0;
     }
 
 public:
