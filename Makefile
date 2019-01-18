@@ -1,14 +1,13 @@
 AR=ar
 
 CXX=g++
-CXXFLAGS_BASE=-Wall -Wextra
+CXXFLAGS_BASE=-Wall -Wextra -I.
 
 CXXFLAGS_OPT=-O3 $(CXXFLAGS_BASE) $(CXXFLAGS)
 CXXFLAGS_DBG=-g $(CXXFLAGS_BASE) $(CXXFLAGS)
 
-SOURCES:=$(wildcard *.cpp)
-SOURCES_BIN:=$(filter test_%.cpp,$(SOURCES))
-SOURCES_LIB:=$(filter-out test_%.cpp,$(SOURCES))
+SOURCES_BIN:=$(wildcard test/*.cpp)
+SOURCES_LIB:=$(wildcard crysp/*.cpp)
 
 OBJS_LIB_OPT:=$(patsubst %.cpp,%.opt.o,$(SOURCES_LIB))
 OBJS_LIB_DBG:=$(patsubst %.cpp,%.dbg.o,$(SOURCES_LIB))
@@ -50,4 +49,4 @@ $(LIB_DBG): $(OBJS_LIB_DBG)
 
 
 clean:
-	rm -f $(BIN_OPT) $(BIN_DBG) *.a *.o core.* *~
+	rm -f $(BIN_OPT) $(BIN_DBG) *.a *.o crysp/*.o test/*.o core.* *~
