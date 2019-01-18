@@ -3,6 +3,8 @@
 
 #include "crysp/type.hpp"
 
+CRYSP_NS_START
+
 int Type::print(FILE *out) const {
     return fputs(name(), out);
 }
@@ -36,3 +38,5 @@ const char * Type::name() const noexcept {
         return "Unknown";
     }
 }
+
+CRYSP_NS_END

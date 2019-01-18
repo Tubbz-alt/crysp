@@ -3,6 +3,8 @@
 
 #include "crysp/t.hpp"
 
+CRYSP_NS_START
+
 void test_failed(const char * str);
 void test_failed(const char * str, T actual, T expected);
 void test_failed(const char * str, int64_t actual, int64_t expected);
@@ -24,5 +26,7 @@ void test_failed(const char * str, int64_t actual, int64_t expected);
                         (actual), (expected));                          \
         }                                                               \
     } while (false)
+
+CRYSP_NS_END
 
 #endif // CRYSP_TEST_HPP

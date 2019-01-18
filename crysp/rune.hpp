@@ -4,6 +4,8 @@
 #include "crysp/t.hpp"
 #include "crysp/type.hpp"
 
+CRYSP_NS_START
+
 typedef uint32_t rune; // Unicode is actually a little less than 21 bits
 
 class Utf8;
@@ -57,5 +59,7 @@ public:
         return (*this) = Rune{ch};
     }
 };
+
+CRYSP_NS_END
 
 #endif // CRYSP_RUNE_HPP

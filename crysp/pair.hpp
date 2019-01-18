@@ -5,6 +5,8 @@
 #include "crysp/t.hpp"
 #include "crysp/type.hpp"
 
+CRYSP_NS_START
+
 class Pair : public T {
 private:
     struct pair {
@@ -58,5 +60,7 @@ public:
         return (const pair *)addr();
     }
 };
+
+CRYSP_NS_END
 
 #endif // CRYSP_PAIR_HPP

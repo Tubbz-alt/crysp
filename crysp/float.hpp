@@ -13,6 +13,8 @@
 # define CRYSP_FLOAT_OBJ_INPLACE
 #endif
 
+CRYSP_NS_START
+
 class Float : public T {
 private:
     template<class To> friend bool is(T arg);
@@ -358,5 +360,7 @@ inline constexpr Float operator/(float a, Float b) noexcept {
     return Float{a / b.val()};
 }
 #endif // CRYSP_FLOAT_OBJ_INPLACE
+
+CRYSP_NS_END
 
 #endif // CRYSP_FLOAT_HPP

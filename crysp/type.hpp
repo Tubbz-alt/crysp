@@ -3,6 +3,8 @@
 
 #include "crysp/t.hpp"
 
+CRYSP_NS_START
+
 class Type : public T {
 private:
     template<class To> friend bool is(T arg);
@@ -56,5 +58,6 @@ inline constexpr Type T::type() const noexcept {
     return Type{type_id()};
 }
 
+CRYSP_NS_END
 
 #endif // CRYSP_TYPE_HPP

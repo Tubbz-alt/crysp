@@ -6,6 +6,6 @@
 #include "crysp/impl.hpp"
 
 #define GCRYSP_NEW(class_, ...) \
-    ((size_t)(void *)new (impl::alloc(sizeof(class_))) class_{__VA_ARGS__})
+    ((size_t)(void *)new (CRYSP_NS impl::alloc(sizeof(class_))) class_{__VA_ARGS__})
 
 #endif // CRYSP_NEW_HPP

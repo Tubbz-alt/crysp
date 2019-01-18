@@ -4,6 +4,8 @@
 #include "crysp/t.hpp"
 #include "crysp/short.hpp"
 
+CRYSP_NS_START
+
 /**
  * 50-bit signed integer.
  * operations on Int are wrapping, i.e. any overflow is truncated modulo 50 bits,
@@ -106,12 +108,30 @@ public:
         return (*this) = Int{i};
     }
 
+    /* equal */
+    using T::operator==;
+    
+    inline constexpr bool operator==(int32_t other) noexcept {
+        return (int64_t(bits) << tag_nbits) ==
+            (int64_t(other) << tag_nbits);
+    }
+
     /* less than */
     inline constexpr bool operator<(Int other) noexcept {
         return (int64_t(bits) << tag_nbits)
             < (int64_t(other.bits) << tag_nbits);
     }
-    
+
+    inline constexpr bool operator<(int32_t other) noexcept {
+        return (int64_t(bits) << tag_nbits) <
+            (int64_t(other) << tag_nbits);
+    }
+
+    inline constexpr bool operator>(int32_t other) noexcept {
+        return (int64_t(bits) << tag_nbits) >
+            (int64_t(other) << tag_nbits);
+    }
+
     /* pre-increment */
     inline constexpr Int & operator++() noexcept {
         bits = (bits + 1) | impl::int_tag;
@@ -330,25 +350,34 @@ inline constexpr Int operator>>(Int a, uint8_t b) noexcept {
 }
 
 
-
 /* op(Int, int64_t) */
 
-// correct also if a overflows Int
+// correct also if b overflows Int
+inline constexpr bool operator==(Int a, int64_t b) noexcept {
+    return a.val() == b;
+}
+
+// correct also if b overflows Int
+inline constexpr bool operator!=(Int a, int64_t b) noexcept {
+    return a.val() != b;
+}
+
+// correct also if b overflows Int
 inline constexpr bool operator<(Int a, int64_t b) noexcept {
     return a.val() < b;
 }
 
-// correct also if a overflows Int
+// correct also if b overflows Int
 inline constexpr bool operator>(Int a, int64_t b) noexcept {
     return a.val() > b;
 }
 
-// correct also if a overflows Int
+// correct also if b overflows Int
 inline constexpr bool operator<=(Int a, int64_t b) noexcept {
     return a.val() <= b;
 }
 
-// correct also if a overflows Int
+// correct also if b overflows Int
 inline constexpr bool operator>=(Int a, int64_t b) noexcept {
     return a.val() >= b;
 }
@@ -392,6 +421,16 @@ inline constexpr Int operator^(Int a, int64_t b) noexcept {
 
 
 /* op(int64_t, Int) */
+
+// correct also if a overflows Int
+inline constexpr bool operator==(int64_t a, Int b) noexcept {
+    return a == b.val();
+}
+
+// correct also if a overflows Int
+inline constexpr bool operator!=(int64_t a, Int b) noexcept {
+    return a != b.val();
+}
 
 // correct also if a overflows Int
 inline constexpr bool operator<(int64_t a, Int b) noexcept {
@@ -449,7 +488,44 @@ inline constexpr Int operator^(int64_t a, Int b) noexcept {
 }
 
 
+
+/* op(Int, int32_t) */
+
+inline constexpr bool operator!=(Int a, int32_t b) noexcept {
+    return !(a == b);
+}
+
+inline constexpr bool operator<=(Int a, int32_t b) noexcept {
+    return !(a > b);
+}
+
+inline constexpr bool operator>=(Int a, int32_t b) noexcept {
+    return !(a < b);
+}
+
+
+/* op(int32_t, Int) */
+
+inline constexpr bool operator==(int32_t a, Int b) noexcept {
+    return b == a;
+}
+
+inline constexpr bool operator!=(int32_t a, Int b) noexcept {
+    return !(b == a);
+}
+
+inline constexpr bool operator<=(int32_t a, Int b) noexcept {
+    return b > a;
+}
+
+inline constexpr bool operator>=(int32_t a, Int b) noexcept {
+    return b < a;
+}
+
+
 constexpr Int int_max{ 0x1ffffffffffffll};
 constexpr Int int_min{-0x2000000000000ll};
+
+CRYSP_NS_END
 
 #endif // CRYSP_INT_HPP

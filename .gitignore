@@ -1,7 +1,9 @@
 *.a
 *.o
 *~
-main
-main.debug
+/main
+/main.debug
+/collatz
+/collatz.debug
 a.out
 core*

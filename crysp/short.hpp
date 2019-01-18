@@ -4,6 +4,8 @@
 #include "crysp/t.hpp"
 #include "crysp/type.hpp"
 
+CRYSP_NS_START
+
 // optimizations
 #define CRYSP_SHORT_REF_INPLACE
 
@@ -590,5 +592,7 @@ inline constexpr Short operator>>(Short a, uint8_t b) noexcept {
     return Short{a.val() >> b};
 }
 #endif // CRYSP_SHORT_OBJ_INPLACE
+
+CRYSP_NS_END
 
 #endif // CRYSP_SHORT_HPP

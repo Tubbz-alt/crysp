@@ -3,10 +3,17 @@
 
 #include <cstdint> // uint32_t, uint64_t
 
+#define CRYSP_NS_START namespace crysp {
+#define CRYSP_NS_END   } // namespace crysp
+#define CRYSP_NS_USE   using namespace crysp;
+#define CRYSP_NS       crysp::
+
+CRYSP_NS_START
+
 #ifdef __GNUC__
-#define noinline __attribute__((noinline))
+#define CRYSP_NOINLINE __attribute__((noinline))
 #else
-#define noinline
+#define CRYSP_NOINLINE
 #endif
 
 #ifdef __GNUC__
@@ -78,5 +85,7 @@ namespace type {
     };
 
 } // namespace type
+
+CRYSP_NS_END
 
 #endif // CRYSP_IMPL_HPP

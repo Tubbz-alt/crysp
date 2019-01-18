@@ -3,6 +3,8 @@
 
 #include "crysp/t.hpp"
 
+CRYSP_NS_START
+
 template<class To>
 inline bool is(T arg) {
     return To::typecheck(arg.bits);
@@ -14,11 +16,13 @@ inline bool is(To) {
 }
 
 template<class To>
-/*noinline*/ To cast(T arg) {
+To cast(T arg) {
     if (!is<To>(arg)) {
         impl::throw_bad_cast();
     }
     return reinterpret_cast<To &>(arg);
 }
+
+CRYSP_NS_END
 
 #endif // CRYSP_CAST_HPP

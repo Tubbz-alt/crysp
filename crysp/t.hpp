@@ -5,6 +5,8 @@
 #include <endian.h>
 #include "crysp/impl.hpp"
 
+CRYSP_NS_START
+
 class Type;
 
 class T {
@@ -107,7 +109,7 @@ public:
     inline constexpr Type type() const noexcept;
 
     // constexpr... must be in header file
-    noinline constexpr type::id type_id() const noexcept {
+    CRYSP_NOINLINE constexpr type::id type_id() const noexcept {
         switch (bits >> 48) {
         case impl::float_tag >> 48:
             return type::float_id;
@@ -152,7 +154,8 @@ public:
     int print(FILE *out) const;
 };
 
-constexpr T t;
+constexpr const T t;
 
+CRYSP_NS_END
 
 #endif // CRYSP_T_HPP

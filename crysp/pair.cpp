@@ -4,6 +4,8 @@
 #include "crysp/pair.hpp"
 #include "crysp/nil.hpp"
 
+CRYSP_NS_START
+
 int Pair::print(FILE *out) const {
     if (bits == impl::nil_bits) {
         return reinterpret_cast<const Nil *>(this)->print(out);
@@ -17,3 +19,5 @@ int Pair::print(FILE *out) const {
     fputc(')', out);
     return ret;
 }
+
+CRYSP_NS_END

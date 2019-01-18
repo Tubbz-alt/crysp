@@ -3,6 +3,8 @@
 
 #include "crysp/pair.hpp"
 
+CRYSP_NS_START
+
 class Nil : public Pair {
 private:
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
@@ -23,6 +25,8 @@ public:
     */
 };
 
-constexpr Nil nil;
+constexpr const Nil nil;
+
+CRYSP_NS_END
 
 #endif // CRYSP_NIL_HPP

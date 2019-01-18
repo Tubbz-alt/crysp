@@ -5,6 +5,8 @@
 #include "crysp/type.hpp"
 #include "crysp/float.hpp"
 
+CRYSP_NS_START
+
 class Double : public T {
 private:
     template<class To> friend bool is(T arg);
@@ -207,6 +209,6 @@ inline constexpr bool operator>=(double a, Double b) noexcept {
     return a >= b.val();
 }
 
-
+CRYSP_NS_END
 
 #endif // CRYSP_DOUBLE_HPP

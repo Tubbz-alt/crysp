@@ -5,6 +5,8 @@
 #include "crysp/test.hpp"
 #include "crysp/type.hpp"
 
+CRYSP_NS_START
+
 void test_failed(const char * str) {
     fprintf(stderr, "test failed at %s,\tactual [false],\texpected [true]", str);
 }
@@ -23,3 +25,4 @@ void test_failed(const char * str, T actual, T expected) {
     fputs(")\n", stderr);
 }
 
+CRYSP_NS_END

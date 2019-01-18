@@ -12,26 +12,27 @@
 #include "crysp/type.hpp"
 #include "crysp/utf8.hpp"
 
+CRYSP_NS_USE
 
-noinline noinline void show(T x) {
+CRYSP_NOINLINE void show(T x) {
     printf("%016" PRIX64 " = %s  \t", x.debug_bits(), x.type().name());
     x.print(stdout);
     putchar('\n');
 }
 
-noinline void test_bool() {
+CRYSP_NOINLINE void test_bool() {
     show(nil);
     show(t);
 }
 
-noinline void test_cons() {
+CRYSP_NOINLINE void test_cons() {
     Pair c = Pair{t, nil};
     show(c);
     TEST_EQ(c->first, t);
     TEST_EQ(c->second, nil);
 }
 
-noinline void show_double() {
+CRYSP_NOINLINE void show_double() {
     show(Double{0.0});
     show(Double{0.5});
     show(Double{1.0});
@@ -40,7 +41,7 @@ noinline void show_double() {
     show(Double{-0.0/0.0}); // -NaN
 }
 
-noinline void show_float() {
+CRYSP_NOINLINE void show_float() {
     show(Float{0.0f});
     show(Float{0.5f});
     show(Float{1.0f});
@@ -50,7 +51,7 @@ noinline void show_float() {
 }
 
 template<class Num, class num>
-noinline void test_int_assign(Num lo, Num hi) {
+CRYSP_NOINLINE void test_int_assign(Num lo, Num hi) {
     Num n;
     T t;
     TEST_EQ(n.val(), 0);
@@ -77,7 +78,7 @@ int32_t mod(int32_t i) {
 }
 
 template<class Num, class num>
-noinline void test_int_unary_op(num lo, num hi) {
+CRYSP_NOINLINE void test_int_unary_op(num lo, num hi) {
     Num n;
     // test ++ and --
     for (num i = -1024; i <= 1024; i++) {
@@ -134,7 +135,7 @@ noinline void test_int_unary_op(num lo, num hi) {
 }
 
 template<class Num, class num>
-noinline void test_int_binary_op0(num i, num j) {
+CRYSP_NOINLINE void test_int_binary_op0(num i, num j) {
     Num a{i}, b{j}, c;
 
     c = a + b; TEST_EQ(c.val(), mod(i + j));
@@ -176,7 +177,7 @@ noinline void test_int_binary_op0(num i, num j) {
 }
 
 template<class Num, class num>
-noinline void test_int_binary_op(num lo, num hi) {
+CRYSP_NOINLINE void test_int_binary_op(num lo, num hi) {
     Num a, b, c;
 
     for (num i = -50; i <= 50; i++) {
@@ -202,20 +203,20 @@ noinline void test_int_binary_op(num lo, num hi) {
     }
 }
 
-noinline void test_int() {
+CRYSP_NOINLINE void test_int() {
     test_int_assign<Int, int64_t>(int_min, int_max);
     test_int_unary_op<Int, int64_t>(int_min.val(), int_max.val());
     test_int_binary_op<Int, int64_t>(int_min.val(), int_max.val());
 }
 
-noinline void test_short() {
+CRYSP_NOINLINE void test_short() {
     test_int_assign<Short, int32_t>(short_min, short_max);
     test_int_unary_op<Short, int32_t>(short_min.val(), short_max.val());
     test_int_binary_op<Short, int32_t>(short_min.val(), short_max.val());
 }
 
 template<class FL, class fl>
-noinline void test_float_unary_op() {
+CRYSP_NOINLINE void test_float_unary_op() {
     FL n;
     // test ++ and --
     for (fl i = -1024; i <= 1024; i++) {
@@ -245,7 +246,7 @@ noinline void test_float_unary_op() {
 }
 
 template<class FL, class fl>
-noinline void test_float_binary_op(fl i, fl j) {
+CRYSP_NOINLINE void test_float_binary_op(fl i, fl j) {
     FL a = i, b = j, c;
 
     TEST_EQ(a < b, i < j);
@@ -271,7 +272,7 @@ noinline void test_float_binary_op(fl i, fl j) {
     }
 }
 
-noinline void show_rune() {
+CRYSP_NOINLINE void show_rune() {
     show(Rune{' '});
     show(Rune{'A'});
     show(Rune{'Z'});
@@ -291,7 +292,7 @@ noinline void show_rune() {
     show(Utf8{0x10FFFF}); // highest codepoint
 }
 
-noinline void test_rune() {
+CRYSP_NOINLINE void test_rune() {
     for (rune i = 0x80; i <= 0x10FFFF; i++) {
         Rune r{i};
         Utf8 u{r};
@@ -303,7 +304,7 @@ noinline void test_rune() {
 }
 
 template<class FL, class fl>
-noinline void test_float_binary_op() {
+CRYSP_NOINLINE void test_float_binary_op() {
     for (fl i = -20; i <= 20; i += 0.25) {
         for (fl j = -20; j <= 20; j += 0.25) {
             test_float_binary_op<FL, fl>(i, j);
@@ -311,19 +312,19 @@ noinline void test_float_binary_op() {
     }
 }
 
-noinline void test_double() {
+CRYSP_NOINLINE void test_double() {
     show_double();
     test_float_unary_op<Double, double>();
     test_float_binary_op<Double, double>();
 }
 
-noinline void test_float() {
+CRYSP_NOINLINE void test_float() {
     show_float();
     test_float_unary_op<Float, float>();
     test_float_binary_op<Float, float>();
 }
 
-noinline void test_type() {
+CRYSP_NOINLINE void test_type() {
     show(Type{});
     show(Float{}.type());
     show(short_max.type());
@@ -336,7 +337,7 @@ noinline void test_type() {
     show(t.type());
 }
 
-noinline void test() {
+CRYSP_NOINLINE void test() {
     test_bool();
     test_cons();
     test_double();

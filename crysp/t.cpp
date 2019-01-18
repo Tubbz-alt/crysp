@@ -12,6 +12,8 @@
 #include "crysp/type.hpp"
 #include "crysp/utf8.hpp"
 
+CRYSP_NS_START
+
 int T::print(FILE *out) const {
     switch (type_id()) {
     case type::float_id:
@@ -41,3 +43,5 @@ int T::print(FILE *out) const {
         return fputs("unknown", out);
     }
 }
+
+CRYSP_NS_END

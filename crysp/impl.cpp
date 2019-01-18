@@ -14,6 +14,8 @@
 #define GC_MALLOC malloc
 #endif // GC_MALLOC
 
+CRYSP_NS_START
+
 namespace impl {
     static const bool running = init();
 }
@@ -56,3 +58,4 @@ void impl::throw_overflow_error(const char * type_name) /* throw(std::overflow_e
     throw std::overflow_error{prefix + type_name};
 }
 
+CRYSP_NS_END
