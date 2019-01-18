@@ -108,17 +108,17 @@ union utf8 {
                 ((u >> 16) & 0x003F);
             if (r <= 0x7F)
                 r = 0; // overlong encoding
-        } else if (CRYSP_LIKELY(u <= 0xFFFFFF)) {
+        } else if (CRYSP_LIKELY((u & 0xFF) == 0)) {
             r = ((u >> 12) & 0xF000) |
                 ((u >> 10) & 0x0FC0) |
                 ((u >>  8) & 0x003F);
             if (r <= 0x07FF)
                 r = 0; // overlong encoding
         } else {
-            r = ((r >> 6) & 0x1C0000) |
-                ((r >> 4) & 0x03F000) |
-                ((r << 2) & 0x000FC0) |
-                ((r << 0) & 0x00003F);
+            r = ((u >> 6) & 0x1C0000) |
+                ((u >> 4) & 0x03F000) |
+                ((u >> 2) & 0x000FC0) |
+                ((u >> 0) & 0x00003F);
             if (r <= 0xFFFF || r > 0x10FFFF)
                 r = 0; // overlong encoding or overflow
         }
