@@ -2,6 +2,7 @@
 #define CRYSP_SHORT_HPP
 
 #include "t.hpp"
+#include "type.hpp"
 
 // optimizations
 #define CRYSP_SHORT_REF_INPLACE
@@ -46,10 +47,11 @@ public:
         return i;
     }
 
-    // defined in type.hpp
-    inline constexpr Type type() const noexcept;
-
-    inline constexpr type::id type_id() const noexcept {
+    static inline constexpr Type type() noexcept {
+        return Type{type::short_id};
+    }
+    
+    static inline constexpr type::id type_id() noexcept {
         return type::short_id;
     }
 

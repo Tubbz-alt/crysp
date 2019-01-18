@@ -1,7 +1,6 @@
 #ifndef CRYSP_T_HPP
 #define CRYSP_T_HPP
 
-#include <cstdint> // int32_t, uint64_t
 #include <cstdio>
 #include <endian.h>
 #include "impl.hpp"

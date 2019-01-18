@@ -2,6 +2,7 @@
 #define CRYSP_FLOAT_HPP
 
 #include "t.hpp"
+#include "type.hpp"
 
 // optimizations
 #define CRYSP_FLOAT_REF_INPLACE
@@ -37,10 +38,11 @@ public:
         return fl;
     }
 
-    // defined in type.hpp
-    inline constexpr Type type() const noexcept;
+    inline constexpr Type type() noexcept {
+        return Type{type::float_id};
+    }
 
-    inline constexpr type::id type_id() const noexcept {
+    static inline constexpr type::id type_id() noexcept {
         return type::float_id;
     }
 

@@ -86,10 +86,11 @@ public:
         return untag(bits);
     }
 
-    // defined in type.hpp
-    inline constexpr Type type() const noexcept;
+    static inline constexpr Type type() noexcept {
+        return Type{type::int_id};
+    }
 
-    inline constexpr type::id type_id() const noexcept {
+    static inline constexpr type::id type_id() noexcept {
         return type::int_id;
     }
 

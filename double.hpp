@@ -2,6 +2,7 @@
 #define CRYSP_DOUBLE_HPP
 
 #include "t.hpp"
+#include "type.hpp"
 #include "float.hpp"
 
 class Double : public T {
@@ -45,10 +46,11 @@ public:
         return dbl;
     }
 
-    // defined in type.hpp
-    inline constexpr Type type() const noexcept;
-    
-    inline constexpr type::id type_id() const noexcept {
+    static inline constexpr Type type() noexcept {
+        return Type{type::double_id};
+    }
+
+    static inline constexpr type::id type_id() noexcept {
         return type::double_id;
     }
 

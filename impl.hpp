@@ -1,6 +1,8 @@
 #ifndef CRYSP_IMPL_HPP
 #define CRYSP_IMPL_HPP
 
+#include <cstdint> // uint32_t, uint64_t
+
 #ifdef __GNUC__
 #define noinline __attribute__((noinline))
 #else

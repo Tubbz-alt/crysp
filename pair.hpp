@@ -1,8 +1,9 @@
 #ifndef CRYSP_PAIR_HPP
 #define CRYSP_PAIR_HPP
 
-#include "t.hpp"
 #include "new.hpp"
+#include "t.hpp"
+#include "type.hpp"
 
 class Pair : public T {
 private:
@@ -35,10 +36,11 @@ public:
     inline ~Pair() = default;
     */
 
-    // defined in type.hpp
-    inline constexpr Type type() const noexcept;
+    static inline constexpr Type type() noexcept {
+        return Type{type::pair_id};
+    }
 
-    inline constexpr type::id type_id() const noexcept {
+    static inline constexpr type::id type_id() noexcept {
         return type::pair_id;
     }
 

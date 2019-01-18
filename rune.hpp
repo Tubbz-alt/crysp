@@ -2,8 +2,9 @@
 #define CRYSP_RUNE_HPP
 
 #include "t.hpp"
+#include "type.hpp"
 
-typedef int32_t rune; // Unicode is actually a little less than 21 bits
+typedef uint32_t rune; // Unicode is actually a little less than 21 bits
 
 class Utf8;
 
@@ -21,7 +22,7 @@ public:
     }
 
     explicit inline constexpr Rune(rune r) noexcept
-        : T{r, uint32_t(impl::rune_tag >> 32)} {
+        : T{int32_t(r), uint32_t(impl::rune_tag >> 32)} {
     }
 
     // defined in utf8.hpp
@@ -35,13 +36,14 @@ public:
     */
     
     inline constexpr rune val() const noexcept {
-        return i;
+        return rune(i);
     }
 
-    // defined in type.hpp
-    inline constexpr Type type() const noexcept;
+    static inline constexpr Type type() noexcept {
+        return Type{type::rune_id};
+    }
 
-    inline constexpr type::id type_id() const noexcept {
+    static inline constexpr type::id type_id() noexcept {
         return type::rune_id;
     }
 
@@ -51,7 +53,7 @@ public:
     
     int print(FILE * out) const;
 
-    Rune & operator=(rune ch) noexcept {
+    inline constexpr Rune & operator=(rune ch) noexcept {
         return (*this) = Rune{ch};
     }
 };

@@ -1,13 +1,7 @@
 #ifndef CRYSP_TYPE_HPP
 #define CRYSP_TYPE_HPP
 
-#include "double.hpp"
-#include "float.hpp"
-#include "int.hpp"
-#include "pair.hpp"
-#include "rune.hpp"
-#include "short.hpp"
-#include "utf8.hpp"
+#include "t.hpp"
 
 class Type : public T {
 private:
@@ -62,39 +56,5 @@ inline constexpr Type T::type() const noexcept {
     return Type{type_id()};
 }
 
-// declared in double.hpp
-inline constexpr Type Double::type() const noexcept {
-    return Type{type::id(static_type_id)};
-}
-
-// declared in float.hpp
-inline constexpr Type Float::type() const noexcept {
-    return Type{type::id(static_type_id)};
-}
-
-// declared in int.hpp
-inline constexpr Type Int::type() const noexcept {
-    return Type{type::id(static_type_id)};
-}
-
-// declared in pair.hpp
-inline constexpr Type Pair::type() const noexcept {
-    return Type{type::id(static_type_id)};
-}
-
-// declared in rune.hpp
-inline constexpr Type Rune::type() const noexcept {
-    return Type{type::id(static_type_id)};
-}
-
-// declared in short.hpp
-inline constexpr Type Short::type() const noexcept {
-    return Type{type::id(static_type_id)};
-}
-
-// declared in utf8.hpp
-inline constexpr Type Utf8::type() const noexcept {
-    return Type{type::id(static_type_id)};
-}
 
 #endif // CRYSP_TYPE_HPP
