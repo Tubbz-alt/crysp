@@ -1,6 +1,6 @@
 AR=ar
 
-CXX=g++ -march=native
+CXX=g++
 CXXFLAGS_BASE=-Wall -Wextra -I.
 
 CXXFLAGS_OPT=$(strip -O3 $(CXXFLAGS_BASE) $(CXXFLAGS))
