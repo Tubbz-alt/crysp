@@ -23,25 +23,23 @@ static CRYSP_NOINLINE constexpr uint64_t collatz(N n) {
 static int argcount = 1;
 
 template<class N>
-static CRYSP_NOINLINE void collatz_repeat(N n, size_t count) {
+static CRYSP_NOINLINE void collatz_repeat(N n) {
     uint64_t iter = 0;
-    for (; count != 0; count--) {
-        iter = collatz(n);
-        if (argcount == 0)
-            printf("%" PRId64 "\n", iter);
+    for (; n != 0; --n) {
+        iter += collatz(n);
     }
     printf("%s: %" PRId64 "\n", __PRETTY_FUNCTION__, iter);
 }
 
 int main(int argc, const char * argv[]) {
-    int64_t n = argc < 2 ? 0x123456789ABull : atoll(argv[1]);
+    int64_t n = argc < 2 ? 1234567 : atoll(argv[1]);
 
     argcount = argc;
 
     if (argc < 3) {
-        collatz_repeat(n,      10000000);
+        collatz_repeat(n);
     } else {
-        collatz_repeat(Int{n}, 10000000);
+        collatz_repeat(Int{n});
     }
 
     return 0;
