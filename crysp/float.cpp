@@ -1,7 +1,7 @@
 
 #include <cstdio>
 
-#include "crysp/float.hpp"
+#include "float.hpp"
 
 CRYSP_NS_START
 

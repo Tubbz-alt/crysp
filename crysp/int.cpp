@@ -2,7 +2,7 @@
 #include <cinttypes>  // PRId64
 #include <cstdio>
 
-#include "crysp/int.hpp"
+#include "int.hpp"
 
 CRYSP_NS_START
 

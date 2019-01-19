@@ -1,9 +1,9 @@
 #ifndef CRYSP_DOUBLE_HPP
 #define CRYSP_DOUBLE_HPP
 
-#include "crysp/t.hpp"
-#include "crysp/type.hpp"
-#include "crysp/float.hpp"
+#include "t.hpp"
+#include "type.hpp"
+#include "float.hpp"
 
 CRYSP_NS_START
 
@@ -173,6 +173,14 @@ inline constexpr Double operator/(Double a, Double b) noexcept {
 
 
 /* op(Double, double) */
+inline constexpr bool operator==(Double a, double b) noexcept {
+    return a.val() == b;
+}
+
+inline constexpr bool operator!=(Double a, double b) noexcept {
+    return a.val() != b;
+}
+
 inline constexpr bool operator<(Double a, double b) noexcept {
     return a.val() < b;
 }
@@ -191,8 +199,33 @@ inline constexpr bool operator>=(Double a, double b) noexcept {
 
 
 
+inline constexpr Double operator+(Double a, double b) noexcept {
+    return Double{a.val() + b};
+}
+
+inline constexpr Double operator-(Double a, double b) noexcept {
+    return Double{a.val() - b};
+}
+
+inline constexpr Double operator*(Double a, double b) noexcept {
+    return Double{a.val() * b};
+}
+
+inline constexpr Double operator/(Double a, double b) noexcept {
+    return Double{a.val() / b};
+}
+
+
 
 /* op(double, Double) */
+inline constexpr bool operator==(double a, Double b) noexcept {
+    return a == b.val();
+}
+
+inline constexpr bool operator!=(double a, Double b) noexcept {
+    return a != b.val();
+}
+
 inline constexpr bool operator<(double a, Double b) noexcept {
     return a < b.val();
 }
@@ -207,6 +240,25 @@ inline constexpr bool operator<=(double a, Double b) noexcept {
 
 inline constexpr bool operator>=(double a, Double b) noexcept {
     return a >= b.val();
+}
+
+
+
+
+inline constexpr Double operator+(double a, Double b) noexcept {
+    return Double{a + b.val()};
+}
+
+inline constexpr Double operator-(double a, Double b) noexcept {
+    return Double{a - b.val()};
+}
+
+inline constexpr Double operator*(double a, Double b) noexcept {
+    return Double{a * b.val()};
+}
+
+inline constexpr Double operator/(double a, Double b) noexcept {
+    return Double{a / b.val()};
 }
 
 CRYSP_NS_END

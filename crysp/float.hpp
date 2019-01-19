@@ -1,8 +1,8 @@
 #ifndef CRYSP_FLOAT_HPP
 #define CRYSP_FLOAT_HPP
 
-#include "crysp/t.hpp"
-#include "crysp/type.hpp"
+#include "t.hpp"
+#include "type.hpp"
 
 // optimizations
 #define CRYSP_FLOAT_REF_INPLACE

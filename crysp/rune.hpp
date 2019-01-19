@@ -1,8 +1,8 @@
 #ifndef CRYSP_RUNE_HPP
 #define CRYSP_RUNE_HPP
 
-#include "crysp/t.hpp"
-#include "crysp/type.hpp"
+#include "t.hpp"
+#include "type.hpp"
 
 CRYSP_NS_START
 

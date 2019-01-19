@@ -3,7 +3,7 @@
 
 #include <new>
 
-#include "crysp/impl.hpp"
+#include "impl.hpp"
 
 #define GCRYSP_NEW(class_, ...) \
     ((size_t)(void *)new (CRYSP_NS impl::alloc(sizeof(class_))) class_{__VA_ARGS__})

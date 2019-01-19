@@ -1,6 +1,6 @@
 
-#include "crysp/rune.hpp"
-#include "crysp/utf8.hpp"
+#include "rune.hpp"
+#include "utf8.hpp"
 
 CRYSP_NS_START
 

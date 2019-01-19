@@ -1,7 +1,7 @@
 
 #include <cstdio>
 
-#include "crysp/utf8.hpp"
+#include "utf8.hpp"
 
 CRYSP_NS_START
 

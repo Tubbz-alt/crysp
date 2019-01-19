@@ -2,8 +2,8 @@
 #include <cstdio>
 #include <cinttypes> // PRIx64
 
-#include "crysp/test.hpp"
-#include "crysp/type.hpp"
+#include "test.hpp"
+#include "type.hpp"
 
 CRYSP_NS_START
 

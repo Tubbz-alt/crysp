@@ -1,8 +1,8 @@
 #ifndef CRYSP_SHORT_HPP
 #define CRYSP_SHORT_HPP
 
-#include "crysp/t.hpp"
-#include "crysp/type.hpp"
+#include "t.hpp"
+#include "type.hpp"
 
 CRYSP_NS_START
 
@@ -333,6 +333,22 @@ public:
 constexpr Short short_max{int32_t(0x7fffffffl)}, short_min{int32_t(-0x80000000l)};
 
 /* relational operators */
+inline constexpr bool operator==(Short a, int32_t b) noexcept {
+    return a.val() == b;
+}
+
+inline constexpr bool operator==(int32_t a, Short b) noexcept {
+    return a == b.val();
+}
+
+inline constexpr bool operator!=(Short a, int32_t b) noexcept {
+    return a.val() != b;
+}
+
+inline constexpr bool operator!=(int32_t a, Short b) noexcept {
+    return a != b.val();
+}
+
 inline constexpr bool operator<(Short a, Short b) noexcept {
     return a.val() < b.val();
 }

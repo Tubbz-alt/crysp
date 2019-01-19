@@ -1,7 +1,7 @@
 #ifndef CRYSP_NIL_HPP
 #define CRYSP_NIL_HPP
 
-#include "crysp/pair.hpp"
+#include "pair.hpp"
 
 CRYSP_NS_START
 

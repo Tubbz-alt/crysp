@@ -3,7 +3,7 @@
 
 #include <cstdio>
 #include <endian.h>
-#include "crysp/impl.hpp"
+#include "impl.hpp"
 
 CRYSP_NS_START
 

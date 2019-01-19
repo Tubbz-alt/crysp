@@ -1,7 +1,7 @@
 
 #include <cstdio>
 
-#include "crysp/type.hpp"
+#include "type.hpp"
 
 CRYSP_NS_START
 

@@ -1,8 +1,8 @@
 #ifndef CRYSP_INT_HPP
 #define CRYSP_INT_HPP
 
-#include "crysp/t.hpp"
-#include "crysp/short.hpp"
+#include "t.hpp"
+#include "short.hpp"
 
 CRYSP_NS_START
 

@@ -1,7 +1,7 @@
 
 #include <cstdio>
 
-#include "crysp/double.hpp"
+#include "double.hpp"
 
 CRYSP_NS_START
 

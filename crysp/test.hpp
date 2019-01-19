@@ -1,7 +1,7 @@
 #ifndef CRYSP_TEST_HPP
 #define CRYSP_TEST_HPP
 
-#include "crysp/t.hpp"
+#include "t.hpp"
 
 CRYSP_NS_START
 

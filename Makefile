@@ -1,11 +1,12 @@
 AR=ar
 
-CXX=g++
+CXX=g++ -march=native
 CXXFLAGS_BASE=-Wall -Wextra -I.
 
-CXXFLAGS_OPT=-O3 $(CXXFLAGS_BASE) $(CXXFLAGS)
-CXXFLAGS_DBG=-g $(CXXFLAGS_BASE) $(CXXFLAGS)
+CXXFLAGS_OPT=$(strip -O3 $(CXXFLAGS_BASE) $(CXXFLAGS))
+CXXFLAGS_DBG=$(strip -g $(CXXFLAGS_BASE) $(CXXFLAGS))
 
+HEADERS_LIB:=$(wildcard crysp/*.hpp)
 SOURCES_LIB:=$(wildcard crysp/*.cpp)
 SOURCES_MAIN:=$(wildcard test/*.cpp)
 SOURCES_COLLATZ:=$(wildcard example/collatz/*.cpp)
@@ -53,11 +54,11 @@ $(COLLATZ_OPT): $(SOURCES_COLLATZ) $(LIB_OPT)
 $(COLLATZ_DBG): $(SOURCES_COLLATZ) $(LIB_DBG)
 	$(CXX) $(CXXFLAGS_DBG) $+ -o $@
 
-%.opt.o: %.cpp
-	$(CXX) $(CXXFLAGS_OPT) $< -c -o $@
+%.opt.o: %.cpp $(HEADERS_LIB)
+	$(CXX) $(CXXFLAGS_OPT) -c $< -o $@
 
-%.dbg.o: %.cpp
-	$(CXX) $(CXXFLAGS_DBG) $< -c -o $@
+%.dbg.o: %.cpp $(HEADERS_LIB)
+	$(CXX) $(CXXFLAGS_DBG) -c $< -o $@
 
 clean:
-	rm -f $(MAIN_OPT) $(MAIN_DBG) (COLLATZ_OPT) $(*.a *.o crysp/*.o test/*.o core.* *~
+	rm -f $(MAIN_OPT) $(MAIN_DBG) $(COLLATZ_OPT) $(COLLATZ_DBG) *.a *.o crysp/*.o test/*.o core.* *~

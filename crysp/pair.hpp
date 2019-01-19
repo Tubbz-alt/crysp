@@ -1,9 +1,9 @@
 #ifndef CRYSP_PAIR_HPP
 #define CRYSP_PAIR_HPP
 
-#include "crysp/new.hpp"
-#include "crysp/t.hpp"
-#include "crysp/type.hpp"
+#include "new.hpp"
+#include "t.hpp"
+#include "type.hpp"
 
 CRYSP_NS_START
 

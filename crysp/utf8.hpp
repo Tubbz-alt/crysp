@@ -1,7 +1,7 @@
 #ifndef CRYSP_UTF8_HPP
 #define CRYSP_UTF8_HPP
 
-#include "crysp/rune.hpp"
+#include "rune.hpp"
 
 CRYSP_NS_START
 

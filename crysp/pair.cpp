@@ -1,8 +1,8 @@
 
 #include <cstdio>
 
-#include "crysp/pair.hpp"
-#include "crysp/nil.hpp"
+#include "pair.hpp"
+#include "nil.hpp"
 
 CRYSP_NS_START
 

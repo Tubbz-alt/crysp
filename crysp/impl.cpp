@@ -6,8 +6,8 @@
 
 #include <sys/mman.h> // mmap()
 
-#include "crysp/int.hpp"
-#include "crysp/nil.hpp"
+#include "int.hpp"
+#include "nil.hpp"
 
 #ifndef GC_MALLOC
 #include <cstdlib>   // malloc

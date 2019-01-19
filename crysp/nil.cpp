@@ -1,7 +1,7 @@
 
 #include <cstdio>
 
-#include "crysp/nil.hpp"
+#include "nil.hpp"
 
 CRYSP_NS_START
 

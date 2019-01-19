@@ -2,15 +2,15 @@
 #include <cstdio>
 #include <cinttypes>  // PRId32, PRId64
 
-#include "crysp/cast.hpp"
-#include "crysp/int.hpp"
-#include "crysp/float.hpp"
-#include "crysp/nil.hpp"
-#include "crysp/double.hpp"
-#include "crysp/pair.hpp"
-#include "crysp/rune.hpp"
-#include "crysp/type.hpp"
-#include "crysp/utf8.hpp"
+#include "cast.hpp"
+#include "int.hpp"
+#include "float.hpp"
+#include "nil.hpp"
+#include "double.hpp"
+#include "pair.hpp"
+#include "rune.hpp"
+#include "type.hpp"
+#include "utf8.hpp"
 
 CRYSP_NS_START
 
