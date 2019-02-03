@@ -7,45 +7,69 @@ CRYSP_NOINLINE Int int_rshift(Int a, uint8_t count) {
 }
 
 // op=(Int)
-CRYSP_NOINLINE void int_add_set(Int & a, Int b) {
+CRYSP_NOINLINE void int_add_ref(Int & a, Int b) {
     a += b;
 }
 
-CRYSP_NOINLINE void int_sub_set(Int & a, Int b) {
+CRYSP_NOINLINE void int_sub_ref(Int & a, Int b) {
     a -= b;
 }
 
-CRYSP_NOINLINE void int_mul_set(Int & a, Int b) {
+CRYSP_NOINLINE void int_mul_ref(Int & a, Int b) {
     a *= b;
 }
 
-CRYSP_NOINLINE void int_div_set(Int & a, Int b) {
+CRYSP_NOINLINE void int_div_ref(Int & a, Int b) {
     a /= b;
 }
 
-CRYSP_NOINLINE void int_mod_set(Int & a, Int b) {
+CRYSP_NOINLINE void int_mod_ref(Int & a, Int b) {
     a %= b;
+}
+
+CRYSP_NOINLINE void int_and_ref(Int & a, Int b) {
+    a &= b;
+}
+
+CRYSP_NOINLINE void int_or_ref(Int & a, Int b) {
+    a |= b;
+}
+
+CRYSP_NOINLINE void int_xor_ref(Int & a, Int b) {
+    a ^= b;
 }
 
 // op=(int32_t)
-CRYSP_NOINLINE void int_add_set(Int & a, int32_t b) {
+CRYSP_NOINLINE void int_add_ref(Int & a, int32_t b) {
     a += b;
 }
 
-CRYSP_NOINLINE void int_sub_set(Int & a, int32_t b) {
+CRYSP_NOINLINE void int_sub_ref(Int & a, int32_t b) {
     a -= b;
 }
 
-CRYSP_NOINLINE void int_mul_set(Int & a, int32_t b) {
+CRYSP_NOINLINE void int_mul_ref(Int & a, int32_t b) {
     a *= b;
 }
 
-CRYSP_NOINLINE void int_div_set(Int & a, int32_t b) {
+CRYSP_NOINLINE void int_div_ref(Int & a, int32_t b) {
     a /= b;
 }
 
-CRYSP_NOINLINE void int_mod_set(Int & a, int32_t b) {
+CRYSP_NOINLINE void int_mod_ref(Int & a, int32_t b) {
     a %= b;
+}
+
+CRYSP_NOINLINE void int_and_ref(Int & a, int32_t b) {
+    a &= b;
+}
+
+CRYSP_NOINLINE void int_or_ref(Int & a, int32_t b) {
+    a |= b;
+}
+
+CRYSP_NOINLINE void int_xor_ref(Int & a, int32_t b) {
+    a ^= b;
 }
 
 // op(Int, Int)

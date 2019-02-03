@@ -7,78 +7,126 @@ CRYSP_NOINLINE Long long_rshift(Long a, uint8_t count) {
 }
 
 // op=(Long)
-CRYSP_NOINLINE void long_add_set(Long & a, Long b) {
+CRYSP_NOINLINE void long_add_ref(Long & a, Long b) {
     a += b;
 }
 
-CRYSP_NOINLINE void long_sub_set(Long & a, Long b) {
+CRYSP_NOINLINE void long_sub_ref(Long & a, Long b) {
     a -= b;
 }
 
-CRYSP_NOINLINE void long_mul_set(Long & a, Long b) {
+CRYSP_NOINLINE void long_mul_ref(Long & a, Long b) {
     a *= b;
 }
 
-CRYSP_NOINLINE void long_div_set(Long & a, Long b) {
+CRYSP_NOINLINE void long_div_ref(Long & a, Long b) {
     a /= b;
 }
 
-CRYSP_NOINLINE void long_mod_set(Long & a, Long b) {
+CRYSP_NOINLINE void long_mod_ref(Long & a, Long b) {
     a %= b;
+}
+
+CRYSP_NOINLINE void long_and_ref(Long & a, Long b) {
+    a &= b;
+}
+
+CRYSP_NOINLINE void long_or_ref(Long & a, Long b) {
+    a |= b;
+}
+
+CRYSP_NOINLINE void long_xor_ref(Long & a, Long b) {
+    a ^= b;
 }
 
 // op=(int64_t)
-CRYSP_NOINLINE void long_add_set(Long & a, int64_t b) {
+CRYSP_NOINLINE void long_add_ref(Long & a, int64_t b) {
     a += b;
 }
 
-CRYSP_NOINLINE void long_sub_set(Long & a, int64_t b) {
+CRYSP_NOINLINE void long_sub_ref(Long & a, int64_t b) {
     a -= b;
 }
 
-CRYSP_NOINLINE void long_mul_set(Long & a, int64_t b) {
+CRYSP_NOINLINE void long_mul_ref(Long & a, int64_t b) {
     a *= b;
 }
 
-CRYSP_NOINLINE void long_div_set(Long & a, int64_t b) {
+CRYSP_NOINLINE void long_div_ref(Long & a, int64_t b) {
     a /= b;
 }
 
-CRYSP_NOINLINE void long_mod_set(Long & a, int64_t b) {
+CRYSP_NOINLINE void long_mod_ref(Long & a, int64_t b) {
     a %= b;
+}
+
+CRYSP_NOINLINE void long_and_ref(Long & a, int64_t b) {
+    a &= b;
+}
+
+CRYSP_NOINLINE void long_or_ref(Long & a, int64_t b) {
+    a |= b;
+}
+
+CRYSP_NOINLINE void long_xor_ref(Long & a, int64_t b) {
+    a ^= b;
 }
 
 // op(Long, Long)
 CRYSP_NOINLINE Long long_add(Long a, Long b) {
     return a + b;
 }
+CRYSP_NOINLINE Long long_add_set(Long a, Long b) {
+    return a += b;
+}
 
 CRYSP_NOINLINE Long long_sub(Long a, Long b) {
     return a - b;
+}
+CRYSP_NOINLINE Long long_sub_set(Long a, Long b) {
+    return a -= b;
 }
 
 CRYSP_NOINLINE Long long_mul(Long a, Long b) {
     return a * b;
 }
+CRYSP_NOINLINE Long long_mul_set(Long a, Long b) {
+    return a *= b;
+}
 
 CRYSP_NOINLINE Long long_div(Long a, Long b) {
     return a / b;
+}
+CRYSP_NOINLINE Long long_div_set(Long a, Long b) {
+    return a /= b;
 }
 
 CRYSP_NOINLINE Long long_mod(Long a, Long b) {
     return a % b;
 }
+CRYSP_NOINLINE Long long_mod_set(Long a, Long b) {
+    return a %= b;
+}
 
 CRYSP_NOINLINE Long long_and(Long a, Long b) {
     return a & b;
+}
+CRYSP_NOINLINE Long long_and_set(Long a, Long b) {
+    return a &= b;
 }
 
 CRYSP_NOINLINE Long long_or(Long a, Long b) {
     return a | b;
 }
+CRYSP_NOINLINE Long long_or_set(Long a, Long b) {
+    return a |= b;
+}
 
 CRYSP_NOINLINE Long long_xor(Long a, Long b) {
     return a ^ b;
+}
+CRYSP_NOINLINE Long long_xor_set(Long a, Long b) {
+    return a ^= b;
 }
 
 // op(Long, int64_t)
