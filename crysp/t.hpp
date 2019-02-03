@@ -13,11 +13,11 @@ class T {
 private:
     friend class Float;
     friend class Double;
-    friend class Int;
+    friend class Long;
     template<class E> friend class Obj;
     friend class Pair;
     friend class Rune;
-    friend class Short;
+    friend class Int;
     friend class Symbol;
     friend class Type;
     friend class Utf8;
@@ -113,19 +113,19 @@ public:
         switch (bits >> 48) {
         case impl::float_tag >> 48:
             return type::float_id;
-        case impl::short_tag >> 48:
-            return type::short_id;
+        case impl::int_tag >> 48:
+            return type::int_id;
         case impl::type_tag >> 48:
             return type::type_id;
         case impl::rune_tag >> 48:
             return type::rune_id;
         case impl::utf8_tag >> 48:
             return type::utf8_id;
-        case (impl::int_tag >> 48) + 0:
-        case (impl::int_tag >> 48) + 1:
-        case (impl::int_tag >> 48) + 2:
-        case (impl::int_tag >> 48) + 3:
-            return type::int_id;
+        case (impl::long_tag >> 48) + 0:
+        case (impl::long_tag >> 48) + 1:
+        case (impl::long_tag >> 48) + 2:
+        case (impl::long_tag >> 48) + 3:
+            return type::long_id;
         }
         
         uint64_t addr52 = 0;

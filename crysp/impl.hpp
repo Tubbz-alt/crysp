@@ -28,15 +28,15 @@ constexpr check_overflow_t check_overflow = {};
 
 namespace impl {
     enum tag : uint64_t {
-          // Int and Short methods depend on this exact value
-          int_tag        = 0xFFFC000000000000ull, // negative quiet NaN
-          int_mask       = int_tag,
+          // Long and Int methods depend on this exact value
+          long_tag       = 0xFFFC000000000000ull, // negative quiet NaN
+          long_mask      = long_tag,
 
           value_mask     = 0xFFFF000000000000ull,
 
-          type_tag       = 0xFFF1000000000000ull,
-          float_tag      = 0xFFF2000000000000ull, // negative signaling NaN
-          short_tag      = 0xFFF3000000000000ull,
+          type_tag       = 0xFFF1000000000000ull, // negative signaling NaN
+          float_tag      = 0xFFF2000000000000ull,
+          int_tag        = 0xFFF3000000000000ull,
           rune_tag       = 0xFFF4000000000000ull,
           utf8_tag       = 0xFFF5000000000000ull,
 
@@ -73,11 +73,11 @@ namespace type {
              unknown_id = 0,
              type_id    = 1,
              float_id   = 2,
-             short_id   = 3,
+	     int_id     = 3,
              rune_id    = 4,
              utf8_id    = 5,
              double_id  = 0xE,
-             int_id     = 0xF,
+             long_id    = 0xF,
              struct_id  = 0x10,
              pair_id    = 0x11,
              symbol_id  = 0x12,

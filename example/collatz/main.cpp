@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "crysp/int.hpp"
-#include "crysp/short.hpp"
+#include "crysp/long.hpp"
+#include "crysp/long.hpp"
 
 CRYSP_NS_USE
 
@@ -31,13 +31,13 @@ static CRYSP_NOINLINE void collatz_repeat(N n) {
 }
 
 int main(int argc, const char * argv[]) {
-    const char * typ = argc < 2 ? "Int" : argv[1];
+    const char * typ = argc < 2 ? "Long" : argv[1];
     int64_t n = argc < 3 ? 12345678 : atoll(argv[2]);
     
-    if (!strcmp(typ, "Short")) {
-        collatz_repeat(Short{int32_t(n)});
-    } else if (!strcmp(typ, "Int")) {
-        collatz_repeat(Int{n});
+    if (!strcmp(typ, "Int")) {
+        collatz_repeat(Int{int32_t(n)});
+    } else if (!strcmp(typ, "Long")) {
+        collatz_repeat(Long{n});
     } else if (!strcmp(typ, "int32")) {
         collatz_repeat(int32_t(n));
     } else {

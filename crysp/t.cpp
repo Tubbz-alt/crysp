@@ -3,7 +3,7 @@
 #include <cinttypes>  // PRId32, PRId64
 
 #include "cast.hpp"
-#include "int.hpp"
+#include "long.hpp"
 #include "float.hpp"
 #include "nil.hpp"
 #include "double.hpp"
@@ -20,16 +20,16 @@ int T::print(FILE *out) const {
         return reinterpret_cast<const Type *>(this)->print(out);
     case type::float_id:
         return reinterpret_cast<const Float *>(this)->print(out);
-    case type::short_id:
-        return reinterpret_cast<const Short *>(this)->print(out);
+    case type::int_id:
+        return reinterpret_cast<const Int *>(this)->print(out);
     case type::rune_id:
         return reinterpret_cast<const Rune *>(this)->print(out);
     case type::utf8_id:
         return reinterpret_cast<const Utf8 *>(this)->print(out);
     case type::double_id:
         return reinterpret_cast<const Double *>(this)->print(out);
-    case type::int_id:
-        return reinterpret_cast<const Int *>(this)->print(out);
+    case type::long_id:
+        return reinterpret_cast<const Long *>(this)->print(out);
     case type::struct_id:
         return fputs("struct", out);
     case type::pair_id:

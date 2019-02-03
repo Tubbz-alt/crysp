@@ -2,13 +2,23 @@
 #define CRYSP_INT_HPP
 
 #include "t.hpp"
-#include "short.hpp"
+#include "type.hpp"
 
 CRYSP_NS_START
 
+// optimizations
+#define CRYSP_INT_REF_INPLACE
+
+#if defined(__x86_64__) || defined(__x86_64) || \
+    defined(__i386__) || defined(__i386)
+# undef CRYSP_INT_OBJ_INPLACE
+#else
+# define CRYSP_INT_OBJ_INPLACE
+#endif
+
 /**
- * 50-bit signed integer.
- * operations on Int are wrapping, i.e. any overflow is truncated modulo 50 bits,
+ * 32-bit signed integer.
+ * operations on Int are wrapping, i.e. any overflow is truncated modulo 32 bits,
  * except methods with a check_overflow_t argument, which throw an exception on overflow.
  */
 class Int : public T {
@@ -16,66 +26,28 @@ private:
     friend class T;
     template<class To> friend bool is(T arg);
 
-    // needed by friend is()
+    friend constexpr Int operator&(Int a, Int b) noexcept;
+    friend constexpr Int operator|(Int a, Int b) noexcept;
+    friend constexpr Int operator|(Int a, int32_t b) noexcept;
+    friend constexpr Int operator|(int32_t a, Int b) noexcept;
+
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
-        return (~bits >> payload_nbits) == 0;
+        return bits >> 48 == impl::int_tag >> 48;
     }
 
-    enum {
-        tag_nbits = 14,
-        payload_nbits = 50,
-    };
-    
-    /*
-     * int64_t -> Int conversion, modulo 2^50:
-     * wraps around if argument overflows Int
-     */
-    static inline constexpr uint64_t tag(int64_t i) noexcept {
-        return uint64_t(i) | impl::int_tag;
-    }
+    struct bits_constructor{};
 
-    /*
-     * checked int64_t -> Int conversion. throws std::overflow_error
-     * if argument overflows Int (50 bits)
-    */
-    static inline uint64_t tag(int64_t i, check_overflow_t) /* throw(std::overflow_error) */ {
-        uint32_t hi = uint64_t(i) >> payload_nbits;
-        if (hi != 0 && hi != 0x3FFF) {
-            impl::throw_overflow_error("Int");
-        }
-        return uint64_t(i) | impl::int_tag;
-    }
-
-    static inline constexpr int64_t untag(uint64_t bits) noexcept {
-        return int64_t(bits << tag_nbits) >> tag_nbits;
+    inline constexpr Int(uint64_t bits, bits_constructor) noexcept
+	: T{bits} {
     }
 
 public:
     inline constexpr Int() noexcept
-    /**/: T{uint64_t(impl::int_tag)} {
+    /**/ : T{int32_t(0), uint32_t(impl::int_tag >> 32)} {
     }
 
-    /* 
-     * unchecked constructor: wraps around modulo 2^50
-     * if argument overflows Int (50 bits)
-     */
-    explicit inline constexpr Int(int64_t i) noexcept
-    /**/: T{tag(i)} {
-    }
-
-    /*
-     * checked constructor: throws std::overflow_error
-     * if argument overflows Int (50 bits)
-     */
-    explicit inline Int(int64_t i, check_overflow_t chk) /* throw(std::overflow_error) */
-        : T{tag(i, chk)} {
-    }
-
-    /*
-     * convert Short (32 bits) to Int (50 bits)
-     */
-    explicit inline constexpr Int(Short i) noexcept
-        : T{tag(i.val())} {
+    explicit inline constexpr Int(int32_t i) noexcept
+        : T{int32_t(i), uint32_t(impl::int_tag >> 32)} {
     }
 
     /*
@@ -84,79 +56,24 @@ public:
     inline ~Int() = default;
     */
     
-    inline constexpr int64_t val() const noexcept {
-        return untag(bits);
+    inline constexpr int32_t val() const noexcept {
+        return i;
     }
 
     static inline constexpr Type type() noexcept {
         return Type{type::int_id};
     }
-
+    
     static inline constexpr type::id type_id() noexcept {
         return type::int_id;
     }
 
     enum {
-          static_type_id = type::int_id,
+        static_type_id = type::int_id,
     };
 
     // return number of written bytes
     int print(FILE *out) const;
-
-    /* wraps around modulo 2^50: Int only holds 50 bits */
-    inline constexpr Int & operator=(int64_t i) noexcept {
-        return (*this) = Int{i};
-    }
-
-    /* equal */
-    using T::operator==;
-    
-    inline constexpr bool operator==(int32_t other) noexcept {
-        return (int64_t(bits) << tag_nbits) ==
-            (int64_t(other) << tag_nbits);
-    }
-
-    /* less than */
-    inline constexpr bool operator<(Int other) noexcept {
-        return (int64_t(bits) << tag_nbits)
-            < (int64_t(other.bits) << tag_nbits);
-    }
-
-    inline constexpr bool operator<(int32_t other) noexcept {
-        return (int64_t(bits) << tag_nbits) <
-            (int64_t(other) << tag_nbits);
-    }
-
-    inline constexpr bool operator>(int32_t other) noexcept {
-        return (int64_t(bits) << tag_nbits) >
-            (int64_t(other) << tag_nbits);
-    }
-
-    /* pre-increment */
-    inline constexpr Int & operator++() noexcept {
-        bits = (bits + 1) | impl::int_tag;
-        return *this;
-    }
-
-    /* post-increment */
-    inline constexpr Int operator++(int) noexcept {
-        Int ret = *this;
-        bits = (bits + 1) | impl::int_tag;
-        return ret;
-    }
-
-    /* pre-decrement */
-    inline constexpr Int & operator--() noexcept {
-        bits = (bits - 1) | impl::int_tag;
-        return *this;
-    }
-
-    /* post-decrement */
-    inline constexpr Int operator--(int) noexcept {
-        Int ret = *this;
-        bits = (bits - 1) | impl::int_tag;
-        return ret;
-    }
 
     /* identity */
     inline constexpr Int & operator+() noexcept {
@@ -165,180 +82,431 @@ public:
 
     /* flip sign */
     inline constexpr Int operator-() noexcept {
-        return Int{-int64_t(bits)}; // exploit wraparound
+        return Int{-i};
     }
 
     /* boolean negate */
     inline constexpr Int operator!() noexcept {
-        return Int{bits == impl::int_tag};
+        return Int{int32_t(!i)};
+    }
+    
+    /* bitwise complement */
+    inline constexpr Int operator~() noexcept {
+        return Int{~i};
+    }
+
+#ifdef CRYSP_INT_REF_INPLACE
+    /* assign */
+    inline constexpr Int & operator=(int32_t other) noexcept {
+        i = other;
+        return *this;
+    }
+
+    /* pre-increment */
+    inline constexpr Int & operator++() noexcept {
+        ++i;
+        return *this;
+    }
+
+    /* post-increment */
+    inline constexpr Int operator++(int) noexcept {
+        Int ret = *this;
+        ++i;
+        return ret;
+    }
+
+    /* pre-decrement */
+    inline constexpr Int & operator--() noexcept {
+        --i;
+        return *this;
+    }
+
+    /* post-decrement */
+    inline constexpr Int operator--(int) noexcept {
+        Int ret = *this;
+        --i;
+        return ret;
     }
 
     /* add */
     inline constexpr Int & operator+=(Int other) noexcept {
-        bits = (bits + other.bits) | impl::int_tag;
+        i += other.i;
         return *this;
     }
 
-    inline constexpr Int & operator+=(int64_t other) noexcept {
-        bits = (bits + other) | impl::int_tag;
+    inline constexpr Int & operator+=(int32_t other) noexcept {
+        i += other;
         return *this;
     }
 
     /* subtract */
     inline constexpr Int & operator-=(Int other) noexcept {
-        bits = (bits - other.bits) | impl::int_tag;
+        i -= other.i;
         return *this;
     }
 
-    inline constexpr Int & operator-=(int64_t other) noexcept {
-        bits = (bits - other) | impl::int_tag;
+    inline constexpr Int & operator-=(int32_t other) noexcept {
+        i -= other;
         return *this;
     }
 
     /* multiply */
     inline constexpr Int & operator*=(Int other) noexcept {
-        // no need to untag(bits)
-        int64_t i = int64_t(bits), j = int64_t(other.bits);
-        bits = uint64_t(i * j) | impl::int_tag;
+        i *= other.i;
         return *this;
     }
 
-    inline constexpr Int & operator*=(int64_t other) noexcept {
-        // no need to untag(bits)
-        int64_t i = int64_t(bits), j = other;
-        bits = uint64_t(i * j) | impl::int_tag;
+    inline constexpr Int & operator*=(int32_t other) noexcept {
+        i *= other;
         return *this;
     }
 
     /* divide */
     inline constexpr Int & operator/=(Int other) noexcept {
-        int64_t i = untag(bits), j = untag(other.bits);
-        bits = uint64_t(i / j) | impl::int_tag;
+        i /= other.i;
         return *this;
     }
 
-    inline constexpr Int & operator/=(int64_t other) noexcept {
-        int64_t i = untag(bits), j = other;
-        bits = uint64_t(i / j) | impl::int_tag;
+    inline constexpr Int & operator/=(int32_t other) noexcept {
+        i /= other;
         return *this;
     }
 
     /* modulus */
     inline constexpr Int & operator%=(Int other) noexcept {
-        int64_t i = untag(bits), j = untag(other.bits);
-        bits = uint64_t(i % j) | impl::int_tag;
+        i %= other.i;
         return *this;
     }
 
-    inline constexpr Int & operator%=(int64_t other) noexcept {
-        int64_t i = untag(bits), j = other;
-        bits = uint64_t(i % j) | impl::int_tag;
+    inline constexpr Int & operator%=(int32_t other) noexcept {
+        i %= other;
         return *this;
-    }
-
-    /* bitwise complement */
-    inline constexpr Int operator~() noexcept {
-        return Int{~int64_t(bits)}; // exploit wraparound
     }
 
     /* bitwise and */
     inline constexpr Int & operator&=(Int other) noexcept {
-        bits &= other.bits; // preserves tag
+        i &= other.i;
         return *this;
     }
 
-    inline constexpr Int & operator&=(int64_t other) noexcept {
-        bits &= uint64_t(other) | impl::int_tag;
+    inline constexpr Int & operator&=(int32_t other) noexcept {
+        i &= other;
         return *this;
     }
 
     /* bitwise or */
     inline constexpr Int & operator|=(Int other) noexcept {
-        bits |= other.bits; // preserves tag
+        i |= other.i;
         return *this;
     }
 
-    inline constexpr Int & operator|=(int64_t other) noexcept {
-        bits |= uint64_t(other); // preserves tag
+    inline constexpr Int & operator|=(int32_t other) noexcept {
+        i |= other;
         return *this;
     }
 
     /* bitwise xor */
     inline constexpr Int & operator^=(Int other) noexcept {
-        bits = (bits ^ other.bits) | impl::int_tag;
+        i ^= other.i;
         return *this;
     }
 
-    inline constexpr Int & operator^=(int64_t other) noexcept {
-        bits = (bits ^ other) | impl::int_tag;
+    inline constexpr Int & operator^=(int32_t other) noexcept {
+        i ^= other;
         return *this;
     }
 
     /* bitwise lshift */
     inline constexpr Int & operator<<=(uint8_t count) noexcept {
-        bits = (bits << count) | impl::int_tag;
+        i <<= count;
         return *this;
     }
 
     /* bitwise rshift */
     inline constexpr Int & operator>>=(uint8_t count) noexcept {
-        int64_t i = untag(bits);
-        // shift separately from the shift performed by untag() above,
-        // to avoid undefined behaviour if count >= 50
         i >>= count;
-        bits = uint64_t(i) | impl::int_tag;
         return *this;
     }
+#else // !CRYSP_INT_REF_INPLACE
+    /* assign */
+    inline constexpr Int & operator=(int32_t i) noexcept {
+        return (*this) = Int{i};
+    }
+
+    /* pre-increment */
+    inline constexpr Int & operator++() noexcept {
+        return *this = Int{i + 1};
+    }
+
+    /* post-increment */
+    inline constexpr Int operator++(int) noexcept {
+        Int ret = *this;
+        *this = Int{i + 1};
+        return ret;
+    }
+
+    /* pre-decrement */
+    inline constexpr Int & operator--() noexcept {
+        return *this = Int{i - 1};
+    }
+
+    /* post-decrement */
+    inline constexpr Int operator--(int) noexcept {
+        Int ret = *this;
+        *this = Int{i - 1};
+        return ret;
+    }
+
+    /* add */
+    inline constexpr Int & operator+=(Int other) noexcept {
+        return *this = Int{i + other.i};
+    }
+
+    inline constexpr Int & operator+=(int32_t other) noexcept {
+        return *this = Int{i + other};
+    }
+
+    /* subtract */
+    inline constexpr Int & operator-=(Int other) noexcept {
+        return *this = Int{i - other.i};
+    }
+
+    inline constexpr Int & operator-=(int32_t other) noexcept {
+        return *this = Int{i - other};
+    }
+
+    /* multiply */
+    inline constexpr Int & operator*=(Int other) noexcept {
+        return *this = Int{i * other.i};
+    }
+
+    inline constexpr Int & operator*=(int32_t other) noexcept {
+        return *this = Int{i * other};
+    }
+
+    /* divide */
+    inline constexpr Int & operator/=(Int other) noexcept {
+        return *this = Int{i / other.i};
+    }
+
+    inline constexpr Int & operator/=(int32_t other) noexcept {
+        return *this = Int{i / other};
+    }
+
+    /* modulus */
+    inline constexpr Int & operator%=(Int other) noexcept {
+        return *this = Int{i % other.i};
+    }
+
+    inline constexpr Int & operator%=(int32_t other) noexcept {
+        return *this = Int{i % other};
+    }
+
+    /* bitwise and */
+    inline constexpr Int & operator&=(Int other) noexcept {
+        // preserves tag
+        return *this = Int{bits & other.bits, bits_constructor{}};
+    }
+
+    inline constexpr Int & operator&=(int32_t other) noexcept {
+        return *this = Int{i & other};
+    }
+
+    /* bitwise or */
+    inline constexpr Int & operator|=(Int other) noexcept {
+        // preserves tag
+        return *this = Int{bits | other.bits, bits_constructor{}};
+    }
+
+    inline constexpr Int & operator|=(int32_t other) noexcept {
+        // preserves tag
+        return *this = Int{bits | uint32_t(other)};
+    }
+
+    /* bitwise xor */
+    inline constexpr Int & operator^=(Int other) noexcept {
+        return *this = Int{i ^ other.i};
+    }
+
+    inline constexpr Int & operator^=(int32_t other) noexcept {
+        return *this = Int{i ^ other};
+    }
+
+    /* bitwise lshift */
+    inline constexpr Int & operator<<=(uint8_t count) noexcept {
+        return *this = Int{i << count};
+    }
+
+    /* bitwise rshift */
+    inline constexpr Int & operator>>=(uint8_t count) noexcept {
+        return *this = Int{i >> count};
+    }
+#endif // CRYSP_INT_REF_INPLACE
 };
 
+constexpr Int int_max{int32_t(0x7fffffffl)}, int_min{int32_t(-0x80000000l)};
 
-/* op(Int, Int) */
+/* relational operators */
+inline constexpr bool operator==(Int a, int32_t b) noexcept {
+    return a.val() == b;
+}
+
+inline constexpr bool operator==(int32_t a, Int b) noexcept {
+    return a == b.val();
+}
+
+inline constexpr bool operator!=(Int a, int32_t b) noexcept {
+    return a.val() != b;
+}
+
+inline constexpr bool operator!=(int32_t a, Int b) noexcept {
+    return a != b.val();
+}
+
+inline constexpr bool operator<(Int a, Int b) noexcept {
+    return a.val() < b.val();
+}
+
+inline constexpr bool operator<(Int a, int32_t b) noexcept {
+    return a.val() < b;
+}
+
+inline constexpr bool operator<(int32_t a, Int b) noexcept {
+    return a < b.val();
+}
 
 inline constexpr bool operator>(Int a, Int b) noexcept {
-    return b < a;
+    return a.val() > b.val();
+}
+
+inline constexpr bool operator>(Int a, int32_t b) noexcept {
+    return a.val() > b;
+}
+
+inline constexpr bool operator>(int32_t a, Int b) noexcept {
+    return a > b.val();
 }
 
 inline constexpr bool operator<=(Int a, Int b) noexcept {
-    return !(b < a);
+    return a.val() <= b.val();
+}
+
+inline constexpr bool operator<=(Int a, int32_t b) noexcept {
+    return a.val() <= b;
+}
+
+inline constexpr bool operator<=(int32_t a, Int b) noexcept {
+    return a <= b.val();
 }
 
 inline constexpr bool operator>=(Int a, Int b) noexcept {
-    return !(a < b);
+    return a.val() >= b.val();
 }
 
+inline constexpr bool operator>=(Int a, int32_t b) noexcept {
+    return a.val() >= b;
+}
 
+inline constexpr bool operator>=(int32_t a, Int b) noexcept {
+    return a >= b.val();
+}
+
+/* arithmetic operators */
+#ifdef CRYSP_INT_OBJ_INPLACE
 inline constexpr Int operator+(Int a, Int b) noexcept {
     return a += b;
+}
+
+inline constexpr Int operator+(Int a, int32_t b) noexcept {
+    return a += b;
+}
+
+inline constexpr Int operator+(int32_t a, Int b) noexcept {
+    return b += a;
 }
 
 inline constexpr Int operator-(Int a, Int b) noexcept {
     return a -= b;
 }
 
+inline constexpr Int operator-(Int a, int32_t b) noexcept {
+    return a -= b;
+}
+
+inline constexpr Int operator-(int32_t a, Int b) noexcept {
+    return b = a - b.val();
+}
+
 inline constexpr Int operator*(Int a, Int b) noexcept {
     return a *= b;
+}
+
+inline constexpr Int operator*(Int a, int32_t b) noexcept {
+    return a *= b;
+}
+
+inline constexpr Int operator*(int32_t a, Int b) noexcept {
+    return b *= a;
 }
 
 inline constexpr Int operator/(Int a, Int b) noexcept {
     return a /= b;
 }
 
+inline constexpr Int operator/(Int a, int32_t b) noexcept {
+    return a /= b;
+}
+
+inline constexpr Int operator/(int32_t a, Int b) noexcept {
+    return b = a / b.val();
+}
+
 inline constexpr Int operator%(Int a, Int b) noexcept {
     return a %= b;
 }
 
+inline constexpr Int operator%(Int a, int32_t b) noexcept {
+    return a %= b;
+}
 
+inline constexpr Int operator%(int32_t a, Int b) noexcept {
+    return b = a % b.val();
+}
 
 inline constexpr Int operator&(Int a, Int b) noexcept {
     return a &= b;
+}
+
+inline constexpr Int operator&(Int a, int32_t b) noexcept {
+    return a &= b;
+}
+
+inline constexpr Int operator&(int32_t a, Int b) noexcept {
+    return b &= a;
 }
 
 inline constexpr Int operator|(Int a, Int b) noexcept {
     return a |= b;
 }
 
+inline constexpr Int operator|(Int a, int32_t b) noexcept {
+    return a |= b;
+}
+
+inline constexpr Int operator|(int32_t a, Int b) noexcept {
+    return b |= a;
+}
+
 inline constexpr Int operator^(Int a, Int b) noexcept {
     return a ^= b;
+}
+
+inline constexpr Int operator^(Int a, int32_t b) noexcept {
+    return a ^= b;
+}
+
+inline constexpr Int operator^(int32_t a, Int b) noexcept {
+    return b ^= a;
 }
 
 inline constexpr Int operator<<(Int a, uint8_t b) noexcept {
@@ -349,182 +517,111 @@ inline constexpr Int operator>>(Int a, uint8_t b) noexcept {
     return a >>= b;
 }
 
-
-/* op(Int, int64_t) */
-
-// correct also if b overflows Int
-inline constexpr bool operator==(Int a, int64_t b) noexcept {
-    return a.val() == b;
+#else // !CRYSP_INT_OBJ_INPLACE
+inline constexpr Int operator+(Int a, Int b) noexcept {
+    return Int{a.val() + b.val()};
 }
 
-// correct also if b overflows Int
-inline constexpr bool operator!=(Int a, int64_t b) noexcept {
-    return a.val() != b;
+inline constexpr Int operator+(Int a, int32_t b) noexcept {
+    return Int{a.val() + b};
 }
 
-// correct also if b overflows Int
-inline constexpr bool operator<(Int a, int64_t b) noexcept {
-    return a.val() < b;
+inline constexpr Int operator+(int32_t a, Int b) noexcept {
+    return Int{a + b.val()};
 }
 
-// correct also if b overflows Int
-inline constexpr bool operator>(Int a, int64_t b) noexcept {
-    return a.val() > b;
+inline constexpr Int operator-(Int a, Int b) noexcept {
+    return Int{a.val() - b.val()};
 }
 
-// correct also if b overflows Int
-inline constexpr bool operator<=(Int a, int64_t b) noexcept {
-    return a.val() <= b;
+inline constexpr Int operator-(Int a, int32_t b) noexcept {
+    return Int{a.val() - b};
 }
 
-// correct also if b overflows Int
-inline constexpr bool operator>=(Int a, int64_t b) noexcept {
-    return a.val() >= b;
+inline constexpr Int operator-(int32_t a, Int b) noexcept {
+    return Int{a - b.val()};
 }
 
-
-inline constexpr Int operator+(Int a, int64_t b) noexcept {
-    return a += b;
+inline constexpr Int operator*(Int a, Int b) noexcept {
+    return Int{a.val() * b.val()};
 }
 
-inline constexpr Int operator-(Int a, int64_t b) noexcept {
-    return a -= b;
+inline constexpr Int operator*(Int a, int32_t b) noexcept {
+    return Int{a.val() * b};
 }
 
-inline constexpr Int operator*(Int a, int64_t b) noexcept {
-    return a *= b;
+inline constexpr Int operator*(int32_t a, Int b) noexcept {
+    return Int{a * b.val()};
 }
 
-inline constexpr Int operator/(Int a, int64_t b) noexcept {
-    return a /= b;
+inline constexpr Int operator/(Int a, Int b) noexcept {
+    return Int{a.val() / b.val()};
 }
 
-inline constexpr Int operator%(Int a, int64_t b) noexcept {
-    return a %= b;
+inline constexpr Int operator/(Int a, int32_t b) noexcept {
+    return Int{a.val() / b};
 }
 
-
-
-inline constexpr Int operator&(Int a, int64_t b) noexcept {
-    return a &= b;
-}
-
-inline constexpr Int operator|(Int a, int64_t b) noexcept {
-    return a |= b;
-}
-
-inline constexpr Int operator^(Int a, int64_t b) noexcept {
-    return a ^= b;
-}
-
-
-
-
-/* op(int64_t, Int) */
-
-// correct also if a overflows Int
-inline constexpr bool operator==(int64_t a, Int b) noexcept {
-    return a == b.val();
-}
-
-// correct also if a overflows Int
-inline constexpr bool operator!=(int64_t a, Int b) noexcept {
-    return a != b.val();
-}
-
-// correct also if a overflows Int
-inline constexpr bool operator<(int64_t a, Int b) noexcept {
-    return a < b.val();
-}
-
-// correct also if a overflows Int
-inline constexpr bool operator>(int64_t a, Int b) noexcept {
-    return a > b.val();
-}
-
-// correct also if a overflows Int
-inline constexpr bool operator<=(int64_t a, Int b) noexcept {
-    return a <= b.val();
-}
-
-// correct also if a overflows Int
-inline constexpr bool operator>=(int64_t a, Int b) noexcept {
-    return a >= b.val();
-}
-
-
-inline constexpr Int operator+(int64_t a, Int b) noexcept {
-    return b += a;
-}
-
-inline constexpr Int operator-(int64_t a, Int b) noexcept {
-    return Int{a - int64_t(b.debug_bits())};
-}
-
-inline constexpr Int operator*(int64_t a, Int b) noexcept {
-    return b *= a;
-}
-
-inline constexpr Int operator/(int64_t a, Int b) noexcept {
+inline constexpr Int operator/(int32_t a, Int b) noexcept {
     return Int{a / b.val()};
 }
 
-inline constexpr Int operator%(int64_t a, Int b) noexcept {
+inline constexpr Int operator%(Int a, Int b) noexcept {
+    return Int{a.val() % b.val()};
+}
+
+inline constexpr Int operator%(Int a, int32_t b) noexcept {
+    return Int{a.val() % b};
+}
+
+inline constexpr Int operator%(int32_t a, Int b) noexcept {
     return Int{a % b.val()};
 }
 
-
-
-inline constexpr Int operator&(int64_t a, Int b) noexcept {
-    return b &= a;
+inline constexpr Int operator&(Int a, Int b) noexcept {
+    return Int{a.debug_bits() & b.debug_bits(), Int::bits_constructor{}};
 }
 
-inline constexpr Int operator|(int64_t a, Int b) noexcept {
-    return b |= a;
+inline constexpr Int operator&(Int a, int32_t b) noexcept {
+    return Int{a.val() & b};
 }
 
-inline constexpr Int operator^(int64_t a, Int b) noexcept {
-    return b ^= a;
+inline constexpr Int operator&(int32_t a, Int b) noexcept {
+    return Int{a & b.val()};
 }
 
-
-
-/* op(Int, int32_t) */
-
-inline constexpr bool operator!=(Int a, int32_t b) noexcept {
-    return !(a == b);
+inline constexpr Int operator|(Int a, Int b) noexcept {
+    return Int{a.debug_bits() | b.debug_bits(), Int::bits_constructor{}};
 }
 
-inline constexpr bool operator<=(Int a, int32_t b) noexcept {
-    return !(a > b);
+inline constexpr Int operator|(Int a, int32_t b) noexcept {
+    return Int{a.debug_bits() | uint32_t(b), Int::bits_constructor{}};
 }
 
-inline constexpr bool operator>=(Int a, int32_t b) noexcept {
-    return !(a < b);
+inline constexpr Int operator|(int32_t a, Int b) noexcept {
+    return Int{uint32_t(a) | b.debug_bits(), Int::bits_constructor{}};
 }
 
-
-/* op(int32_t, Int) */
-
-inline constexpr bool operator==(int32_t a, Int b) noexcept {
-    return b == a;
+inline constexpr Int operator^(Int a, Int b) noexcept {
+    return Int{a.val() ^ b.val()};
 }
 
-inline constexpr bool operator!=(int32_t a, Int b) noexcept {
-    return !(b == a);
+inline constexpr Int operator^(Int a, int32_t b) noexcept {
+    return Int{a.val() ^ b};
 }
 
-inline constexpr bool operator<=(int32_t a, Int b) noexcept {
-    return b > a;
+inline constexpr Int operator^(int32_t a, Int b) noexcept {
+    return Int{a ^ b.val()};
 }
 
-inline constexpr bool operator>=(int32_t a, Int b) noexcept {
-    return b < a;
+inline constexpr Int operator<<(Int a, uint8_t b) noexcept {
+    return Int{a.val() << b};
 }
 
-
-constexpr Int int_max{ 0x1ffffffffffffll};
-constexpr Int int_min{-0x2000000000000ll};
+inline constexpr Int operator>>(Int a, uint8_t b) noexcept {
+    return Int{a.val() >> b};
+}
+#endif // CRYSP_INT_OBJ_INPLACE
 
 CRYSP_NS_END
 

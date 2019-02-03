@@ -1,13 +1,13 @@
 
-#include <cinttypes>  // PRId64
+#include <cinttypes>  // PRId32
 #include <cstdio>
 
-#include "int.hpp"
+#include "long.hpp"
 
 CRYSP_NS_START
 
 int Int::print(FILE *out) const {
-    return fprintf(out, "%" PRId64, untag(bits));
+    return fprintf(out, "%" PRId32, i);
 }
 
 CRYSP_NS_END

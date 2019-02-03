@@ -15,16 +15,16 @@ const char * Type::name() const noexcept {
         return "Type";
     case type::float_id:
         return "Float";
-    case type::short_id:
-        return "Short";
+    case type::int_id:
+        return "Int";
     case type::rune_id:
         return "Rune";
     case type::utf8_id:
         return "Utf8";
     case type::double_id:
         return "Double";
-    case type::int_id:
-        return "Int";
+    case type::long_id:
+        return "Long";
     case type::struct_id:
         return "Struct";
     case type::pair_id:

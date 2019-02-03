@@ -3,11 +3,11 @@
 
 #include "crysp/cast.hpp"
 #include "crysp/double.hpp"
-#include "crysp/int.hpp"
+#include "crysp/long.hpp"
 #include "crysp/float.hpp"
 #include "crysp/nil.hpp"
 #include "crysp/rune.hpp"
-#include "crysp/short.hpp"
+#include "crysp/long.hpp"
 #include "crysp/test.hpp"
 #include "crysp/type.hpp"
 #include "crysp/utf8.hpp"
@@ -203,16 +203,16 @@ CRYSP_NOINLINE void test_int_binary_op(num lo, num hi) {
     }
 }
 
-CRYSP_NOINLINE void test_int() {
-    test_int_assign<Int, int64_t>(int_min, int_max);
-    test_int_unary_op<Int, int64_t>(int_min.val(), int_max.val());
-    test_int_binary_op<Int, int64_t>(int_min.val(), int_max.val());
+CRYSP_NOINLINE void test_long() {
+    test_int_assign<Long, int64_t>(long_min, long_max);
+    test_int_unary_op<Long, int64_t>(long_min.val(), long_max.val());
+    test_int_binary_op<Long, int64_t>(long_min.val(), long_max.val());
 }
 
-CRYSP_NOINLINE void test_short() {
-    test_int_assign<Short, int32_t>(short_min, short_max);
-    test_int_unary_op<Short, int32_t>(short_min.val(), short_max.val());
-    test_int_binary_op<Short, int32_t>(short_min.val(), short_max.val());
+CRYSP_NOINLINE void test_int() {
+    test_int_assign<Int, int32_t>(int_min, int_max);
+    test_int_unary_op<Int, int32_t>(int_min.val(), int_max.val());
+    test_int_binary_op<Int, int32_t>(int_min.val(), int_max.val());
 }
 
 template<class FL, class fl>
@@ -328,11 +328,11 @@ CRYSP_NOINLINE void test_type() {
     show(Type{});
     show(t.type().type());
     show(Float{}.type());
-    show(short_max.type());
+    show(int_max.type());
     show(Rune{}.type());
     show(Utf8{}.type());
     show(Double{}.type());
-    show(int_max.type());
+    show(long_max.type());
     show(nil.type());
     show(t.type());
 }
@@ -343,9 +343,9 @@ CRYSP_NOINLINE void test() {
     test_double();
     test_type();
     test_float();
-    test_short();
-    test_rune();
     test_int();
+    test_rune();
+    test_long();
 }
 
 int main() {

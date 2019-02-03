@@ -6,7 +6,7 @@
 
 #include <sys/mman.h> // mmap()
 
-#include "int.hpp"
+#include "long.hpp"
 #include "nil.hpp"
 
 #ifndef GC_MALLOC
