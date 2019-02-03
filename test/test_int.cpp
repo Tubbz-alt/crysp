@@ -69,6 +69,18 @@ CRYSP_NOINLINE Int int_mod(Int a, Int b) {
     return a % b;
 }
 
+CRYSP_NOINLINE Int int_and(Int a, Int b) {
+    return a & b;
+}
+
+CRYSP_NOINLINE Int int_or(Int a, Int b) {
+    return a | b;
+}
+
+CRYSP_NOINLINE Int int_xor(Int a, Int b) {
+    return a ^ b;
+}
+
 // op(Int, int64_t)
 CRYSP_NOINLINE Int int_add(Int a, int64_t b) {
     return a + b;
@@ -88,6 +100,18 @@ CRYSP_NOINLINE Int int_div(Int a, int64_t b) {
 
 CRYSP_NOINLINE Int int_mod(Int a, int64_t b) {
     return a % b;
+}
+
+CRYSP_NOINLINE Int int_and(Int a, int64_t b) {
+    return a & b;
+}
+
+CRYSP_NOINLINE Int int_or(Int a, int64_t b) {
+    return a | b;
+}
+
+CRYSP_NOINLINE Int int_xor(Int a, int64_t b) {
+    return a ^ b;
 }
 
 // op(int64_t, Int)
@@ -111,4 +135,15 @@ CRYSP_NOINLINE Int int_mod(int64_t a, Int b) {
     return a % b;
 }
 
+CRYSP_NOINLINE Int int_and(int64_t a, Int b) {
+    return a & b;
+}
+
+CRYSP_NOINLINE Int int_or(int64_t a, Int b) {
+    return a | b;
+}
+
+CRYSP_NOINLINE Int int_xor(int64_t a, Int b) {
+    return a ^ b;
+}
 

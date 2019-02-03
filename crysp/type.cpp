@@ -11,12 +11,12 @@ int Type::print(FILE *out) const {
 
 const char * Type::name() const noexcept {
     switch (type::id(i)) {
+    case type::type_id:
+        return "Type";
     case type::float_id:
         return "Float";
     case type::short_id:
         return "Short";
-    case type::type_id:
-        return "Type";
     case type::rune_id:
         return "Rune";
     case type::utf8_id:

@@ -16,12 +16,12 @@ CRYSP_NS_START
 
 int T::print(FILE *out) const {
     switch (type_id()) {
+    case type::type_id:
+        return reinterpret_cast<const Type *>(this)->print(out);
     case type::float_id:
         return reinterpret_cast<const Float *>(this)->print(out);
     case type::short_id:
         return reinterpret_cast<const Short *>(this)->print(out);
-    case type::type_id:
-        return reinterpret_cast<const Type *>(this)->print(out);
     case type::rune_id:
         return reinterpret_cast<const Rune *>(this)->print(out);
     case type::utf8_id:

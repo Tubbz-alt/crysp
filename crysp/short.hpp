@@ -26,6 +26,11 @@ private:
     friend class T;
     template<class To> friend bool is(T arg);
 
+    friend constexpr Short operator&(Short a, Short b) noexcept;
+    friend constexpr Short operator|(Short a, Short b) noexcept;
+    friend constexpr Short operator|(Short a, int32_t b) noexcept;
+    friend constexpr Short operator|(int32_t a, Short b) noexcept;
+
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
         return bits >> 48 == impl::short_tag >> 48;
     }
@@ -299,7 +304,8 @@ public:
 
     /* bitwise and */
     inline constexpr Short & operator&=(Short other) noexcept {
-        return *this = Short{bits & other.bits, bits_constructor_t{}};
+        // preserves tag
+        return *this = Short{bits & other.bits, bits_constructor{}};
     }
 
     inline constexpr Short & operator&=(int32_t other) noexcept {
@@ -308,11 +314,13 @@ public:
 
     /* bitwise or */
     inline constexpr Short & operator|=(Short other) noexcept {
-        return *this = Short{bits | other.bits, bits_constructor_t{}};
+        // preserves tag
+        return *this = Short{bits | other.bits, bits_constructor{}};
     }
 
     inline constexpr Short & operator|=(int32_t other) noexcept {
-        return *this = Short{i | other};
+        // preserves tag
+        return *this = Short{bits | uint32_t(other)};
     }
 
     /* bitwise xor */
@@ -571,7 +579,7 @@ inline constexpr Short operator%(int32_t a, Short b) noexcept {
 }
 
 inline constexpr Short operator&(Short a, Short b) noexcept {
-    return Short{a.val() & b.val()};
+    return Short{a.debug_bits() & b.debug_bits(), Short::bits_constructor{}};
 }
 
 inline constexpr Short operator&(Short a, int32_t b) noexcept {
@@ -583,15 +591,15 @@ inline constexpr Short operator&(int32_t a, Short b) noexcept {
 }
 
 inline constexpr Short operator|(Short a, Short b) noexcept {
-    return Short{a.val() | b.val()};
+    return Short{a.debug_bits() | b.debug_bits(), Short::bits_constructor{}};
 }
 
 inline constexpr Short operator|(Short a, int32_t b) noexcept {
-    return Short{a.val() | b};
+    return Short{a.debug_bits() | uint32_t(b), Short::bits_constructor{}};
 }
 
 inline constexpr Short operator|(int32_t a, Short b) noexcept {
-    return Short{a | b.val()};
+    return Short{uint32_t(a) | b.debug_bits(), Short::bits_constructor{}};
 }
 
 inline constexpr Short operator^(Short a, Short b) noexcept {

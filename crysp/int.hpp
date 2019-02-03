@@ -243,7 +243,7 @@ public:
 
     /* bitwise and */
     inline constexpr Int & operator&=(Int other) noexcept {
-        bits &= other.bits;
+        bits &= other.bits; // preserves tag
         return *this;
     }
 
@@ -254,12 +254,12 @@ public:
 
     /* bitwise or */
     inline constexpr Int & operator|=(Int other) noexcept {
-        bits |= other.bits;
+        bits |= other.bits; // preserves tag
         return *this;
     }
 
     inline constexpr Int & operator|=(int64_t other) noexcept {
-        bits |= other;
+        bits |= uint64_t(other); // preserves tag
         return *this;
     }
 

@@ -69,6 +69,18 @@ CRYSP_NOINLINE Short short_mod(Short a, Short b) {
     return a % b;
 }
 
+CRYSP_NOINLINE Short short_and(Short a, Short b) {
+    return a & b;
+}
+
+CRYSP_NOINLINE Short short_or(Short a, Short b) {
+    return a | b;
+}
+
+CRYSP_NOINLINE Short short_xor(Short a, Short b) {
+    return a ^ b;
+}
+
 // op(Short, int32_t)
 CRYSP_NOINLINE Short short_add(Short a, int32_t b) {
     return a + b;
@@ -90,6 +102,18 @@ CRYSP_NOINLINE Short short_mod(Short a, int32_t b) {
     return a % b;
 }
 
+CRYSP_NOINLINE Short short_and(Short a, int32_t b) {
+    return a & b;
+}
+
+CRYSP_NOINLINE Short short_or(Short a, int32_t b) {
+    return a | b;
+}
+
+CRYSP_NOINLINE Short short_xor(Short a, int32_t b) {
+    return a ^ b;
+}
+
 // op(int32_t, Short)
 CRYSP_NOINLINE Short short_add(int32_t a, Short b) {
     return a + b;
@@ -109,5 +133,17 @@ CRYSP_NOINLINE Short short_div(int32_t a, Short b) {
 
 CRYSP_NOINLINE Short short_mod(int32_t a, Short b) {
     return a % b;
+}
+
+CRYSP_NOINLINE Short short_and(int32_t a, Short b) {
+    return a & b;
+}
+
+CRYSP_NOINLINE Short short_or(int32_t a, Short b) {
+    return a | b;
+}
+
+CRYSP_NOINLINE Short short_xor(int32_t a, Short b) {
+    return a ^ b;
 }
 
