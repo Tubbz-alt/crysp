@@ -9,7 +9,7 @@ CRYSP_NS_START
 // optimizations
 #define CRYSP_INT_REF_INPLACE
 
-#if defined(__x86_64__) || defined(__x86_64) || \
+#if 1 || defined(__x86_64__) || defined(__x86_64) || \
     defined(__i386__) || defined(__i386)
 # undef CRYSP_INT_OBJ_INPLACE
 #else
@@ -185,8 +185,8 @@ public:
 
     /* bitwise and */
     inline constexpr Int & operator&=(Int other) noexcept {
-        i &= other.i;
-        return *this;
+        // preserves tag
+        return *this = Int{bits & other.bits, bits_constructor{}};
     }
 
     inline constexpr Int & operator&=(int32_t other) noexcept {
@@ -196,13 +196,13 @@ public:
 
     /* bitwise or */
     inline constexpr Int & operator|=(Int other) noexcept {
-        i |= other.i;
-        return *this;
+        // preserves tag
+        return *this = Int{bits | other.bits, bits_constructor{}};
     }
 
     inline constexpr Int & operator|=(int32_t other) noexcept {
-        i |= other;
-        return *this;
+        // preserves tag
+        return *this = Int{bits | uint32_t(other), bits_constructor{}};
     }
 
     /* bitwise xor */
@@ -320,7 +320,7 @@ public:
 
     inline constexpr Int & operator|=(int32_t other) noexcept {
         // preserves tag
-        return *this = Int{bits | uint32_t(other)};
+        return *this = Int{bits | uint32_t(other), bits_constructor{}};
     }
 
     /* bitwise xor */
