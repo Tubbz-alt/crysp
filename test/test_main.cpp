@@ -326,9 +326,9 @@ CRYSP_NOINLINE void test_float() {
 
 CRYSP_NOINLINE void test_type() {
     show(Type{});
+    show(t.type().type());
     show(Float{}.type());
     show(short_max.type());
-    show(t.type().type());
     show(Rune{}.type());
     show(Utf8{}.type());
     show(Double{}.type());
@@ -341,9 +341,9 @@ CRYSP_NOINLINE void test() {
     test_bool();
     test_cons();
     test_double();
+    test_type();
     test_float();
     test_short();
-    test_type();
     test_rune();
     test_int();
 }

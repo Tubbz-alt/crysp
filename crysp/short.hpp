@@ -30,6 +30,12 @@ private:
         return bits >> 48 == impl::short_tag >> 48;
     }
 
+    struct bits_constructor{};
+
+    inline constexpr Short(uint64_t bits, bits_constructor) noexcept
+	: T{bits} {
+    }
+
 public:
     inline constexpr Short() noexcept
     /**/ : T{int32_t(0), uint32_t(impl::short_tag >> 32)} {
@@ -293,7 +299,7 @@ public:
 
     /* bitwise and */
     inline constexpr Short & operator&=(Short other) noexcept {
-        return *this = Short{i & other.i};
+        return *this = Short{bits & other.bits, bits_constructor_t{}};
     }
 
     inline constexpr Short & operator&=(int32_t other) noexcept {
@@ -302,7 +308,7 @@ public:
 
     /* bitwise or */
     inline constexpr Short & operator|=(Short other) noexcept {
-        return *this = Short{i | other.i};
+        return *this = Short{bits | other.bits, bits_constructor_t{}};
     }
 
     inline constexpr Short & operator|=(int32_t other) noexcept {

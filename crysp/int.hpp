@@ -198,7 +198,7 @@ public:
     /* multiply */
     inline constexpr Int & operator*=(Int other) noexcept {
         // no need to untag(bits)
-        int64_t i = int64_t(bits), j = untag(other.bits);
+        int64_t i = int64_t(bits), j = int64_t(other.bits);
         bits = uint64_t(i * j) | impl::int_tag;
         return *this;
     }
@@ -243,23 +243,23 @@ public:
 
     /* bitwise and */
     inline constexpr Int & operator&=(Int other) noexcept {
-        bits = (bits & other.bits) | impl::int_tag;
+        bits &= other.bits;
         return *this;
     }
 
     inline constexpr Int & operator&=(int64_t other) noexcept {
-        bits = (bits & other) | impl::int_tag;
+        bits &= uint64_t(other) | impl::int_tag;
         return *this;
     }
 
     /* bitwise or */
     inline constexpr Int & operator|=(Int other) noexcept {
-        bits = (bits | other.bits) | impl::int_tag;
+        bits |= other.bits;
         return *this;
     }
 
     inline constexpr Int & operator|=(int64_t other) noexcept {
-        bits = (bits | other) | impl::int_tag;
+        bits |= other;
         return *this;
     }
 

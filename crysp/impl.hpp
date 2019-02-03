@@ -34,9 +34,9 @@ namespace impl {
 
           value_mask     = 0xFFFF000000000000ull,
 
-          float_tag      = 0xFFF1000000000000ull, // negative signaling NaN
-          short_tag      = 0xFFF2000000000000ull,
-          type_tag       = 0xFFF3000000000000ull,
+          type_tag       = 0xFFF1000000000000ull,
+          float_tag      = 0xFFF2000000000000ull, // negative signaling NaN
+          short_tag      = 0xFFF3000000000000ull,
           rune_tag       = 0xFFF4000000000000ull,
           utf8_tag       = 0xFFF5000000000000ull,
 
@@ -71,9 +71,9 @@ namespace impl {
 namespace type {
     enum id : uint32_t {
              unknown_id = 0,
-             float_id   = 1,
-             short_id   = 2,
-             type_id    = 3,
+             type_id    = 1,
+             float_id   = 2,
+             short_id   = 3,
              rune_id    = 4,
              utf8_id    = 5,
              double_id  = 0xE,
