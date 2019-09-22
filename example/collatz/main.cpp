@@ -5,7 +5,7 @@
 #include <cstring>
 
 #include "crysp/long.hpp"
-#include "crysp/long.hpp"
+#include "crysp/double.hpp"
 
 CRYSP_NS_USE
 
@@ -21,11 +21,33 @@ static CRYSP_NOINLINE constexpr uint64_t collatz(N n) {
     return iter;
 }
 
-template<class N>
+static CRYSP_NOINLINE constexpr uint64_t collatz_double(double n) {
+    uint64_t iter = 0;
+    for (; n > 1; iter++) {
+        if ((long(n) & 1) != 0) {
+            n = (n * 3 + 1);
+        }
+	n *= 0.5;
+    }
+    return iter;
+}
+
+static CRYSP_NOINLINE constexpr uint64_t collatz_Double(Double n) {
+    uint64_t iter = 0;
+    for (; n > 1; iter++) {
+        if ((long(n.val()) & 1) != 0) {
+            n = (n * 3 + 1);
+        }
+	n *= 0.5;
+    }
+    return iter;
+}
+
+template<class N, uint64_t (*func)(N) = collatz<N>>
 static CRYSP_NOINLINE void collatz_repeat(N n) {
     uint64_t iter = 0;
     for (; n != 0; --n) {
-        iter += collatz(n);
+        iter += func(n);
     }
     printf("%s: %" PRId64 "\n", __PRETTY_FUNCTION__, iter);
 }
@@ -34,14 +56,14 @@ int main(int argc, const char * argv[]) {
     const char * typ = argc < 2 ? "Long" : argv[1];
     int64_t n = argc < 3 ? 12345678 : atoll(argv[2]);
     
-    if (!strcmp(typ, "Int")) {
-        collatz_repeat(Int{int32_t(n)});
-    } else if (!strcmp(typ, "Long")) {
+    if (!strcmp(typ, "Long")) {
         collatz_repeat(Long{n});
-    } else if (!strcmp(typ, "int32")) {
-        collatz_repeat(int32_t(n));
+    } else if (!strcmp(typ, "double")) {
+        collatz_repeat<double, collatz_double>(double(n));
+    } else if (!strcmp(typ, "Double")) {
+        collatz_repeat<Double, collatz_Double>(Double(n));
     } else {
-        collatz_repeat(n);
+        collatz_repeat(long(n));
     }
 
     return 0;
