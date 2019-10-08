@@ -50,12 +50,12 @@ namespace impl {
           symbol_tag     = 0x7FF0000000000002ull,
           func_tag       = 0x7FF0000000000003ull,
 
-#if defined(__aarch64__) || defined(__AARCH64EL__) || defined(__AARCH64BE__)
-          fixed_addr_bits = 0x7FF0000000ull,
+	  /* start of fixed-address memory area containing nil, t ... */
+#if defined(__aarch64__) || defined(__AARCH64EL__) || defined(__AARCH64BE__)	 
+          fixed_addr_bits = 0x8000ull,
 #else
-          fixed_addr_bits = 0x7FF0ull << 4*sizeof(void *),
+          fixed_addr_bits = 0x10000ull,
 #endif
-
           nil_bits       = pair_tag + fixed_addr_bits,
           t_bits         = symbol_tag + 0x20 + fixed_addr_bits,
     };

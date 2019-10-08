@@ -25,7 +25,7 @@ bool impl::init() {
         return true;
 
     /* fixed memory address reserved for nil, t */
-    void * addr = mmap((void *)(nil_bits & pointer_unmask), 32768,
+    void * addr = mmap((void *)fixed_addr_bits, 32768,
                        PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS,
                        -1, 0);
     if (addr == MAP_FAILED)

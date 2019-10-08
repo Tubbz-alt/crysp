@@ -110,17 +110,24 @@ public:
 
     // constexpr... must be in header file
     CRYSP_NOINLINE constexpr type::id type_id() const noexcept {
+        static_assert(((impl::type_tag  >> 48) & 0xF) == impl::tag(type::type_id),  "mismatch between impl::type_tag  and type::type_id");
+        static_assert(((impl::float_tag >> 48) & 0xF) == impl::tag(type::float_id), "mismatch between impl::float_tag and type::float_id");
+        static_assert(((impl::int_tag   >> 48) & 0xF) == impl::tag(type::int_id),   "mismatch between impl::int_tag   and type::int_id");
+        static_assert(((impl::rune_tag  >> 48) & 0xF) == impl::tag(type::rune_id),  "mismatch between impl::rune_tag  and type::rune_id");
+        static_assert(((impl::utf8_tag  >> 48) & 0xF) == impl::tag(type::utf8_id),  "mismatch between impl::utf8_tag  and type::utf8_id");
+       
         switch (bits >> 48) {
-        case impl::float_tag >> 48:
-            return type::float_id;
-        case impl::int_tag >> 48:
-            return type::int_id;
         case impl::type_tag >> 48:
-            return type::type_id;
+            // return type::type_id;
+        case impl::float_tag >> 48:
+            // return type::float_id;
+        case impl::int_tag >> 48:
+            // return type::int_id;
         case impl::rune_tag >> 48:
-            return type::rune_id;
+            // return type::rune_id;
         case impl::utf8_tag >> 48:
-            return type::utf8_id;
+            // return type::utf8_id;
+	   return type::id((bits >> 48) & 0xF);
         case (impl::long_tag >> 48) + 0:
         case (impl::long_tag >> 48) + 1:
         case (impl::long_tag >> 48) + 2:
