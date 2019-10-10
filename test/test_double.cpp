@@ -2,6 +2,23 @@
 
 CRYSP_NS_USE
 
+// op=(Double)
+CRYSP_NOINLINE void double_add_ref(Double & a, Double b) {
+    a += b;
+}
+
+CRYSP_NOINLINE void double_sub_ref(Double & a, Double b) {
+    a -= b;
+}
+
+CRYSP_NOINLINE void double_mul_ref(Double & a, Double b) {
+    a *= b;
+}
+
+CRYSP_NOINLINE void double_div_ref(Double & a, Double b) {
+    a /= b;
+}
+
 // op(Double, Double)
 CRYSP_NOINLINE Double double_add(Double a, Double b) {
     return a + b;

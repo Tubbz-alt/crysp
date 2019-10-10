@@ -3,19 +3,19 @@
 CRYSP_NS_USE
 
 // op=(Float)
-CRYSP_NOINLINE void float_add_set(Float & a, Float b) {
+CRYSP_NOINLINE void float_add_ref(Float & a, Float b) {
     a += b;
 }
 
-CRYSP_NOINLINE void float_sub_set(Float & a, Float b) {
+CRYSP_NOINLINE void float_sub_ref(Float & a, Float b) {
     a -= b;
 }
 
-CRYSP_NOINLINE void float_mul_set(Float & a, Float b) {
+CRYSP_NOINLINE void float_mul_ref(Float & a, Float b) {
     a *= b;
 }
 
-CRYSP_NOINLINE void float_div_set(Float & a, Float b) {
+CRYSP_NOINLINE void float_div_ref(Float & a, Float b) {
     a /= b;
 }
 

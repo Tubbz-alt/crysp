@@ -4,13 +4,13 @@
 #include "t.hpp"
 #include "type.hpp"
 
-// optimizations
-#define CRYSP_FLOAT_REF_INPLACE
-
+// architecture-dependent optimizations
 #if defined(__x86_64__) || defined(__x86_64)
-# undef CRYSP_FLOAT_OBJ_INPLACE
+# undef  CRYSP_FLOAT_OBJ_INPLACE
+# define CRYSP_FLOAT_REF_INPLACE
 #else
 # define CRYSP_FLOAT_OBJ_INPLACE
+# define CRYSP_FLOAT_REF_INPLACE
 #endif
 
 CRYSP_NS_START
