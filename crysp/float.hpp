@@ -4,6 +4,8 @@
 #include "t.hpp"
 #include "type.hpp"
 
+CRYSP_NS_START
+
 // architecture-dependent optimizations
 #if defined(__x86_64__) || defined(__x86_64)
 # undef  CRYSP_FLOAT_OBJ_INPLACE
@@ -12,8 +14,6 @@
 # define CRYSP_FLOAT_OBJ_INPLACE
 # define CRYSP_FLOAT_REF_INPLACE
 #endif
-
-CRYSP_NS_START
 
 class Float : public T {
 private:

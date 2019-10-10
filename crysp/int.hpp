@@ -7,9 +7,13 @@
 CRYSP_NS_START
 
 // architecture-dependent optimizations
-#define CRYSP_INT_OBJ_INPLACE
-#define CRYSP_INT_REF_INPLACE
-
+#if defined(__x86_64__) || defined(__x86_64)
+# undef  CRYSP_INT_OBJ_INPLACE
+# define CRYSP_INT_REF_INPLACE
+#else
+# define CRYSP_INT_OBJ_INPLACE
+# define CRYSP_INT_REF_INPLACE
+#endif
 
 /**
  * 32-bit signed integer.
