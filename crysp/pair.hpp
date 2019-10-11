@@ -53,11 +53,11 @@ public:
     int print(FILE *out) const;
     
     pair * operator->() {
-        return (pair *)addr();
+        return reinterpret_cast<pair *>(addr());
     }
 
     const pair * operator->() const {
-        return (const pair *)addr();
+        return reinterpret_cast<const pair *>(addr());
     }
 };
 

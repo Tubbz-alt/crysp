@@ -28,7 +28,7 @@ constexpr check_overflow_t check_overflow = {};
 
 namespace impl {
     enum tag : uint64_t {
-          // Long and Int methods depend on this exact value
+          // Long methods depend on this exact value
           long_tag       = 0xFFFC000000000000ull, // negative quiet NaN
           long_mask      = long_tag,
 

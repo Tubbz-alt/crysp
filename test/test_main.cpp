@@ -12,6 +12,8 @@
 #include "crysp/type.hpp"
 #include "crysp/utf8.hpp"
 
+#include "test/test_func.hpp"
+
 CRYSP_NS_USE
 
 CRYSP_NOINLINE void show(T x) {
@@ -346,6 +348,7 @@ CRYSP_NOINLINE void test() {
     test_int();
     test_rune();
     test_long();
+    test_func();
 }
 
 int main() {

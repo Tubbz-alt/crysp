@@ -12,6 +12,7 @@ class Type;
 class T {
 private:
     friend class Float;
+    friend class Func;
     friend class Double;
     friend class Long;
     template<class E> friend class Obj;
