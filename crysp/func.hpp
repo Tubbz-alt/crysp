@@ -62,7 +62,7 @@ public:
     std::vector<T> call(const std::vector<T>& vargs) {
         func * x = reinterpret_cast<func *>(addr());
         if (vargs.size() != x->narg) {
-            throw std::out_of_range("wrong number of arguments in Func call");
+	   impl::throw_out_of_range("wrong number of arguments in Func call");
         }
         x->fun();
         return std::vector<T>{};

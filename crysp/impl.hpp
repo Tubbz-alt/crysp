@@ -1,6 +1,7 @@
 #ifndef CRYSP_IMPL_HPP
 #define CRYSP_IMPL_HPP
 
+#include <cstddef> // size_t
 #include <cstdint> // uint32_t, uint64_t
 
 #define CRYSP_NS_START namespace crysp {
@@ -15,6 +16,8 @@ CRYSP_NS_START
 #else
 #define CRYSP_NOINLINE
 #endif
+
+#define CRYSP_NORETURN [[noreturn]]
 
 #ifdef __GNUC__
 #define CRYSP_LIKELY(val) __builtin_expect(val, true)
@@ -62,9 +65,10 @@ namespace impl {
 
     bool init();                /* throw(std::bad_alloc) */
     void * alloc(size_t bytes); /* throw(std::bad_alloc) */
-    void throw_bad_alloc();     /* throw(std::bad_alloc) */
-    void throw_bad_cast();      /* throw(std::bad_cast) */
-    void throw_overflow_error(const char * type_name); /* throw(std::overflow_error) */
+    CRYSP_NORETURN void throw_bad_alloc();     /* throw(std::bad_alloc) */
+    CRYSP_NORETURN void throw_bad_cast();      /* throw(std::bad_cast) */
+    CRYSP_NORETURN void throw_out_of_range(const char * message);  /* throw(std::out_of_range) */
+    CRYSP_NORETURN void throw_overflow_error(const char * type_name); /* throw(std::overflow_error) */
 } // namespace impl
 
 

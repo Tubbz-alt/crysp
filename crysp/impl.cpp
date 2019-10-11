@@ -45,15 +45,19 @@ void * impl::alloc(size_t bytes) /* throw(std::bad_alloc) */ {
     return addr;
 }
 
-void impl::throw_bad_alloc() /* throw(std::bad_alloc) */ {
+CRYSP_NORETURN void impl::throw_bad_alloc() /* throw(std::bad_alloc) */ {
     throw std::bad_alloc{};
 }
 
-void impl::throw_bad_cast() /* throw(std::bad_cast) */ {
+CRYSP_NORETURN void impl::throw_bad_cast() /* throw(std::bad_cast) */ {
     throw std::bad_cast{};
 }
 
-void impl::throw_overflow_error(const char * type_name) /* throw(std::overflow_error) */ {
+CRYSP_NORETURN void impl::throw_out_of_range(const char * message) /* throw(std::bad_cast) */ {
+   throw std::out_of_range{message};
+}
+
+CRYSP_NORETURN void impl::throw_overflow_error(const char * type_name) /* throw(std::overflow_error) */ {
     const std::string prefix = "integer too large, overflows ";
     throw std::overflow_error{prefix + type_name};
 }
