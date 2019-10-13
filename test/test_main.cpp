@@ -13,6 +13,7 @@
 #include "crysp/utf8.hpp"
 
 #include "test/test_func.hpp"
+#include "test/test_values.hpp"
 
 CRYSP_NS_USE
 
@@ -348,6 +349,7 @@ CRYSP_NOINLINE void test() {
     test_int();
     test_rune();
     test_long();
+    test_values();
     test_func();
 }
 

@@ -1,21 +1,34 @@
 #ifndef CRYSP_FUNC_HPP
 #define CRYSP_FUNC_HPP
 
-#include <functional>  // std::bad_function_call
-#include <stdexcept>   // std::out_of_range
+#include <tuple>
 #include <vector>
 
 #include "new.hpp"
+#include "nil.hpp"
 #include "t.hpp"
 #include "type.hpp"
+#include "values.hpp"
 
 CRYSP_NS_START
 
 class Func : public T {
 private:
+    using ret_type = std::tuple<T, T>;
+    
+    // pretend function pointer accepts 16 arguments
+    // and returns two values.
+    // this is safe at least on x86_64 and arm64,
+    // provided the returned values are used only
+    // if the actual function really returns them.
+    using func_type = ret_type (*)(T, T, T, T,
+                                   T, T, T, T,
+                                   T, T, T, T,
+                                   T, T, T, T);
     struct func {
-        void (*fun)();
-        size_t narg;
+        func_type fun;
+        uint16_t retcount, argcount;
+	type::id argtype[16]; // support up to 16 function arguments
     };
 
     template<class To> friend bool is(T arg);
@@ -26,7 +39,7 @@ private:
 
 public:
     explicit inline Func(void (*f)()) /* throw(std::bad_alloc) */
-        : T{impl::func_tag | GCRYSP_NEW(func, f, 0)} {
+        : T{impl::func_tag | GCRYSP_NEW(func, (func_type)f, 0, 0, {})} {
     }
 
     /*
@@ -59,14 +72,7 @@ public:
         return call(vargs);
     }
 
-    std::vector<T> call(const std::vector<T>& vargs) {
-        func * x = reinterpret_cast<func *>(addr());
-        if (vargs.size() != x->narg) {
-	   impl::throw_out_of_range("wrong number of arguments in Func call");
-        }
-        x->fun();
-        return std::vector<T>{};
-    }
+    std::vector<T> call(const std::vector<T>& vargs);
     
 };
 

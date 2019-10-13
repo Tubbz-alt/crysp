@@ -29,7 +29,7 @@ union utf8 {
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     /* encode Unicode codepoint to 4-byte utf-8 */
-    static CRYSP_NOINLINE constexpr uint32_t make(rune r) noexcept {
+    CRYSP_NOINLINE static constexpr uint32_t make(rune r) noexcept {
         uint32_t u = 0;
         if (CRYSP_LIKELY(r <= 0x7F)) {
             u = r;
@@ -51,7 +51,7 @@ union utf8 {
     }
 
     /* decode 4-byte utf-8 to Unicode codepoint */
-    static CRYSP_NOINLINE constexpr rune unmake(uint32_t u) noexcept {
+    CRYSP_NOINLINE static constexpr rune unmake(uint32_t u) noexcept {
         rune r = 0;
         if (CRYSP_LIKELY(u <= 0xFF)) {
             r = u & 0x7F;
@@ -77,7 +77,7 @@ union utf8 {
     }
 #else
     /* encode Unicode codepoint to 4-byte utf-8 */
-    static CRYSP_NOINLINE constexpr uint32_t make(rune r) noexcept {
+    CRYSP_NOINLINE static constexpr uint32_t make(rune r) noexcept {
         uint32_t u = 0;
         if (CRYSP_LIKELY(r <= 0x7F)) {
             u = r << 24;
@@ -101,7 +101,7 @@ union utf8 {
     }
 
     /* decode 4-byte utf-8 to Unicode codepoint */
-    static CRYSP_NOINLINE constexpr rune unmake(uint32_t u) noexcept {
+    CRYSP_NOINLINE static constexpr rune unmake(uint32_t u) noexcept {
         rune r = 0;
         if (CRYSP_LIKELY((u & 0x00FFFFFF) == 0)) {
             r = u >> 24;
