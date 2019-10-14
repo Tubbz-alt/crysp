@@ -69,6 +69,7 @@ namespace impl {
     CRYSP_NORETURN void throw_bad_cast();      /* throw(std::bad_cast) */
     CRYSP_NORETURN void throw_out_of_range(const char * message);  /* throw(std::out_of_range) */
     CRYSP_NORETURN void throw_overflow_error(const char * type_name); /* throw(std::overflow_error) */
+    CRYSP_NORETURN void throw_runtime_error(const char * message);  /* throw(std::runtime_error) */
 } // namespace impl
 
 

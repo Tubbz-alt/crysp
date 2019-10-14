@@ -1,95 +1,71 @@
 #ifndef CRYSP_VALUES_HPP
 #define CRYSP_VALUES_HPP
 
-#include <array>
-
 #include "t.hpp"
 
 CRYSP_NS_START
 
-enum {
-      MaxValues = 16,
-};
-
 namespace impl {
-    struct ValuesTls {
-        size_t n;
-        T v[MaxValues];
 
-        template<class... Args>
-        inline constexpr ValuesTls * assign(Args... args) noexcept
-        {
-            static_assert(sizeof...(Args) <= MaxValues,
-                          "Values supports only up to 16 values");
-            struct Tn {
-                T v[sizeof...(Args)];
-            };
-            n = sizeof...(Args);
-            reinterpret_cast<Tn &>(v) = Tn{args...};
-            return this;
-        }
+    // extract the n-th type from Args
+    template<size_t N, class... Args>
+    struct nth_type_struct {
     };
-    extern thread_local ValuesTls values_tls;
+
+    template<size_t N, class Arg0, class... Args>
+    struct nth_type_struct<N, Arg0, Args...> {
+        using type = typename nth_type_struct<N-1, Args...>::type;
+    };
+
+    template<class Arg0, class... Args>
+    struct nth_type_struct<0, Arg0, Args...> {
+        using type = Arg0;
+    };
 }
 
+// extract the N-th type from Args
+template<size_t N, class... Args>
+using nth_type = typename impl::nth_type_struct<N, Args...>::type;
+
 /**
- * Values is not a first-class object:
- * it stores its data in a per-thread global variable.
+ * Values represent multiple values, for example returned by a function.
  *
- * It should only be used to return multiple values
- * from a function, which are then immediately copied
- * somewhere else.
+ * It is similar in spirit to std:tuple, the main difference being
+ * that Values can only hold objects derived from crysp::T
  *
- * Do not define variables, fields or arguments with type
- * Values or with a type that uses Values in any way.
+ * Note that Values is (almost) a plain struct:
+ * it does NOT derive from crysp::T
  */
 template<class... Args>
-class Values;
-
-template<>
-class Values<> {
-public:
-    inline constexpr Values() noexcept {
-    }
-};
-
-template<class Arg0>
-class Values<Arg0> {
+class Values {
 private:
-    T data;
+    T v[sizeof...(Args)];
 
 public:
-    explicit inline constexpr Values(Arg0 a0) noexcept
-        : data{a0} {
+    explicit inline constexpr Values(Args... args) noexcept
+        : v{args...}
+    { }
+        
+    enum { Size = sizeof...(Args) };
+
+    static inline constexpr size_t size() noexcept {
+        return Size;
     }
-};
 
-template<class Arg0, class Arg1>
-class Values<Arg0, Arg1> {
-    T data[2];
-
-public:
-    inline constexpr Values(Arg0 a0, Arg1 a1) noexcept
-        : data{a0, a1} {
+    template <size_t N>
+    inline constexpr nth_type<N, Args...> get() const noexcept {
+        return static_cast<const nth_type<N, Args...>&>(v[N]);
     }
-};
 
-template<class Arg0, class Arg1, class Arg2, class... Args>
-class Values<Arg0, Arg1, Arg2, Args...> {
-    T v0;
-    impl::ValuesTls *data;
-
-public:
-    inline constexpr Values(Arg0 a0, Arg1 a1, Arg2 a2, Args... as) noexcept
-        : v0{a0}
-        , data{impl::values_tls.assign(a0, a1, a2, as...)}
-    {
+    template <size_t N>
+    inline constexpr void set(nth_type<N, Args...> arg) noexcept {
+        v[N] = arg;
     }
 };
 
 template<class... Args>
 inline constexpr Values<Args...> values(Args... args) noexcept {
-    return Values<Args...>(args...);
+    return Values<Args...>{args...};
 }
 
 CRYSP_NS_END

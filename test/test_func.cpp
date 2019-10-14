@@ -10,6 +10,7 @@ CRYSP_NOINLINE void foo() {
 
 CRYSP_NOINLINE void test_func() {
     Func func{foo};
-    func();
+    Func::Ret ret = func();
+    printf("Func: called foo() returned %u values\n", (unsigned)ret.size);
 }
 

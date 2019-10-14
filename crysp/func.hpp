@@ -1,34 +1,36 @@
 #ifndef CRYSP_FUNC_HPP
 #define CRYSP_FUNC_HPP
 
-#include <tuple>
-#include <vector>
-
-#include "new.hpp"
-#include "nil.hpp"
 #include "t.hpp"
+#include "nil.hpp"
 #include "type.hpp"
-#include "values.hpp"
+#include "slice.hpp"
 
 CRYSP_NS_START
 
 class Func : public T {
+public:
+    enum : size_t {
+          MaxArg = 15, // support up to 15 function arguments
+          MaxRet = 15, // support up to 15 return values
+    };
+
+    struct Ret {
+        size_t size;
+        T val[MaxRet];
+
+        inline constexpr Ret() noexcept
+        : size{0}, val{nil, nil, nil, nil, nil,
+                       nil, nil, nil, nil, nil,
+                       nil, nil, nil, nil, nil}
+        { }
+    };
+
 private:
-    using ret_type = std::tuple<T, T>;
-    
-    // pretend function pointer accepts 16 arguments
-    // and returns two values.
-    // this is safe at least on x86_64 and arm64,
-    // provided the returned values are used only
-    // if the actual function really returns them.
-    using func_type = ret_type (*)(T, T, T, T,
-                                   T, T, T, T,
-                                   T, T, T, T,
-                                   T, T, T, T);
     struct func {
-        func_type fun;
-        uint16_t retcount, argcount;
-	type::id argtype[16]; // support up to 16 function arguments
+        void * fun;
+        uint16_t retsize, argsize;
+	type::id argtype[MaxArg];
     };
 
     template<class To> friend bool is(T arg);
@@ -37,9 +39,16 @@ private:
         return (bits & impl::pointer_mask) == impl::func_tag;
     }
 
+    static void call_impl(Ret & ret, const func * x, const T args[MaxArg]);
+    static void call0(T ret[MaxRet], void * fun, const T args[MaxArg]);
+    static void call1(T ret[MaxRet], void * fun, const T args[MaxArg]);
+    static void call2(T ret[MaxRet], void * fun, const T args[MaxArg]);
+    static void calln(size_t retsize, T ret[MaxRet], void * fun, const T args[MaxArg]);
+    
 public:
+
     explicit inline Func(void (*f)()) /* throw(std::bad_alloc) */
-        : T{impl::func_tag | GCRYSP_NEW(func, (func_type)f, 0, 0, {})} {
+        : T{impl::func_tag | GCRYSP_NEW(func, (void *)f, uint16_t(0), uint16_t(0), {})} {
     }
 
     /*
@@ -63,17 +72,22 @@ public:
     // int print(FILE *out) const;
 
     template<class ...Args>
-    std::vector<T> operator()(Args&& ... args) {
-        /*
-        static_assert(is_derived_from_T<Args>::value && ...,
-                      "each argument must have type T or a subclass");
-        */
-        std::vector<T> vargs{std::forward<T>(args)...};
-        return call(vargs);
+    Ret operator()(Args&& ... args) {
+        enum : size_t { N = sizeof...(Args) };
+        static_assert(size_t(N) <= size_t(MaxArg),
+                      "Func supports only up to 15 function call arguments");
+        func * x = reinterpret_cast<func *>(addr());
+        const size_t n = x->argsize;
+        if (N != n) {
+            impl::throw_out_of_range("wrong argument count in Func call");
+        }
+        const T vargs[MaxArg] = {std::forward<T>(args)...};
+        Ret ret;
+        call_impl(ret, x, vargs);
+        return ret;
     }
 
-    std::vector<T> call(const std::vector<T>& vargs);
-    
+    Ret call(ConstSlice<T> args);
 };
 
 CRYSP_NS_END

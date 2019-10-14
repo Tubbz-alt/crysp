@@ -1,6 +1,6 @@
 
 #include <new>        // std::bad_alloc
-#include <stdexcept>  // std::overflow_error
+#include <stdexcept>  // std::overflow_error, std::runtime_error
 #include <string>     // std::string
 #include <typeinfo>   // std::bad_cast
 
@@ -60,6 +60,10 @@ CRYSP_NORETURN void impl::throw_out_of_range(const char * message) /* throw(std:
 CRYSP_NORETURN void impl::throw_overflow_error(const char * type_name) /* throw(std::overflow_error) */ {
     const std::string prefix = "integer too large, overflows ";
     throw std::overflow_error{prefix + type_name};
+}
+
+CRYSP_NORETURN void impl::throw_runtime_error(const char * message)  /* throw(std::runtime_error) */ {
+   throw std::runtime_error{message};
 }
 
 CRYSP_NS_END
