@@ -24,7 +24,7 @@ void Func::call_impl(Ret & ret, const func * x, const T args[MaxArg]) {
     for (size_t i = 0; i < n; i++) {
         T arg = args[i];
         type::id expected_type_id = x->argtype[i];
-        if (expected_type_id == T::static_type_id) {
+        if (expected_type_id == type::id::t_id) {
             // argument can be any type
             continue;
         }
