@@ -75,7 +75,7 @@ namespace impl {
 
 namespace type {
     enum id : uint32_t {
-             unknown_id = 0,
+             t_id       = 0, // means "any type::id"
              type_id    = 1,
              float_id   = 2,
 	     int_id     = 3,

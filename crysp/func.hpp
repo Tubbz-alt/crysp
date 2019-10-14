@@ -5,6 +5,7 @@
 #include "nil.hpp"
 #include "type.hpp"
 #include "slice.hpp"
+#include "values.hpp"
 
 CRYSP_NS_START
 
@@ -31,6 +32,33 @@ private:
         void * fun;
         uint16_t retsize, argsize;
 	type::id argtype[MaxArg];
+
+        template<class... Args>
+        explicit inline constexpr func(void (*f)(Args...))
+            : fun{(void *)f}
+            , retsize{0}
+            , argsize{sizeof...(Args)}
+            , argtype{type::id(Args::static_type_id)...}
+        { }
+
+        template<class R, class... Args>
+        explicit inline constexpr func(R (*f)(Args...))
+            : fun{(void *)f}
+            , retsize{1}
+            , argsize{sizeof...(Args)}
+            , argtype{type::id(Args::static_type_id)...}
+        {
+            static_assert(std::is_base_of<T, R>::value,
+                          "Func: single-return function must return T or a subclass");
+        }
+
+        template<class... Rs, class... Args>
+        explicit inline constexpr func(Values<Rs...> (*f)(Args...))
+            : fun{(void *)f}
+            , retsize{sizeof...(Rs)}
+            , argsize{sizeof...(Args)}
+            , argtype{type::id(Args::static_type_id)...}
+        { }
     };
 
     template<class To> friend bool is(T arg);
@@ -47,8 +75,9 @@ private:
     
 public:
 
-    explicit inline Func(void (*f)()) /* throw(std::bad_alloc) */
-        : T{impl::func_tag | GCRYSP_NEW(func, (void *)f, uint16_t(0), uint16_t(0), {})} {
+    template<class R, class... Args>
+    explicit inline Func(R (*f)(Args...)) /* throw(std::bad_alloc) */
+        : T{impl::func_tag | GCRYSP_NEW(func, f)} {
     }
 
     /*

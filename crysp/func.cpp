@@ -23,7 +23,12 @@ void Func::call_impl(Ret & ret, const func * x, const T args[MaxArg]) {
     const size_t n = x->argsize;
     for (size_t i = 0; i < n; i++) {
         T arg = args[i];
-        if (arg.type_id() != x->argtype[i]) {
+        type::id expected_type_id = x->argtype[i];
+        if (expected_type_id == T::static_type_id) {
+            // argument can be any type
+            continue;
+        }
+        if (expected_type_id != arg.type_id()) {
             // TODO: support subclasses
             impl::throw_runtime_error("wrong argument type in Func call");
         }

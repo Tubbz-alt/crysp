@@ -38,7 +38,6 @@ int T::print(FILE *out) const {
         return fputs(bits == impl::t_bits ? "t" : "symbol", out);
     case type::func_id:
         return fputs("func", out);
-    case type::unknown_id:
     default:
         return fputs("unknown", out);
     }

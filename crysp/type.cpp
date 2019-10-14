@@ -11,6 +11,8 @@ int Type::print(FILE *out) const {
 
 const char * Type::name() const noexcept {
     switch (type::id(i)) {
+    case type::t_id:
+        return "T";
     case type::type_id:
         return "Type";
     case type::float_id:
@@ -33,7 +35,6 @@ const char * Type::name() const noexcept {
         return "Symbol";
     case type::func_id:
         return "Func";
-    case type::unknown_id:
     default:
         return "Unknown";
     }

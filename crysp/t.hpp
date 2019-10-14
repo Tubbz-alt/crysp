@@ -152,11 +152,15 @@ public:
             case impl::func_tag & 0xF:
                 return type::func_id;
             default:
-                return type::unknown_id;
+                return type::t_id;
             }
         }
         return type::double_id;
     }
+
+    enum {
+        static_type_id = type::t_id,
+    };
 
     // return number of written bytes
     int print(FILE *out) const;

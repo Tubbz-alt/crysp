@@ -16,7 +16,7 @@ private:
 
 public:
     inline constexpr Type() noexcept
-    /**/: T{int32_t(type::unknown_id), uint32_t(impl::type_tag >> 32)} {
+    /**/: T{int32_t(type::t_id), uint32_t(impl::type_tag >> 32)} {
     }
 
     explicit inline constexpr Type(type::id id) noexcept
