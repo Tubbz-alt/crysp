@@ -84,8 +84,21 @@ private:
 #endif
     
 public:
+    /*
+     * default constructor: create a T containing nil.
+     * It was found more useful in practice than
+     * the alternative to create a T containing t.
+     *
+     * To create a T containing t, call T::t()
+     * or just use the global variable t
+     */
     inline constexpr T() noexcept
-    /**/ : bits(impl::t_bits) {
+    /**/ : bits(impl::nil_bits) {
+    }
+
+    // return a T containing t
+    static inline constexpr T t() noexcept {
+        return T{impl::t_bits};
     }
 
     /*
@@ -118,16 +131,11 @@ public:
         static_assert(((impl::utf8_tag  >> 48) & 0xF) == impl::tag(type::utf8_id),  "mismatch between impl::utf8_tag  and type::utf8_id");
        
         switch (bits >> 48) {
-        case impl::type_tag >> 48:
-            // return type::type_id;
-        case impl::float_tag >> 48:
-            // return type::float_id;
-        case impl::int_tag >> 48:
-            // return type::int_id;
-        case impl::rune_tag >> 48:
-            // return type::rune_id;
-        case impl::utf8_tag >> 48:
-            // return type::utf8_id;
+        case impl::type_tag  >> 48: // return type::type_id;
+        case impl::float_tag >> 48: // return type::float_id;
+        case impl::int_tag   >> 48: // return type::int_id;
+        case impl::rune_tag  >> 48: // return type::rune_id;
+        case impl::utf8_tag  >> 48: // return type::utf8_id;
 	   return type::id((bits >> 48) & 0xF);
         case (impl::long_tag >> 48) + 0:
         case (impl::long_tag >> 48) + 1:
@@ -166,7 +174,7 @@ public:
     int print(FILE *out) const;
 };
 
-constexpr const T t;
+constexpr const T t = T::t();
 
 CRYSP_NS_END
 

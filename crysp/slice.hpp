@@ -28,7 +28,7 @@ public:
         : sz{size}, v{address}
     { }
 
-    inline constexpr E * data() const noexcept {
+    inline constexpr const E * data() const noexcept {
         return v;
     }
     
@@ -76,7 +76,7 @@ public:
     
     inline constexpr E & operator[](size_t index) {
         assert(index < Base::sz);
-        return data()[index];
+        return const_cast<E *>(Base::v)[index];
     }
 
     inline constexpr Slice<E> slice(size_t start, size_t end) {

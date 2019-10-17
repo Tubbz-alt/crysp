@@ -21,9 +21,7 @@ public:
         T val[MaxRet];
 
         inline constexpr Ret() noexcept
-        : size{0}, val{nil, nil, nil, nil, nil,
-                       nil, nil, nil, nil, nil,
-                       nil, nil, nil, nil, nil}
+        : size{0}, val{}
         { }
     };
 
@@ -67,7 +65,7 @@ private:
         return (bits & impl::pointer_mask) == impl::func_tag;
     }
 
-    static void call_impl(Ret & ret, const func * x, const T args[MaxArg]);
+    static Ret  call_impl(const func * x, const T args[MaxArg]);
     static void call0(T ret[MaxRet], void * fun, const T args[MaxArg]);
     static void call1(T ret[MaxRet], void * fun, const T args[MaxArg]);
     static void call2(T ret[MaxRet], void * fun, const T args[MaxArg]);
@@ -111,9 +109,7 @@ public:
             impl::throw_out_of_range("wrong argument count in Func call");
         }
         const T vargs[MaxArg] = {std::forward<T>(args)...};
-        Ret ret;
-        call_impl(ret, x, vargs);
-        return ret;
+        return call_impl(x, vargs);
     }
 
     Ret call(ConstSlice<T> args);

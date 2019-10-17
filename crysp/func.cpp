@@ -14,12 +14,10 @@ Func::Ret Func::call(ConstSlice<T> args) {
     for (size_t i = 0; i < n; i++) {
         vargs[i] = args[i];
     }
-    Ret ret;
-    call_impl(ret, x, vargs);
-    return ret;
+    return call_impl(x, vargs);
 }
 
-void Func::call_impl(Ret & ret, const func * x, const T args[MaxArg]) {
+Func::Ret Func::call_impl(const func * x, const T args[MaxArg]) {
     const size_t n = x->argsize;
     for (size_t i = 0; i < n; i++) {
         T arg = args[i];
@@ -40,6 +38,7 @@ void Func::call_impl(Ret & ret, const func * x, const T args[MaxArg]) {
     // function returning more than two values have instead different ABI:
     // they receive a hidden first argument containing the base address
     // where to store the return values.
+    Ret ret;
     void * f = x->fun;
     switch ((ret.size = x->retsize)) {
     case 0:
@@ -55,6 +54,7 @@ void Func::call_impl(Ret & ret, const func * x, const T args[MaxArg]) {
         calln(ret.size, ret.val, f, args);
         break;
     }
+    return ret;
 }
 
 void Func::call0(T /*ret*/[MaxRet], void * fun, const T args[MaxArg]) {
