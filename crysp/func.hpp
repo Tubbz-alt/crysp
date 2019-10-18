@@ -65,12 +65,12 @@ private:
         return (bits & impl::pointer_mask) == impl::func_tag;
     }
 
-    static Ret  call_impl(const func * x, const T args[MaxArg]);
-    static void call0(T ret[MaxRet], void * fun, const T args[MaxArg]);
-    static void call1(T ret[MaxRet], void * fun, const T args[MaxArg]);
-    static void call2(T ret[MaxRet], void * fun, const T args[MaxArg]);
-    static void calln(size_t retsize, T ret[MaxRet], void * fun, const T args[MaxArg]);
-    
+    static void callx(Ret & ret,  const func * x, const T args[MaxArg]);
+    static void call0(Ret & ret, void * fun, const T args[MaxArg]);
+    static void call1(Ret & ret, void * fun, const T args[MaxArg]);
+    static void call2(Ret & ret, void * fun, const T args[MaxArg]);
+    static void calln(Ret & ret, void * fun, const T args[MaxArg]);
+
 public:
 
     template<class R, class... Args>
@@ -109,7 +109,9 @@ public:
             impl::throw_out_of_range("wrong argument count in Func call");
         }
         const T vargs[MaxArg] = {std::forward<T>(args)...};
-        return call_impl(x, vargs);
+	Ret ret;
+        callx(ret, x, vargs);
+	return ret;
     }
 
     Ret call(ConstSlice<T> args);

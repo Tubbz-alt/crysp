@@ -14,10 +14,12 @@ Func::Ret Func::call(ConstSlice<T> args) {
     for (size_t i = 0; i < n; i++) {
         vargs[i] = args[i];
     }
-    return call_impl(x, vargs);
+    Ret ret;
+    callx(ret, x, vargs);
+    return ret;
 }
 
-Func::Ret Func::call_impl(const func * x, const T args[MaxArg]) {
+void Func::callx(Ret & ret, const func * x, const T args[MaxArg]) {
     const size_t n = x->argsize;
     for (size_t i = 0; i < n; i++) {
         T arg = args[i];
@@ -31,33 +33,30 @@ Func::Ret Func::call_impl(const func * x, const T args[MaxArg]) {
             impl::throw_runtime_error("wrong argument type in Func call");
         }
     }
-   
     // at least on x86_64 and arm64, function returning up to two values
     // (each as wide as T) return them in registers.
     //
     // function returning more than two values have instead different ABI:
     // they receive a hidden first argument containing the base address
     // where to store the return values.
-    Ret ret;
     void * f = x->fun;
     switch ((ret.size = x->retsize)) {
     case 0:
-        call0(ret.val, f, args);
+        call0(ret, f, args);
         break;
     case 1:
-        call1(ret.val, f, args);
+        call1(ret, f, args);
         break;
     case 2:
-        call2(ret.val, f, args);
+        call2(ret, f, args);
         break;
     default:
-        calln(ret.size, ret.val, f, args);
+        calln(ret, f, args);
         break;
     }
-    return ret;
 }
 
-void Func::call0(T /*ret*/[MaxRet], void * fun, const T args[MaxArg]) {
+void Func::call0(Ret & /*ret*/, void * fun, const T args[MaxArg]) {
 
     // at least on x86_64 and arm64, we can safely pass to a function
     // more arguments than it expects: extra arguments are just ignored
@@ -70,32 +69,31 @@ void Func::call0(T /*ret*/[MaxRet], void * fun, const T args[MaxArg]) {
       args[10],args[11],args[12],args[13],args[14]);
 }
 
-void Func::call1(T ret[MaxRet], void * fun, const T args[MaxArg]) {
+void Func::call1(Ret & ret, void * fun, const T args[MaxArg]) {
 
     using f_type = T (*)(T, T, T, T, T,
                          T, T, T, T, T,
                          T, T, T, T, T);
     f_type f = reinterpret_cast<f_type>(fun);
-    T vret = f(args[0], args[1], args[2], args[3], args[4],
-               args[5], args[6], args[7], args[8], args[9],
-               args[10],args[11],args[12],args[13],args[14]);
-    ret[0] = vret;
+    ret.val[0] = f(args[0], args[1], args[2], args[3], args[4],
+                   args[5], args[6], args[7], args[8], args[9],
+                   args[10],args[11],args[12],args[13],args[14]);
 }
 
-void Func::call2(T ret[MaxRet], void * fun, const T args[MaxArg]) {
+void Func::call2(Ret & ret, void * fun, const T args[MaxArg]) {
 
     using f_type = Values<T, T> (*)(T, T, T, T, T,
                                     T, T, T, T, T,
                                     T, T, T, T, T);
     f_type f = reinterpret_cast<f_type>(fun);
-    Values<T, T> vret = f(args[0], args[1], args[2], args[3], args[4],
-                          args[5], args[6], args[7], args[8], args[9],
-                          args[10],args[11],args[12],args[13],args[14]);
-    ret[0] = vret.get<0>();
-    ret[1] = vret.get<1>();
+    auto vret = f(args[0], args[1], args[2], args[3], args[4],
+                  args[5], args[6], args[7], args[8], args[9],
+                  args[10],args[11],args[12],args[13],args[14]);
+    ret.val[0] = vret.get<0>();
+    ret.val[1] = vret.get<1>();
 }
 
-void Func::calln(size_t retsize, T ret[MaxRet], void * fun, const T args[MaxArg]) {
+void Func::calln(Ret & ret, void * fun, const T args[MaxArg]) {
 
     // approximates Values<T, ...> sufficiently well
     // to have same in-memory layout and same function return ABI
@@ -110,8 +108,8 @@ void Func::calln(size_t retsize, T ret[MaxRet], void * fun, const T args[MaxArg]
     ret_type vret = f(args[0], args[1], args[2], args[3], args[4],
                       args[5], args[6], args[7], args[8], args[9],
                       args[10],args[11],args[12],args[13],args[14]);
-    for (size_t i = 0; i < retsize; i++) {
-        ret[i] = vret.val[i];
+    for (size_t i = 0, n = ret.size; i < n; i++) {
+        ret.val[i] = vret.val[i];
     }
 }
 
