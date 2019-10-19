@@ -20,14 +20,14 @@ CRYSP_NOINLINE T identity(T arg) {
 CRYSP_NOINLINE void test_func() {
     Func func{nop};
     Func::Ret ret = func();
-    printf("Func: called nop() returned %u values\n", (unsigned)ret.size);
+    printf("Func: called nop() returned %u values\n", (unsigned)ret.size());
 
     Pair arg{Float{1.5f}, Float{2.0f}};
     func = Func{identity};
     ret = func(arg);
     fputs("Func: called identity() returned [", stdout);
-    for (size_t i = 0, n = ret.size; i < n; i++) {
-        ret.val[i].print(stdout);
+    for (size_t i = 0, n = ret.size(); i < n; i++) {
+        ret[i].print(stdout);
         fputs(", ", stdout);
     }
     fputs("]\n", stdout);

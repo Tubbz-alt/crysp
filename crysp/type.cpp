@@ -1,5 +1,6 @@
 
 #include <cstdio>
+#include <unordered_map>
 
 #include "type.hpp"
 
@@ -10,34 +11,20 @@ int Type::print(FILE *out) const {
 }
 
 const char * Type::name() const noexcept {
-    switch (type::id(i)) {
-    case type::t_id:
-        return "T";
-    case type::type_id:
-        return "Type";
-    case type::float_id:
-        return "Float";
-    case type::int_id:
-        return "Int";
-    case type::rune_id:
-        return "Rune";
-    case type::utf8_id:
-        return "Utf8";
-    case type::double_id:
-        return "Double";
-    case type::long_id:
-        return "Long";
-    case type::struct_id:
-        return "Struct";
-    case type::pair_id:
-        return "Pair";
-    case type::symbol_id:
-        return "Symbol";
-    case type::func_id:
-        return "Func";
-    default:
-        return "Unknown";
+    static const char * const names[] =
+        {
+         "T", "Type", "Float", "Int", "Rune", "Utf8",
+         nullptr, nullptr, nullptr, nullptr,
+         nullptr, nullptr, nullptr, nullptr,
+         "Double", "Long", "Struct", "Pair", "Symbol", "Func",
+        };
+    if (size_t(i) < sizeof(names)/sizeof(names[0])) {
+        const char * ret = names[size_t(i)];
+        if (ret != nullptr) {
+            return ret;
+        }
     }
+    return "Unknown";
 }
 
 CRYSP_NS_END

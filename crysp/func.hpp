@@ -1,14 +1,16 @@
 #ifndef CRYSP_FUNC_HPP
 #define CRYSP_FUNC_HPP
 
-#include "t.hpp"
+#include "array.hpp"
 #include "nil.hpp"
-#include "type.hpp"
 #include "slice.hpp"
+#include "t.hpp"
+#include "type.hpp"
 #include "values.hpp"
 
 CRYSP_NS_START
 
+// function wrapper. Can call a function with arbitrary prototype
 class Func : public T {
 public:
     enum : size_t {
@@ -16,12 +18,10 @@ public:
           MaxRet = 15, // support up to 15 return values
     };
 
-    struct Ret {
-        size_t size;
-        T val[MaxRet];
+    struct Ret : public DynArray<T, MaxRet> {
 
         inline constexpr Ret() noexcept
-        : size{0}, val{}
+        : DynArray<T, MaxRet>{0}
         { }
     };
 
@@ -66,8 +66,6 @@ private:
     }
 
     static void callx(Ret & ret,  const func * x, const T args[MaxArg]);
-    static void call0(Ret & ret, void * fun, const T args[MaxArg]);
-    static void call1(Ret & ret, void * fun, const T args[MaxArg]);
     static void call2(Ret & ret, void * fun, const T args[MaxArg]);
     static void calln(Ret & ret, void * fun, const T args[MaxArg]);
 
