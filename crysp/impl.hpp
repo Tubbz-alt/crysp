@@ -48,7 +48,7 @@ namespace impl {
           pointer_mask   = 0xFFF000000000000Full,
           pointer_unmask = ~pointer_mask,
 
-          struct_tag     = pointer_tag,
+          obj_tag        = pointer_tag,
           pair_tag       = 0x7FF0000000000001ull,
           symbol_tag     = 0x7FF0000000000002ull,
           func_tag       = 0x7FF0000000000003ull,
@@ -83,7 +83,7 @@ namespace type {
              utf8_id    = 5,
              double_id  = 0xE,
              long_id    = 0xF,
-             struct_id  = 0x10,
+             obj_id     = 0x10,
              pair_id    = 0x11,
              symbol_id  = 0x12,
              func_id    = 0x13,

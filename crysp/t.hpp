@@ -137,6 +137,15 @@ public:
         case impl::rune_tag  >> 48: // return type::rune_id;
         case impl::utf8_tag  >> 48: // return type::utf8_id;
 	   return type::id((bits >> 48) & 0xF);
+           
+           static_assert(((impl::type_tag  >> 48) & 0xF) == type::type_id  &&
+                         ((impl::float_tag >> 48) & 0xF) == type::float_id &&
+                         ((impl::int_tag   >> 48) & 0xF) == type::int_id   &&
+                         ((impl::rune_tag  >> 48) & 0xF) == type::rune_id  &&
+                         ((impl::utf8_tag  >> 48) & 0xF) == type::utf8_id,
+                         "mismatch between impl::*_tag and type::*_id. "
+                         "please fix crysp/impl.hpp");
+
         case (impl::long_tag >> 48) + 0:
         case (impl::long_tag >> 48) + 1:
         case (impl::long_tag >> 48) + 2:
@@ -151,14 +160,18 @@ public:
             addr52 != (uint64_t(1) << 51)) /* skip +NaN */ {
             
             switch (bits & 0xF) {
-            case impl::struct_tag & 0xF:
-                return type::struct_id;
-            case impl::pair_tag & 0xF:
-                return type::pair_id;
-            case impl::symbol_tag & 0xF:
-                return type::symbol_id;
-            case impl::func_tag & 0xF:
-                return type::func_id;
+            case impl::obj_tag & 0xF:    // return type::obj_id;
+            case impl::pair_tag & 0xF:   // return type::pair_id;
+            case impl::symbol_tag & 0xF: // return type::symbol_id;
+            case impl::func_tag & 0xF:   // return type::func_id;
+                return type::id((bits & 0xF) | 0x10);
+
+                static_assert((impl::obj_tag    & 0xF) == (type::obj_id    & 0xF) &&
+                              (impl::pair_tag   & 0xF) == (type::pair_id   & 0xF) &&
+                              (impl::symbol_tag & 0xF) == (type::symbol_id & 0xF) &&
+                              (impl::func_tag   & 0xF) == (type::func_id   & 0xF),
+                              "mismatch between impl::*_tag and type::*_id. "
+                              "please fix crysp/impl.hpp");
             default:
                 return type::t_id;
             }

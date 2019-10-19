@@ -30,8 +30,8 @@ int T::print(FILE *out) const {
         return reinterpret_cast<const Double *>(this)->print(out);
     case type::long_id:
         return reinterpret_cast<const Long *>(this)->print(out);
-    case type::struct_id:
-        return fputs("struct", out);
+    case type::obj_id:
+        return fputs("obj", out);
     case type::pair_id:
         return reinterpret_cast<const Pair *>(this)->print(out);
     case type::symbol_id:
