@@ -68,6 +68,14 @@ inline Pair pair(T first, T rest) {
     return Pair{first, rest};
 }       
 
+inline T first(Pair x) {
+    return x->first;
+}
+
+inline T rest(Pair x) {
+    return x->rest;
+}
+
 CRYSP_NS_END
 
 #endif // CRYSP_PAIR_HPP
