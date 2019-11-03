@@ -1,8 +1,14 @@
+#include <cinttypes>  // PRIxPTR
+
 #include "func.hpp"
 #include "nil.hpp"
 #include "values.hpp"
 
 CRYSP_NS_START
+
+int Func::print(FILE *out) const {
+    return fprintf(out, "0x%" PRIxPTR, reinterpret_cast<uintptr_t>(addr()));
+}
 
 Func::Ret Func::call(ConstSlice<T> args) {
     func * x = reinterpret_cast<func *>(addr());

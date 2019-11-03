@@ -2,6 +2,7 @@
 #define CRYSP_FUNC_HPP
 
 #include "array.hpp"
+#include "new.hpp"
 #include "nil.hpp"
 #include "slice.hpp"
 #include "t.hpp"
@@ -94,7 +95,7 @@ public:
           static_type_id = type::func_id,
     };
 
-    // int print(FILE *out) const;
+    int print(FILE *out) const;
 
     template<class ...Args>
     Ret operator()(Args&& ... args) {

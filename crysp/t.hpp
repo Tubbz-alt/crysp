@@ -11,6 +11,7 @@ class Type;
 
 class T {
 private:
+    friend bool impl::init();
     friend class Float;
     friend class Func;
     friend class Double;
@@ -19,6 +20,7 @@ private:
     friend class Pair;
     friend class Rune;
     friend class Int;
+    friend class String;
     friend class Symbol;
     friend class Type;
     friend class Utf8;
@@ -95,11 +97,6 @@ public:
     /**/ : bits(impl::nil_bits) {
     }
 
-    // return a T containing t
-    static inline constexpr T t() noexcept {
-        return T{impl::t_bits};
-    }
-
     /*
     inline constexpr T(const T & other) = default;
     inline constexpr T & operator=(const T & other) = default;
@@ -155,12 +152,13 @@ public:
         uint64_t addr52 = 0;
 
         if ((bits >> 52) == (impl::pointer_tag >> 52) &&
-            (addr52 = (bits & ~impl::pointer_mask)) != 0 && /* skip +inf */
+            (addr52 = (bits & ~impl::pointer_himask)) != 0 && /* skip +inf */
             addr52 != (uint64_t(1) << 51)) /* skip +NaN */ {
             
             switch (bits & 0xF) {
             case impl::obj_tag & 0xF:    // return type::obj_id;
             case impl::pair_tag & 0xF:   // return type::pair_id;
+            case impl::vector_tag & 0xF: // return type::vector_id;
             case impl::symbol_tag & 0xF: // return type::symbol_id;
             case impl::func_tag & 0xF:   // return type::func_id;
                 return type::id((bits & 0xF) | 0x10);
@@ -168,6 +166,7 @@ public:
                 static_assert((impl::obj_tag    & 0xF) == (type::obj_id    & 0xF) &&
                               (impl::pair_tag   & 0xF) == (type::pair_id   & 0xF) &&
                               (impl::symbol_tag & 0xF) == (type::symbol_id & 0xF) &&
+                              (impl::vector_tag & 0xF) == (type::vector_id & 0xF) &&
                               (impl::func_tag   & 0xF) == (type::func_id   & 0xF),
                               "mismatch between impl::*_tag and type::*_id. "
                               "please fix crysp/impl.hpp");
@@ -185,8 +184,6 @@ public:
     // return number of written bytes
     int print(FILE *out) const;
 };
-
-constexpr const T t = T::t();
 
 CRYSP_NS_END
 

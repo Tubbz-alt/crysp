@@ -1,4 +1,5 @@
 
+#include <cstring>    // std::memset()
 #include <new>        // std::bad_alloc
 #include <stdexcept>  // std::overflow_error, std::runtime_error
 #include <string>     // std::string
@@ -6,6 +7,8 @@
 #include <typeinfo>   // std::bad_cast
 
 #include "nil.hpp"
+#include "string.hpp"
+#include "symbol.hpp"
 
 #ifndef GC_MALLOC
 #include <cstdlib>   // malloc
@@ -22,15 +25,28 @@ bool impl::init() {
     if (running)
         return true;
 
-    /* fixed memory address reserved for nil, t */
+    /* fixed memory address reserved for nil, t, empty string */
     void * addr = mmap((void *)fixed_addr_bits, 32768,
                        PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS,
                        -1, 0);
     if (addr == MAP_FAILED)
         throw_bad_alloc();
 
-    Pair x = nil;
-    x->first = x->rest = nil;
+    // initialize nil
+    Pair n = nil;
+    n->first = n->rest = nil;
+
+    // initialize empty string
+    String str;
+    impl::string* s = reinterpret_cast<impl::string*>(str.addr());
+    s->size = Long{0};
+    // std::memset(s->data, '\0', sizeof(Long)); // unnecessary, mmap() zeroes data
+    
+    // initialize t
+    Symbol sym = t;
+    const_cast<String &>(sym->name) = String{"t"};
+    const_cast<T &>(sym->value) = t;
+
     return true;
 }
 

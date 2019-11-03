@@ -6,6 +6,7 @@
 #include "crysp/long.hpp"
 #include "crysp/nil.hpp"
 #include "crysp/rune.hpp"
+#include "crysp/symbol.hpp"
 #include "crysp/utf8.hpp"
 #include "crysp/values.hpp"
 
@@ -23,11 +24,11 @@ CRYSP_NOINLINE Values<Rune, Utf8> values2() {
     return values(Rune{'!'}, Utf8{'!'});
 }
 
-CRYSP_NOINLINE Values<Float, Double, T> values3() {
+CRYSP_NOINLINE Values<Float, Double, Symbol> values3() {
     return values(Float{9.5f}, Double{'!'}, t);
 }
 
-CRYSP_NOINLINE Values<Long, Long, Int, Int, T, Nil> values6() {
+CRYSP_NOINLINE Values<Long, Long, Int, Int, Symbol, Nil> values6() {
     return values(Long{1}, Long{2}, Int{1}, Int{2}, t, nil);
 }
 

@@ -3,9 +3,14 @@
 
 #include "is.hpp"
 #include "pair.hpp"
+#include "new.hpp"
 #include "nil.hpp"
 
 CRYSP_NS_START
+
+Pair::Pair(T first, T rest) /* throw(std::bad_alloc) */
+    : T(impl::pair_tag | GCRYSP_NEW(pair, first, rest)) {
+}
 
 int Pair::print(FILE *out) const {
     Pair P = *this;

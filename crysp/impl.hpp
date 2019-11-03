@@ -50,8 +50,9 @@ namespace impl {
 
           obj_tag        = pointer_tag,
           pair_tag       = 0x7FF0000000000001ull,
-          symbol_tag     = 0x7FF0000000000002ull,
-          func_tag       = 0x7FF0000000000003ull,
+          vector_tag     = 0x7FF0000000000002ull,
+          symbol_tag     = 0x7FF0000000000003ull,
+          func_tag       = 0x7FF0000000000004ull,
 
 	  /* start of fixed-address memory area containing nil, t ... */
 #if defined(__aarch64__) || defined(__AARCH64EL__) || defined(__AARCH64BE__)	 
@@ -59,8 +60,9 @@ namespace impl {
 #else
           fixed_addr_bits = 0x10000ull,
 #endif
-          nil_bits       = pair_tag + fixed_addr_bits,
-          t_bits         = symbol_tag + 0x20 + fixed_addr_bits,
+          nil_bits          = pair_tag   + 0x00 + fixed_addr_bits,
+          empty_string_bits = vector_tag + 0x10 + fixed_addr_bits,
+          t_bits            = symbol_tag + 0x20 + fixed_addr_bits,
     };
 
     bool init();                /* throw(std::bad_alloc) */
@@ -85,8 +87,9 @@ namespace type {
              long_id    = 0xF,
              obj_id     = 0x10,
              pair_id    = 0x11,
-             symbol_id  = 0x12,
-             func_id    = 0x13,
+             vector_id  = 0x12,
+             symbol_id  = 0x13,
+             func_id    = 0x14,
     };
 
 } // namespace type

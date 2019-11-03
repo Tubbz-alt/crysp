@@ -1,15 +1,16 @@
-
 #include <cstdio>
-#include <cinttypes>  // PRId32, PRId64
 
-#include "float.hpp"
-#include "nil.hpp"
 #include "double.hpp"
+#include "float.hpp"
+#include "func.hpp"
+#include "nil.hpp"
 #include "long.hpp"
 #include "pair.hpp"
 #include "rune.hpp"
+#include "symbol.hpp"
 #include "type.hpp"
 #include "utf8.hpp"
+#include "vector.hpp"
 
 CRYSP_NS_START
 
@@ -34,9 +35,11 @@ int T::print(FILE *out) const {
     case type::pair_id:
         return reinterpret_cast<const Pair *>(this)->print(out);
     case type::symbol_id:
-        return fputs(bits == impl::t_bits ? "t" : "symbol", out);
+        return reinterpret_cast<const Symbol *>(this)->print(out);
+    case type::vector_id:
+        return reinterpret_cast<const Vector *>(this)->print(out);
     case type::func_id:
-        return fputs("func", out);
+        return reinterpret_cast<const Func *>(this)->print(out);
     default:
         return fputs("unknown", out);
     }

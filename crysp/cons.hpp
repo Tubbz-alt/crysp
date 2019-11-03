@@ -19,6 +19,14 @@ inline T cdr(Cons x) {
     return x->rest;
 }
 
+inline T setf_car(Cons x, T arg) {
+    return x->first = arg;
+}
+
+inline T setf_cdr(Cons x, T arg) {
+    return x->rest = arg;
+}
+
 CRYSP_NS_END
 
 #endif // CRYSP_CONS_HPP

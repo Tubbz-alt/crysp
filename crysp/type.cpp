@@ -21,8 +21,9 @@ const char * Type::name() const noexcept {
                   type::long_id    == 0xF &&
                   type::obj_id     == 0x10 &&
                   type::pair_id    == 0x11 &&
-                  type::symbol_id  == 0x12 &&
-                  type::func_id    == 0x13,
+                  type::vector_id  == 0x12 &&
+                  type::symbol_id  == 0x13 &&
+                  type::func_id    == 0x14,
                   "type::id enum values changed. update Type::name() accordingly");
     
     static const char * const names[] =
@@ -30,7 +31,7 @@ const char * Type::name() const noexcept {
          "T", "Type", "Float", "Int", "Rune", "Utf8",
          nullptr, nullptr, nullptr, nullptr,
          nullptr, nullptr, nullptr, nullptr,
-         "Double", "Long", "Obj", "Pair", "Symbol", "Func",
+         "Double", "Long", "Obj", "Pair", "String", "Symbol", "Func",
         };
     if (size_t(i) < sizeof(names)/sizeof(names[0])) {
         const char * ret = names[size_t(i)];

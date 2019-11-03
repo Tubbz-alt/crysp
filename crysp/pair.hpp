@@ -1,13 +1,10 @@
 #ifndef CRYSP_PAIR_HPP
 #define CRYSP_PAIR_HPP
 
-#include "new.hpp"
 #include "t.hpp"
 #include "type.hpp"
 
 CRYSP_NS_START
-
-class Pair;
 
 class Pair : public T {
 private:
@@ -26,14 +23,13 @@ protected:
     struct bits_constructor {};
     
     /* needed by subclass constructor Nil() */
-    explicit inline constexpr Pair(uint64_t bits, bits_constructor) noexcept : T(bits) {
+    explicit inline constexpr Pair(uint64_t bits,
+                                   bits_constructor) noexcept
+        : T(bits) {
     }
     
 public:
-    explicit inline Pair(T first  = T{},
-                         T rest   = T{}) /* throw(std::bad_alloc) */
-        : T(impl::pair_tag | GCRYSP_NEW(pair, first, rest)) {
-    }
+    explicit Pair(T first = T{}, T rest = T{}); /* throw(std::bad_alloc) */
         
     /*
     inline constexpr Pair(const Pair & other) = default;

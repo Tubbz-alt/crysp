@@ -1,5 +1,6 @@
-#include "crysp/pair.hpp"
 #include "crysp/nil.hpp"
+#include "crysp/pair.hpp"
+#include "crysp/symbol.hpp"
 
 CRYSP_NS_USE
 

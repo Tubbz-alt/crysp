@@ -8,6 +8,8 @@
 #include "crysp/long.hpp"
 #include "crysp/nil.hpp"
 #include "crysp/rune.hpp"
+#include "crysp/string.hpp"
+#include "crysp/symbol.hpp"
 #include "crysp/test.hpp"
 #include "crysp/the.hpp"
 #include "crysp/type.hpp"
@@ -309,6 +311,11 @@ CRYSP_NOINLINE void test_rune() {
     show_rune();
 }
 
+CRYSP_NOINLINE void test_string() {
+    show(String{}); // empty string
+    show(String{"abcd"});
+}
+
 template<class FL, class fl>
 CRYSP_NOINLINE void test_float_binary_op() {
     for (fl i = -20; i <= 20; i += 0.25) {
@@ -340,18 +347,20 @@ CRYSP_NOINLINE void test_type() {
     show(Double{}.type());
     show(Long{}.type());
     show(nil.type());
+    show(String{}.type());
     show(t.type());
 }
 
 CRYSP_NOINLINE void test() {
-    test_bool();
-    test_list();
     test_double();
     test_type();
     test_float();
     test_int();
     test_rune();
     test_long();
+    test_list();
+    test_bool();
+    test_string();
     test_values();
     test_func();
 }
