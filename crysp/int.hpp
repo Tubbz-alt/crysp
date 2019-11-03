@@ -15,6 +15,9 @@ CRYSP_NS_START
 # define CRYSP_INT_REF_INPLACE
 #endif
 
+class Int;
+using Int32 = Int;
+
 /**
  * 32-bit signed integer.
  * operations on Int are wrapping, i.e. any overflow is truncated modulo 32 bits,
@@ -23,7 +26,7 @@ CRYSP_NS_START
 class Int : public T {
 private:
     friend class T;
-    template<class To> friend bool is(T arg);
+    template<class E> friend bool is(T arg);
 
     friend constexpr Int operator&(Int a, Int b) noexcept;
     friend constexpr Int operator|(Int a, Int b) noexcept;

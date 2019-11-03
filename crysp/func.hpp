@@ -26,6 +26,12 @@ public:
     };
 
 private:
+    template<class E> friend bool is(T arg);
+
+    static inline constexpr bool typecheck(uint64_t bits) noexcept {
+        return (bits & impl::pointer_mask) == impl::func_tag;
+    }
+
     struct func {
         void * fun;
         uint16_t retsize, argsize;
@@ -59,13 +65,7 @@ private:
         { }
     };
 
-    template<class To> friend bool is(T arg);
-
-    static inline constexpr bool typecheck(uint64_t bits) noexcept {
-        return (bits & impl::pointer_mask) == impl::func_tag;
-    }
-
-    static void callx(Ret & ret,  const func * x, const T args[MaxArg]);
+    static void callx(Ret & ret, const func * x, const T args[MaxArg]);
     static void call2(Ret & ret, void * fun, const T args[MaxArg]);
     static void calln(Ret & ret, void * fun, const T args[MaxArg]);
 

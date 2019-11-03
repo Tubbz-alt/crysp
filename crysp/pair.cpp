@@ -1,21 +1,34 @@
 
 #include <cstdio>
 
+#include "is.hpp"
 #include "pair.hpp"
 #include "nil.hpp"
 
 CRYSP_NS_START
 
 int Pair::print(FILE *out) const {
-    if (bits == impl::nil_bits) {
-        return reinterpret_cast<const Nil *>(this)->print(out);
+    Pair P = *this;
+    if (P == nil) {
+        return nil.print(out);
     }
-    const pair * p = operator->();
-    int ret = 4;
+    int ret = 2;
     fputc('(', out);
-    ret += p->first.print(out);
-    fputs(", ", out);
-    ret += p->second.print(out);
+    for (;;) {
+        const pair * p = P.operator->();
+        ret += p->first.print(out);
+        T rest = p->rest;
+        if (rest == nil) {
+            break;
+        } else if (is<Pair>(rest, &P)) {
+            fputc(' ', out);
+            continue;
+        } else {
+            fputs(" . ", out);
+            ret += 3 + rest.print(out);
+            break;
+        }
+    }
     fputc(')', out);
     return ret;
 }

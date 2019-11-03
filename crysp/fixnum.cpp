@@ -2,11 +2,11 @@
 #include <cinttypes>  // PRId64
 #include <cstdio>
 
-#include "long.hpp"
+#include "fixnum.hpp"
 
 CRYSP_NS_START
 
-int Long::print(FILE *out) const {
+int Fixnum::print(FILE *out) const {
     return fprintf(out, "%" PRId64, untag(bits));
 }
 

@@ -2,9 +2,8 @@
 #include <cstdio>
 #include <cinttypes>  // PRId32, PRId64
 
-#include "cast.hpp"
-#include "long.hpp"
 #include "float.hpp"
+#include "fixnum.hpp"
 #include "nil.hpp"
 #include "double.hpp"
 #include "pair.hpp"
@@ -28,8 +27,8 @@ int T::print(FILE *out) const {
         return reinterpret_cast<const Utf8 *>(this)->print(out);
     case type::double_id:
         return reinterpret_cast<const Double *>(this)->print(out);
-    case type::long_id:
-        return reinterpret_cast<const Long *>(this)->print(out);
+    case type::fixnum_id:
+        return reinterpret_cast<const Fixnum *>(this)->print(out);
     case type::obj_id:
         return fputs("obj", out);
     case type::pair_id:

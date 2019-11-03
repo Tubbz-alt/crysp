@@ -17,7 +17,7 @@ CRYSP_NS_START
 
 class Float : public T {
 private:
-    template<class To> friend bool is(T arg);
+    template<class E> friend bool is(T arg);
 
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
         return (bits >> 48) == (impl::float_tag >> 48);

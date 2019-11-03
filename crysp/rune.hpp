@@ -12,7 +12,7 @@ class Utf8;
 
 class Rune : public T {
 private:
-    template<class To> friend bool is(T arg);
+    template<class E> friend bool is(T arg);
 
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
         return (bits >> 48) == (impl::rune_tag >> 48);

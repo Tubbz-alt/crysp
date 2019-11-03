@@ -7,7 +7,7 @@ CRYSP_NS_START
 
 class Type : public T {
 private:
-    template<class To> friend bool is(T arg);
+    template<class E> friend bool is(T arg);
 
     // needed by friend is()
     static inline constexpr bool typecheck(uint64_t bits) noexcept {

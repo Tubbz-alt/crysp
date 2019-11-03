@@ -1,9 +1,9 @@
 #include <cstdio>
 
 #include "crysp/double.hpp"
+#include "crysp/fixnum.hpp"
 #include "crysp/float.hpp"
 #include "crysp/int.hpp"
-#include "crysp/long.hpp"
 #include "crysp/nil.hpp"
 #include "crysp/rune.hpp"
 #include "crysp/utf8.hpp"
@@ -27,8 +27,8 @@ CRYSP_NOINLINE Values<Float, Double, T> values3() {
     return values(Float{9.5f}, Double{'!'}, t);
 }
 
-CRYSP_NOINLINE Values<Long, Long, Int, Int, T, Nil> values6() {
-    return values(Long{1}, Long{2}, Int{1}, Int{2}, t, nil);
+CRYSP_NOINLINE Values<Fixnum, Fixnum, Int, Int, T, Nil> values6() {
+    return values(Fixnum{1}, Fixnum{2}, Int{1}, Int{2}, t, nil);
 }
 
 CRYSP_NOINLINE void test_values() {

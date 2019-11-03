@@ -20,5 +20,5 @@ CRYSP_NOINLINE T pair_first(Pair c) {
 }
 
 CRYSP_NOINLINE T pair_second(Pair c) {
-    return c->second;
+    return c->rest;
 }

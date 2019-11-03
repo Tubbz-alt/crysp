@@ -2,7 +2,7 @@
 #include <cinttypes>  // PRId32
 #include <cstdio>
 
-#include "long.hpp"
+#include "int.hpp"
 
 CRYSP_NS_START
 

@@ -11,10 +11,10 @@ class Type;
 
 class T {
 private:
+    friend class Fixnum;
     friend class Float;
     friend class Func;
     friend class Double;
-    friend class Long;
     template<class E> friend class Obj;
     friend class Pair;
     friend class Rune;
@@ -22,8 +22,7 @@ private:
     friend class Symbol;
     friend class Type;
     friend class Utf8;
-    template<class To> friend bool is(T arg);
-    template<class To, class From> friend To cast(From arg);
+    template<class E> friend bool is(T arg);
     
     static inline constexpr bool typecheck(uint64_t) noexcept {
         return true;
@@ -146,11 +145,11 @@ public:
                          "mismatch between impl::*_tag and type::*_id. "
                          "please fix crysp/impl.hpp");
 
-        case (impl::long_tag >> 48) + 0:
-        case (impl::long_tag >> 48) + 1:
-        case (impl::long_tag >> 48) + 2:
-        case (impl::long_tag >> 48) + 3:
-            return type::long_id;
+        case (impl::fixnum_tag >> 48) + 0:
+        case (impl::fixnum_tag >> 48) + 1:
+        case (impl::fixnum_tag >> 48) + 2:
+        case (impl::fixnum_tag >> 48) + 3:
+            return type::fixnum_id;
         }
         
         uint64_t addr52 = 0;

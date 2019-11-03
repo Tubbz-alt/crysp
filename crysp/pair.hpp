@@ -10,10 +10,11 @@ CRYSP_NS_START
 class Pair : public T {
 private:
     struct pair {
-        T first, second;
+        T first;
+        T rest;
     };
     
-    template<class To> friend bool is(T arg);
+    template<class E> friend bool is(T arg);
 
     static inline constexpr bool typecheck(uint64_t bits) noexcept {
         return (bits & impl::pointer_mask) == impl::pair_tag;
@@ -27,9 +28,9 @@ protected:
     }
     
 public:
-    explicit inline Pair(T first  = T{impl::nil_bits},
-                         T second = T{impl::nil_bits}) /* throw(std::bad_alloc) */
-        : T(impl::pair_tag | GCRYSP_NEW(pair, first, second)) {
+    explicit inline Pair(T first  = T{},
+                         T rest   = T{}) /* throw(std::bad_alloc) */
+        : T(impl::pair_tag | GCRYSP_NEW(pair, first, rest)) {
     }
         
     /*

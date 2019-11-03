@@ -2,11 +2,10 @@
 #include <new>        // std::bad_alloc
 #include <stdexcept>  // std::overflow_error, std::runtime_error
 #include <string>     // std::string
+#include <sys/mman.h> // mmap()
 #include <typeinfo>   // std::bad_cast
 
-#include <sys/mman.h> // mmap()
-
-#include "long.hpp"
+#include "fixnum.hpp"
 #include "nil.hpp"
 
 #ifndef GC_MALLOC
@@ -32,7 +31,7 @@ bool impl::init() {
         throw_bad_alloc();
 
     Pair x = nil;
-    x->first = x->second = nil;
+    x->first = x->rest = nil;
     return true;
 }
 

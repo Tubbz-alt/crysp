@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "crysp/long.hpp"
 #include "crysp/double.hpp"
+#include "crysp/fixnum.hpp"
 
 CRYSP_NS_USE
 
@@ -53,11 +53,11 @@ static CRYSP_NOINLINE void collatz_repeat(N n) {
 }
 
 int main(int argc, const char * argv[]) {
-    const char * typ = argc < 2 ? "Long" : argv[1];
+    const char * typ = argc < 2 ? "Fixnum" : argv[1];
     int64_t n = argc < 3 ? 12345678 : atoll(argv[2]);
     
-    if (!strcmp(typ, "Long")) {
-        collatz_repeat(Long{n});
+    if (!strcmp(typ, "Fixnum")) {
+        collatz_repeat(Fixnum{n});
     } else if (!strcmp(typ, "double")) {
         collatz_repeat<double, collatz_double>(double(n));
     } else if (!strcmp(typ, "Double")) {
