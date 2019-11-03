@@ -3,9 +3,9 @@
 
 #include "crysp/cons.hpp"
 #include "crysp/double.hpp"
-#include "crysp/fixnum.hpp"
 #include "crysp/float.hpp"
 #include "crysp/list.hpp"
+#include "crysp/long.hpp"
 #include "crysp/nil.hpp"
 #include "crysp/rune.hpp"
 #include "crysp/test.hpp"
@@ -34,7 +34,7 @@ CRYSP_NOINLINE void test_list() {
     show(c);
     TEST_EQ(c->first, t);
     TEST_EQ(c->rest, nil);
-    c = list(Fixnum(1), Fixnum(2), Fixnum(3), Fixnum(4));
+    c = list(Long(1), Long(2), Long(3), Long(4));
     show(c);
 }
 
@@ -209,10 +209,10 @@ CRYSP_NOINLINE void test_int_binary_op(num lo, num hi) {
     }
 }
 
-CRYSP_NOINLINE void test_fixnum() {
-    test_int_assign<Fixnum, int64_t>(fixnum_min, fixnum_max);
-    test_int_unary_op<Fixnum, int64_t>(fixnum_min.val(), fixnum_max.val());
-    test_int_binary_op<Fixnum, int64_t>(fixnum_min.val(), fixnum_max.val());
+CRYSP_NOINLINE void test_long() {
+    test_int_assign<Long, int64_t>(long_min, long_max);
+    test_int_unary_op<Long, int64_t>(long_min.val(), long_max.val());
+    test_int_binary_op<Long, int64_t>(long_min.val(), long_max.val());
 }
 
 CRYSP_NOINLINE void test_int() {
@@ -338,7 +338,7 @@ CRYSP_NOINLINE void test_type() {
     show(Rune{}.type());
     show(Utf8{}.type());
     show(Double{}.type());
-    show(Fixnum{}.type());
+    show(Long{}.type());
     show(nil.type());
     show(t.type());
 }
@@ -351,7 +351,7 @@ CRYSP_NOINLINE void test() {
     test_float();
     test_int();
     test_rune();
-    test_fixnum();
+    test_long();
     test_values();
     test_func();
 }

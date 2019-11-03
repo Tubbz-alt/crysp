@@ -18,7 +18,7 @@ const char * Type::name() const noexcept {
                   type::rune_id    == 4 &&
                   type::utf8_id    == 5 &&
                   type::double_id  == 0xE &&
-                  type::fixnum_id  == 0xF &&
+                  type::long_id    == 0xF &&
                   type::obj_id     == 0x10 &&
                   type::pair_id    == 0x11 &&
                   type::symbol_id  == 0x12 &&
@@ -30,7 +30,7 @@ const char * Type::name() const noexcept {
          "T", "Type", "Float", "Int", "Rune", "Utf8",
          nullptr, nullptr, nullptr, nullptr,
          nullptr, nullptr, nullptr, nullptr,
-         "Double", "Fixnum", "Obj", "Pair", "Symbol", "Func",
+         "Double", "Long", "Obj", "Pair", "Symbol", "Func",
         };
     if (size_t(i) < sizeof(names)/sizeof(names[0])) {
         const char * ret = names[size_t(i)];

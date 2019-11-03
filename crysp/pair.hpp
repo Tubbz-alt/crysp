@@ -7,6 +7,8 @@
 
 CRYSP_NS_START
 
+class Pair;
+
 class Pair : public T {
 private:
     struct pair {
@@ -61,6 +63,10 @@ public:
         return reinterpret_cast<const pair *>(addr());
     }
 };
+
+inline Pair pair(T first, T rest) {
+    return Pair{first, rest};
+}       
 
 CRYSP_NS_END
 

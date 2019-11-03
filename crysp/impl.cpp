@@ -5,7 +5,6 @@
 #include <sys/mman.h> // mmap()
 #include <typeinfo>   // std::bad_cast
 
-#include "fixnum.hpp"
 #include "nil.hpp"
 
 #ifndef GC_MALLOC

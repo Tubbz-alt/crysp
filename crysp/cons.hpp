@@ -7,9 +7,9 @@ CRYSP_NS_START
 
 using Cons = Pair;
 
-Cons cons(T first, T rest) {
+inline Cons cons(T first, T rest) {
     return Cons{first, rest};
-}
+}       
 
 CRYSP_NS_END
 

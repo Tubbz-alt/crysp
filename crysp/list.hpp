@@ -1,8 +1,8 @@
 #ifndef CRYSP_LIST_HPP
 #define CRYSP_LIST_HPP
 
-#include "crysp/cons.hpp"
 #include "crysp/nil.hpp"
+#include "crysp/pair.hpp"
 
 CRYSP_NS_START
 
@@ -11,8 +11,8 @@ inline constexpr Nil list() noexcept {
 }
 
 template<class Arg, class... Args>
-Cons list(Arg first, Args... rest) {
-    return cons(first, list(rest...));
+Pair list(Arg first, Args... rest) {
+    return pair(first, list(rest...));
 }
 
 CRYSP_NS_END
